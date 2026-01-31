@@ -1,37 +1,70 @@
 # Repository Calibration Prompt
 
-> Apply this prompt to any codebase to refactor it toward the architectural principles, quality standards, and operational patterns defined by the Get Shit Done (GSD) framework. Feed this prompt to an AI coding assistant alongside the target repo.
+> Apply this prompt to any codebase to refactor it toward the architectural principles, quality standards, and operational patterns derived from the Get Shit Done (GSD) framework. Feed this prompt to an AI coding assistant alongside the target repo.
 
 ---
 
 ## PROMPT
 
-You are refactoring and calibrating a repository to align with a rigorous set of engineering principles. Analyze the target codebase, then apply the standards below systematically. Do not add complexity beyond what is required. Do not introduce enterprise patterns. Every change must serve a concrete purpose.
+You are calibrating a repository to align with a set of engineering principles. Analyze the target codebase first, then apply the standards below — but only where they fit. These are principles, not a universal checklist. Every change must serve a concrete purpose for this specific repo.
+
+**Before applying any section, answer:** Does this principle improve this repo, or am I force-fitting a standard that doesn't belong here?
+
+---
+
+### 0. APPLICABILITY FILTER
+
+Not every section applies to every repo. Use this filter before applying each section:
+
+| Repo type | Apply sections | Skip or reduce |
+|---|---|---|
+| Small script/CLI (<500 LOC) | 3, 5, 6, 7, 8, 9 | 1 (minimal), 2 (skip), 4 (skip if no tests), 10 (skip), 11 (skip) |
+| Library/package | 1 (adapted), 2, 3, 4, 5, 6, 7, 8, 9 | 10 (minimal), 11 (skip) |
+| Web application | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 | 11 (only if multi-agent) |
+| Monorepo | Apply per-package where possible | Single `.planning/` at root; adapt naming/structure rules per package's language conventions |
+| AI agent system | All sections | — |
+
+**Team context matters:**
+- Solo developer + AI: apply git/branch rules as written.
+- Team repo with existing PR process, branch protection, release trains: preserve the team's git workflow. Apply code quality, verification, and planning principles but do not override established team git conventions.
+
+**Language adaptation:**
+- Naming conventions (Section 1) apply to `.planning/` artifacts and project-level config. Source code naming follows the target language's idioms (PascalCase React components, snake_case Python modules, etc.).
+- Stub detection patterns (Section 4) must be adapted to the target language. The examples given are JS/React-specific. Derive equivalent patterns for the actual language.
 
 ---
 
 ### 1. PROJECT STRUCTURE
 
-Organize the repository into a clear progressive-disclosure hierarchy:
+Organize planning artifacts into a persistent state directory:
 
 ```
-.planning/                    # Persistent project state (never deleted)
-  PROJECT.md                  # Vision, core value prop, audience, constraints
-  REQUIREMENTS.md             # Atomic requirements with IDs (REQ-CATEGORY-NN)
-  ROADMAP.md                  # Phase structure with goal-backward success criteria
-  STATE.md                    # Living memory: current position, decisions, blockers
-  config.json                 # Workflow preferences (depth, mode, model profile)
-  research/                   # Discovery and research outputs
-  phases/{NN}-{name}/         # Per-phase plans, summaries, verification
-  codebase/                   # Architecture, conventions, stack, concerns docs
+.planning/                       # Persistent project state (never deleted)
+  PROJECT.md                     # Vision, core value prop, audience, constraints
+  REQUIREMENTS.md                # Atomic requirements with IDs (REQ-CATEGORY-NN)
+  ROADMAP.md                     # Phase structure with goal-backward success criteria
+  STATE.md                       # Living memory: current position, decisions, blockers
+  config.json                    # Workflow preferences (depth, mode, model profile)
+  research/                      # Discovery and research outputs
+  phases/{NN}-{name}/            # Per-phase plans, summaries, verification
+  codebase/                      # Architecture, conventions, stack, concerns docs
 ```
 
-**Rules:**
-- Kebab-case for all file and directory names.
+**Naming rules:**
+- `.planning/` artifacts use UPPER_CASE.md for top-level documents (PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md, SUMMARY.md, VERIFICATION.md) and kebab-case for directories and secondary files.
+- Source code files follow the target language's conventions. Do not rename existing source files to kebab-case if the language/framework has a different standard (PascalCase React components, snake_case Python, etc.).
 - Zero-pad phase numbers: `01`, `02`, `08`.
+
+**Requirement rules:**
 - One capability per requirement. Requirements are user-centric ("User can X"), specific, testable, and atomic.
 - Every v1 requirement maps to exactly one phase. No orphans, no duplicates.
 - Phase goals are outcomes, not tasks. Good: "Users can securely access their accounts." Bad: "Build authentication."
+
+**Scaling guidance:**
+- Repos under 500 LOC: a single PROJECT.md may suffice. Skip REQUIREMENTS.md, ROADMAP.md, and phase directories unless the project is expected to grow significantly.
+- Repos 500–5000 LOC: PROJECT.md + REQUIREMENTS.md + ROADMAP.md. Phase directories as needed.
+- Repos over 5000 LOC or with multiple contributors: full `.planning/` structure.
+- Monorepos: single `.planning/` at repo root. Per-package planning only if packages are independently versioned and released.
 
 ---
 
@@ -51,13 +84,13 @@ Use **goal-backward decomposition**, not forward planning.
 **Plan sizing:**
 - 2–3 tasks per plan maximum. No exceptions.
 - Each task: concrete enough that a different person/agent could execute it without clarifying questions.
-- Tasks touching >3–5 files are too large — split them.
+- Tasks touching more than 5 files are too large — split them.
 - Discovery and implementation never share a plan.
 
 **Split signals (always split if):**
 - More than 3 tasks
 - Multiple subsystems (DB + API + UI = separate plans)
-- Any task modifying >5 files
+- Any task modifying more than 5 files
 - Checkpoint + implementation in same plan
 
 **Task specificity test:**
@@ -78,7 +111,9 @@ Use **goal-backward decomposition**, not forward planning.
 - Types: `feat`, `fix`, `test`, `refactor`, `docs`, `chore`, `revert`, `perf`, `style`
 - Stage files individually. NEVER use `git add .`, `git add -A`, or broad directory adds.
 
-**Deviation rules during execution:**
+**Deviation rules during execution (not during calibration — see Section 12):**
+
+These rules apply when executing planned work against this repo. During calibration itself, the scope is limited to structure, conventions, and quality — not feature implementation.
 
 | Situation | Action |
 |---|---|
@@ -88,6 +123,8 @@ Use **goal-backward decomposition**, not forward planning.
 | Architectural change (new DB table, switching library, changing API contract) | STOP. Present to user. Wait for decision. |
 
 Priority: architectural changes override auto-fix rules. When in doubt, ask.
+
+**Scope boundary for auto-fix vs. code quality rules:** Section 6 says "do not add features beyond what was requested." The deviation rules above apply only to work discovered *during execution of a planned task*. They do not authorize proactive feature additions during unrelated work. If you find a security vulnerability while refactoring file naming, log it as a gap — don't fix it in the naming commit.
 
 **Context budget discipline:**
 - Target completion within 50% context usage.
@@ -115,11 +152,13 @@ Priority: architectural changes override auto-fix rules. When in doubt, ask.
 | 2. Substantive | Real implementation, not a stub | "Does it do something?" |
 | 3. Wired | Imported AND used by other code | "Is it connected?" |
 
-**Minimum substantive thresholds:**
-- Component: 15+ lines
-- API route: 10+ lines
-- Hook/utility: 10+ lines
-- Schema/model: 5+ lines
+**Minimum substantive thresholds (adapt to language — these are baselines):**
+- Component/view: 15+ lines
+- API route/handler: 10+ lines
+- Hook/utility/helper: 10+ lines
+- Schema/model/type definition: 5+ lines
+
+These are heuristics, not hard rules. A 12-line component that does real work is better than a 50-line component padded to hit a threshold.
 
 **Artifact status matrix:**
 
@@ -130,15 +169,30 @@ Priority: architectural changes override auto-fix rules. When in doubt, ask.
 | Y | N | — | STUB |
 | N | — | — | MISSING |
 
-**Stub red flags — scan for these patterns:**
+**Stub red flags — adapt these patterns to the target language:**
+
+JavaScript/React:
 - `return <div>Component</div>` or `return <div>Placeholder</div>`
 - `onClick={() => {}}` (empty handler)
 - `return Response.json({ message: "Not implemented" })`
 - `return Response.json([])` with no actual data query
-- `fetch('/api/...')` with no await, no .then, no assignment
-- Query exists but result not returned
-- State exists but never rendered
-- Console.log-only implementations
+
+Python:
+- `pass` as sole function body
+- `raise NotImplementedError` in production code (not abstract base classes)
+- `return {}` or `return []` with no computation
+- `# TODO` as sole function body
+
+Go:
+- `return nil, nil` ignoring actual logic
+- Empty interface implementations
+- `panic("not implemented")`
+
+General (any language):
+- `fetch`/`request`/`http.get` with no assignment or error handling
+- Query constructed but result not returned
+- State/variable assigned but never read
+- Console/print/log as sole implementation
 
 **Goal-backward must-haves:**
 - **Truths**: 3–7 observable behaviors from user perspective per phase
@@ -150,6 +204,8 @@ Key links are where 80% of stubs hide. Never skip link verification.
 ---
 
 ### 5. GIT AND BRANCH STRATEGY
+
+**Default model (solo or small team without existing conventions):**
 
 Two branches: `main` and feature branches. No `develop`. No release branches.
 
@@ -164,6 +220,8 @@ Two branches: `main` and feature branches. No `develop`. No release branches.
 - No direct commits (forces checkpoint thinking)
 - PRs required (creates revert points)
 - Must pass CI
+
+**If the repo already has an established git workflow** (protected branches, required reviewers, release branches, CI gates): preserve it. Apply commit message format and atomic commit discipline within the existing workflow. Do not restructure a team's branching model during calibration.
 
 **Versioning:**
 - Breaking change → MAJOR (X.0.0)
@@ -219,14 +277,15 @@ These are explicitly prohibited. Remove them if found during refactoring:
 **Enterprise theater:**
 - Story points, sprint ceremonies, RACI matrices
 - Human dev time estimates (days/weeks) — estimate in execution time if needed
-- Team coordination docs, knowledge transfer docs
-- Change management processes, release committees
+- Team coordination docs, knowledge transfer docs (in a solo-dev context)
+- Change management processes, release committees (in a solo-dev context)
 - Stakeholder management, risk matrices, Gantt charts
 - Multi-week stabilization branches, change advisory boards
 
+**Note:** Some of these (team coordination docs, release processes) are legitimate in team contexts. Only ban them in solo-dev or small-team repos where they are pure overhead.
+
 **Code anti-patterns:**
 - `git add .` or `git add -A` (always stage individually)
-- Generic XML/structural tags (`<section>`, `<item>`, `<content>`) — use semantic tags (`<objective>`, `<verification>`, `<action>`)
 - Vague task descriptions ("Add authentication", "Handle errors")
 - Horizontal decomposition over vertical slices
 - Forward planning over goal-backward decomposition
@@ -276,11 +335,13 @@ Every meaningful decision, blocker, and progress marker must persist to disk. Co
 
 Commit state artifacts immediately after creation. If context is lost mid-session, artifacts on disk are the recovery mechanism.
 
+**For small repos (under 500 LOC):** a single STATE.md at the project root may be sufficient. Do not create a full `.planning/` hierarchy for a project that doesn't need it.
+
 ---
 
-### 11. MULTI-AGENT ORCHESTRATION (when applicable)
+### 11. MULTI-AGENT ORCHESTRATION
 
-If the target repo involves AI agent coordination:
+**Apply this section only if** the target repo involves AI agent coordination, multi-agent workflows, or prompt orchestration systems. Skip entirely for standard applications, libraries, CLIs, and services.
 
 - **Orchestrator stays lean.** It routes work, it doesn't do work.
 - **Each executor gets a fresh context.** Never accumulate unrelated context across agents.
@@ -290,12 +351,41 @@ If the target repo involves AI agent coordination:
 
 ---
 
-### APPLICATION INSTRUCTIONS
+### 12. APPLICATION INSTRUCTIONS
 
-When applying this prompt to a target repository:
+**Ordering:** Apply sections in this order. Each category must be stable before moving to the next.
+
+1. **Structural** (Sections 1, 5): file organization, naming, git setup
+2. **Quality** (Sections 6, 8): code anti-patterns, dead code, stubs
+3. **Process** (Sections 2, 3): planning methodology, execution standards
+4. **Verification** (Section 4): tests, CI, artifact verification
+5. **Communication** (Section 7): language standards, commit messages
+6. **Operational** (Sections 9, 10, 11): debugging, state, orchestration
+
+**Steps:**
 
 1. **Audit first.** Map the existing codebase structure, conventions, stack, and concerns before changing anything.
-2. **Identify gaps.** Compare current state against each section above. Document what's missing, what violates standards, what's already aligned.
-3. **Prioritize by impact.** Fix structural issues (file organization, naming, git practices) before behavioral issues (planning methodology, verification standards).
-4. **Apply incrementally.** One category at a time. Atomic commits per change. Verify each change before proceeding.
-5. **Do not over-apply.** If a section doesn't apply to the target repo (e.g., multi-agent orchestration for a simple library), skip it. These are principles, not a checklist to force-fit.
+2. **Filter by applicability.** Use Section 0 to determine which sections apply. Document which sections you're skipping and why.
+3. **Identify gaps.** Compare current state against applicable sections. Document what's missing, what violates standards, what's already aligned.
+4. **Prioritize by impact.** Critical gaps (broken tests, security issues, missing .gitignore) before style preferences.
+5. **Apply incrementally.** One category at a time. Atomic commits per change. Verify each change before proceeding.
+6. **Do not over-apply.** If a principle doesn't improve this specific repo, skip it.
+
+**Calibration scope limits:**
+- Calibration addresses structure, conventions, and quality. It does NOT implement features, write business logic, or make architectural decisions.
+- If you discover bugs or security issues during calibration, log them in `.planning/STATE.md` as gaps. Do not fix them in calibration commits unless they are trivial (broken import, missing .gitignore entry).
+- If a transformation breaks the build or tests: `git revert` the offending commit, log the issue in STATE.md, and ask the user how to proceed. Do not attempt more than one fix without user input.
+
+**Conflict resolution:**
+- Existing tooling (Prettier, ESLint, Black, rustfmt, etc.) takes precedence over style preferences in this prompt. Do not fight the formatter.
+- Existing CI configuration takes precedence over git workflow recommendations. Add to CI, don't restructure it.
+- Language idioms take precedence over naming conventions in this prompt for source code files. `.planning/` artifacts follow this prompt's conventions.
+
+**Done condition:** Calibration is complete when:
+- All applicable sections have been audited
+- All critical and high-priority gaps have been addressed (or explicitly deferred with documented reasoning)
+- All existing tests still pass
+- All existing builds still succeed
+- `.planning/CALIBRATION-AUDIT.md` documents what was done, what was skipped, and what remains
+
+**Resuming interrupted calibration:** If context is lost mid-calibration, read `.planning/STATE.md` and `.planning/CALIBRATION-AUDIT.md` to determine current position. Do not restart from Phase 1. Continue from the last documented checkpoint.
