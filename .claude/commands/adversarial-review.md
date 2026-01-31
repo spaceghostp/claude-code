@@ -9,6 +9,8 @@ Provide adversarial analysis of a subject while keeping critique grounded, evide
 
 The core principle: **never critique in a vacuum.** Every adversarial pass must be anchored to a specific scope, dimension, severity threshold, and success definition — all confirmed by the user before analysis begins.
 
+Note: The scoping behavior defined here also applies **automatically** whenever adversarial input is requested in conversation, as specified in `CLAUDE.md` at the project root. This command provides the full structured process; `CLAUDE.md` enforces the minimum scoping protocol at all times.
+
 Input: any subject the user wants adversarial input on — code, architecture, decisions, documents, designs, processes.
 Argument: $ARGUMENTS
 </objective>
