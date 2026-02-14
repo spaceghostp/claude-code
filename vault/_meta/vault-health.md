@@ -27,20 +27,31 @@ Updated by `/vault-maintain`. Metrics below are populated on each maintenance ru
 
 ## Orphans (zero inbound links)
 
-_None detected yet. Run `/vault-maintain orphans` to scan._
+_vault-health.md (meta documentation, acceptable)_
+_encounters/2026-02-14-designing-the-cognitive-vault.md (first encounter, awaiting references)_
+
+**Action:** No immediate action needed. First encounter will accumulate inbound links as vault grows.
 
 ## Stale Notes (`#status/working` older than 30 days)
 
-_None yet. Run `/vault-maintain stale` to scan._
+_None. All notes created today._
 
 ## Unverified Assumptions
 
-_None yet. Run `/vault-maintain anti-library` to audit._
+_None. No `#status/unverified` notes yet._
 
 ## Emerging Patterns
 
-_None detected yet. Run `/vault-maintain patterns` to extract._
+_Insufficient data. Need 3+ encounters over time to extract patterns._
+
+## Broken Links (Intentional Signal)
+
+The following links intentionally point to non-existent notes (per conventions):
+- `[[atoms/hyrums-law]]` — referenced in what-good-code-actually-is.md
+- `[[tensions/abstraction-vs-explicitness]]` — referenced in what-good-code-actually-is.md
+
+**Recommendation:** Create these notes to resolve the position's reasoning.
 
 ## Last Maintenance Run
 
-_Never — run `/vault-maintain` to populate this dashboard._
+2026-02-14 (first complete maintenance cycle)

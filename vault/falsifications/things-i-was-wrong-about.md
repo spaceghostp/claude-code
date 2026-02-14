@@ -27,7 +27,17 @@ A record of beliefs that changed, with links to the reasoning. The purpose is no
 
 ## Entries
 
-_No entries yet. Use `/vault-falsify` to record a changed belief._
+### 2026-02-14 — Metadata Tracking
+
+**Old belief:** Manual `links_in` and `links_out` counts in frontmatter can be kept in sync through discipline and convention.
+
+**New belief:** Only `links_out` should be in frontmatter for programmatic tools. `links_in` should be derived from Obsidian's native backlink tracking or programmatic grep.
+
+**What caused the change:** Testing the vault revealed that manual link counts drifted within a single commit cycle, violating the constraint that metadata should never get out of sync with actual content.
+
+**Revision note:** [[revisions/2026-02-14-revised-on-metadata-tracking]]
+
+**Error type:** wrong abstraction level (links are graph properties, not individual note properties); over-engineering (simpler solution exists: derive what can be derived)
 
 ## Meta-Patterns
 
