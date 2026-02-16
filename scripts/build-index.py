@@ -10,172 +10,18 @@ No external dependencies — uses only Python stdlib.
 
 import json
 import os
-import re
 import sys
 from datetime import date
-from pathlib import Path
 
-
-# Words too common to be useful as keywords
-STOP_WORDS = frozenset({
-    "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
-    "of", "with", "by", "from", "is", "it", "its", "this", "that", "are",
-    "was", "be", "as", "has", "had", "not", "no", "if", "do", "did", "does",
-    "will", "would", "could", "should", "can", "may", "might", "about",
-    "what", "when", "where", "which", "who", "how", "why", "all", "each",
-    "every", "both", "few", "more", "most", "other", "some", "such", "than",
-    "too", "very", "just", "also", "into", "over", "after", "before", "between",
-    "through", "during", "without", "again", "further", "then", "once", "here",
-    "there", "these", "those", "my", "your", "his", "her", "our", "their",
-    "i", "me", "we", "you", "he", "she", "they", "them", "been", "being",
-    "have", "having", "any", "up", "out", "so", "only", "own", "same",
-    "don", "doesn", "didn", "won", "isn", "aren", "wasn", "weren", "hasn",
-    "haven", "hadn", "couldn", "shouldn", "wouldn", "mustn", "needn",
-    "ve", "re", "ll", "t", "s", "d", "m",
-})
-
-# Minimum keyword length
-MIN_KEYWORD_LEN = 3
-
-
-def find_vault_root():
-    """Find the vault directory relative to the script or working directory."""
-    # Try sibling to script's parent (scripts/ and vault/ are siblings at repo root)
-    script_dir = Path(__file__).resolve().parent
-    vault_from_script = script_dir.parent / "vault"
-    if (vault_from_script / "_meta" / "conventions.md").exists():
-        return vault_from_script
-
-    # Try working directory
-    cwd = Path.cwd()
-    vault_from_cwd = cwd / "vault"
-    if (vault_from_cwd / "_meta" / "conventions.md").exists():
-        return vault_from_cwd
-
-    return None
-
-
-def parse_frontmatter(filepath):
-    """Parse YAML frontmatter from a markdown file.
-
-    Simple key:value parser matching resurface.py approach.
-    Returns (dict, remaining_lines) or (None, []) on failure.
-    """
-    try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-    except (OSError, UnicodeDecodeError):
-        return None, []
-
-    if not lines or lines[0].strip() != "---":
-        return None, []
-
-    frontmatter = {}
-    found_end = False
-
-    end_index = 0
-    for i, line in enumerate(lines[1:], start=1):
-        if line.strip() == "---":
-            found_end = True
-            end_index = i
-            break
-        if ":" in line:
-            key, _, value = line.partition(":")
-            frontmatter[key.strip()] = value.strip()
-
-    if not found_end:
-        return None, []
-
-    body_lines = lines[end_index + 1:]
-    return frontmatter, body_lines
-
-
-def strip_code(text):
-    """Remove fenced code blocks and inline code from text.
-
-    This prevents extracting wikilinks or keywords from code examples.
-    """
-    # Remove fenced code blocks (```...```) first
-    text = re.sub(r"```[\s\S]*?```", "", text)
-    # Remove inline code (`...`)
-    text = re.sub(r"`[^`]+`", "", text)
-    return text
-
-
-def extract_title(body_lines):
-    """Extract the first H1 heading from body lines."""
-    for line in body_lines:
-        stripped = line.strip()
-        if stripped.startswith("# ") and not stripped.startswith("## "):
-            return stripped[2:].strip()
-    return ""
-
-
-def extract_wikilinks(body_text):
-    """Extract all [[wikilink]] targets from body content (code already stripped)."""
-    # Match [[path/name]] or [[path/name|display]]
-    matches = re.findall(r"\[\[([^\]|]+)(?:\|[^\]]*)?\]\]", body_text)
-    links = []
-    for match in matches:
-        # Normalize: strip whitespace, remove .md if present
-        link = match.strip()
-        if link.endswith(".md"):
-            link = link[:-3]
-        links.append(link)
-    return links
-
-
-def extract_heading_words(body_lines):
-    """Extract words from ## and ### headings."""
-    words = []
-    for line in body_lines:
-        stripped = line.strip()
-        if stripped.startswith("## ") or stripped.startswith("### "):
-            # Remove the heading markers
-            heading_text = re.sub(r"^#{2,3}\s+", "", stripped)
-            # Split into words, strip punctuation
-            for word in re.findall(r"[a-zA-Z]+", heading_text):
-                words.append(word.lower())
-    return words
-
-
-def extract_keywords(body_lines, wikilinks):
-    """Extract keywords from headings, wikilinks, and body terms.
-
-    Sources:
-    - Words from ## and ### headings
-    - Basenames of wikilink targets (split on hyphens)
-    - Deduplicated, lowercased, stop words filtered
-    """
-    keywords = set()
-
-    # 1. Words from ## and ### headings
-    heading_words = extract_heading_words(body_lines)
-    for word in heading_words:
-        w = word.lower()
-        if w not in STOP_WORDS and len(w) >= MIN_KEYWORD_LEN:
-            keywords.add(w)
-
-    # 2. Basenames of wikilink targets (last path component, split on hyphens)
-    for link in wikilinks:
-        basename = link.split("/")[-1]
-        for part in basename.split("-"):
-            w = part.lower()
-            if w not in STOP_WORDS and len(w) >= MIN_KEYWORD_LEN:
-                keywords.add(w)
-
-    return sorted(keywords)
-
-
-def deduplicate_links(links):
-    """Deduplicate while preserving order."""
-    seen = set()
-    result = []
-    for link in links:
-        if link not in seen:
-            seen.add(link)
-            result.append(link)
-    return result
+from vault_parsing import (
+    find_vault_root,
+    parse_frontmatter,
+    strip_code,
+    extract_wikilinks,
+    extract_title,
+    extract_keywords,
+    deduplicate_links,
+)
 
 
 def load_existing_index(index_path):
