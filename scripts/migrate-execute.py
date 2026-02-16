@@ -21,6 +21,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
+sys.path.insert(0, str(Path.home() / ".claude" / "vault" / "_scripts"))
 from vault_parsing import find_vault_root, count_wikilinks, TYPE_DIRS
 
 

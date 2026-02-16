@@ -24,6 +24,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path.home() / ".claude" / "vault" / "_scripts"))
 from vault_parsing import parse_frontmatter, strip_code, extract_wikilinks
 
 

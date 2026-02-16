@@ -16,7 +16,9 @@ No external dependencies — uses only Python stdlib.
 import json
 import re
 import sys
+from pathlib import Path
 
+sys.path.insert(0, str(Path.home() / ".claude" / "vault" / "_scripts"))
 from vault_parsing import find_vault_root, parse_frontmatter, strip_code, extract_wikilinks
 
 

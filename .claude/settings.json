@@ -1,25 +1,3 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "type": "command",
-        "command": "python3 scripts/resurface.py",
-        "timeout": 10
-      }
-    ],
-    "Stop": [
-      {
-        "type": "command",
-        "command": "python3 scripts/stop-capture-check.py",
-        "timeout": 5
-      }
-    ],
-    "SessionEnd": [
-      {
-        "type": "command",
-        "command": "python3 scripts/build-index.py",
-        "timeout": 30
-      }
-    ]
-  }
+  "hooks": {}
 }
