@@ -159,6 +159,7 @@ As the vault grows, maintenance frequency should increase:
 
 ### Immediate (per-session)
 - Proposals generated vs. proposals approved (approval rate)
+- Capture commit SHA (enables tracing which session produced which vault notes via `git log`)
 - Did surfaced notes from `resurface.py` actually get referenced in the session?
 
 ### Medium-term (weekly, via vault-maintain)
@@ -182,3 +183,4 @@ This document is the source of truth for capture behavior. When signal categorie
 ### Changelog
 
 - **2026-02-16**: Initial schema. Six signal categories, two-tier capture/maintenance model, human-in-the-loop approval requirement.
+- **2026-02-16**: Added git integration. Capture cycles now produce atomic commits. Maintenance runs produce tagged checkpoints. Added commit SHA to effectiveness tracking.

@@ -64,6 +64,17 @@ _Updated by `/vault-evaluate` after each capture cycle._
 
 _Updated by `/vault-maintain` on each run._
 
+## Git History
+
+| Metric | Value |
+|--------|-------|
+| Capture commits since last maintain | — |
+| Total vault commits | — |
+| Last capture commit | — |
+| Last maintenance tag | — |
+
+_Updated by `/vault-maintain` on each run using `git log -- vault/` and `git tag -l "vault-maintain/*"`._
+
 ## Capacity Status
 
 | Threshold | Current | Status |

@@ -116,3 +116,72 @@ The human is the final authority on vault content. This means:
 2. **Maintenance**: Findings are reported; modifications require human confirmation
 3. **Falsification**: Position changes are documented and presented, not silently applied
 4. **Pruning**: Dormant notes are flagged for review, never auto-deleted
+
+## Git Integration
+
+The vault uses git for temporal history, maintenance checkpoints, and (eventually) multi-user divergence. Git integration is lightweight — simple commits and tags, no complex workflows.
+
+### Capture Commits
+
+Every `/vault-evaluate` cycle that produces approved notes creates a single atomic commit:
+
+```
+vault(capture): 2 notes — 1 atom, 1 encounter
+
+Notes created:
+- vault/atoms/oauth-token-race.md (atom, domain)
+- vault/encounters/2026-02-16-debugging-auth.md (encounter, architecture)
+
+Cycle stats: 5 proposed, 2 approved, 3 rejected
+```
+
+**Rules:**
+- One commit per evaluate cycle, not per note
+- Only vault content files are staged — never `_meta/` in capture commits
+- Commits are local only — pushing is a separate human decision
+- The commit message includes type and signal category for each note, enabling `git log` archaeology
+
+### Maintenance Checkpoints
+
+Every `/vault-maintain` run creates a tagged commit:
+
+```
+vault(maintain): health check — 2026-02-16
+
+Vault: 12 notes (8 working, 4 settled)
+Orphans: 1 found
+Stale: 2 found
+Patterns: 1 emerging
+```
+
+Tag: `vault-maintain/YYYY-MM-DD`
+
+The tag serves as the boundary marker for the next maintenance diff report. Running `git log vault-maintain/2026-02-14..HEAD -- vault/` shows exactly what changed between maintenance cycles.
+
+### Cognitive Archaeology
+
+Git history enables temporal analysis of vault evolution:
+
+- **Position evolution:** `git log --oneline -- vault/positions/what-good-code-actually-is.md` shows every modification to a position over time
+- **Capture patterns:** `git log --oneline --grep="vault(capture)"` shows the rhythm of capture cycles
+- **Maintenance history:** `git tag -l "vault-maintain/*"` shows maintenance cadence
+- **Diff between states:** `git diff vault-maintain/2026-02-14 vault-maintain/2026-02-16 -- vault/` shows structural vault changes between checkpoints
+
+### Session Branching
+
+Sessions work on branches following the pattern `claude/{description}-{sessionId}`. Vault changes committed on a session branch merge into main with the session's other changes. This means:
+
+- Each session's vault captures are isolated until merge
+- The main branch accumulates the canonical vault state
+- Merge conflicts in vault notes are rare (new files, not edits to the same file) but signal genuine content overlap — resolve by keeping both and adding a link between them
+
+### Multi-User Divergence (Future)
+
+When multiple users or sessions capture independently:
+
+1. Each session branch captures its own insights via `/vault-evaluate`
+2. Merge into main aggregates captures from all sessions
+3. If two sessions capture contradictory insights about the same topic, this is a **feature** — it becomes a tension note during the next `/vault-maintain` run
+4. `/vault-maintain` reconciles by identifying new notes that reference the same atoms or positions but take different stances, and flagging them as candidate tensions
+
+This is documented here for future reference. With a small vault and single-user access, multi-user branching is not yet operational — but the commit structure supports it without modification when it becomes relevant.

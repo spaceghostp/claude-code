@@ -123,14 +123,48 @@ origin: session
 Use date-prefix for encounters: `YYYY-MM-DD-{title}.md`
 </step>
 
-## Step 6: Report and Track
+## Step 6: Commit Vault Changes
+
+<step name="commit_changes">
+If any notes were written in Step 5, create a single atomic git commit capturing this evaluate cycle.
+
+1. Stage only the vault content files just created:
+   ```
+   git add vault/atoms/ vault/tensions/ vault/encounters/ vault/positions/ vault/questions/ vault/anti-library/
+   ```
+   **Important:** Do NOT use `git add -A` or `git add .`. Do NOT stage `vault/_meta/` — health dashboard updates are a maintenance concern, not a capture concern.
+
+2. Guard against empty commit:
+   ```
+   git diff --cached --quiet || git commit
+   ```
+
+3. Commit message format:
+   ```
+   vault(capture): {n} notes — {type_summary}
+
+   Notes created:
+   - {path1} ({type}, {signal_category})
+   - {path2} ({type}, {signal_category})
+
+   Cycle stats: {proposed} proposed, {approved} approved, {rejected} rejected
+   ```
+   Where `{n}` = number of notes created, `{type_summary}` = comma-separated types (e.g., "2 atoms, 1 encounter"), and `{signal_category}` = which detector found the signal (domain, architecture, patterns, questions).
+
+4. Do NOT push. Commit locally only. Pushing is a separate human decision.
+
+**Skip this step entirely** if no notes were approved in Step 4.
+</step>
+
+## Step 7: Report and Track
 
 <step name="report">
-After writing approved notes, display:
+After writing and committing approved notes, display:
 
 - Notes created (paths)
 - Links added (both existing and broken/TODO)
 - Proposals rejected (for awareness — these inform future signal tuning)
+- Git commit created (show the short SHA and commit message subject line, or "No commit — no notes approved")
 - Current vault note count (check against maintenance thresholds in capture-signals.md)
 
 If the vault has crossed a capacity threshold, recommend running `/vault-maintain`:
