@@ -6,6 +6,13 @@
         "command": "python3 scripts/resurface.py",
         "timeout": 10
       }
+    ],
+    "SessionEnd": [
+      {
+        "type": "command",
+        "command": "python3 scripts/build-index.py",
+        "timeout": 30
+      }
     ]
   }
 }

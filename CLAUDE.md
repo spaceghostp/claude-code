@@ -14,15 +14,10 @@ This repository includes a persistent cognitive vault at `vault/`. The vault is 
 ## Open Questions
 @vault/questions/my-own-cognition.md
 
-## Vault Health
-@vault/_meta/vault-health.md
-
 ## Available Vault Skills
 
-- `/vault-capture` — Create a new vault note from the current session (atom, tension, encounter, position, question, anti-library)
-- `/vault-maintain` — Run maintenance: index rebuild, proposed note review, orphan scan, staleness check, pattern extraction, anti-library audit, falsification review
-- `/vault-reflect` — Write a synthesis note reconciling multiple vault positions or tensions
-- `/vault-falsify` — Record a changed belief with reasoning, update falsification log
+- `/vault-capture` — Create a new vault note from the current session
+- `/vault-maintain` — Run maintenance: index rebuild, proposed note review, orphan scan, staleness check, pattern extraction
 
 ## Vault Capture Protocol
 
@@ -43,7 +38,4 @@ During sessions, actively watch for moments matching the capture signals documen
 If there are 10+ notes with `lifecycle: proposed` in the vault, **do not propose new captures**. Instead, suggest running `/vault-maintain` to review the backlog.
 
 ### Maintenance auto-invocation:
-If the vault surfacing output at session start includes a maintenance warning (⚠), run `/vault-maintain` before starting other work unless the user's request is urgent.
-
-## Implementation Plan
-@vault/_meta/autonomous-vault-plan.md
+If the vault surfacing output at session start includes a maintenance warning, run `/vault-maintain` before starting other work unless the user's request is urgent.

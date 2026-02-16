@@ -37,6 +37,7 @@ This document defines how the cognitive vault works. All vault operations should
 - `#origin/session` — Arose from a conversation
 - `#origin/reflection` — Written unprompted during vault maintenance
 - `#origin/contradiction` — Created to resolve disagreement between notes
+- `#origin/migration` — Imported from an external vault or note system
 
 ### Meta tags
 - `#meta/pattern` — A pattern extracted from graph topology
@@ -52,7 +53,7 @@ lifecycle: active | proposed | dormant | falsified
 created: YYYY-MM-DD
 last_touched: YYYY-MM-DD
 links_out: 0
-origin: session | reflection | contradiction
+origin: session | reflection | contradiction | migration
 ---
 ```
 

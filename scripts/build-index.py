@@ -34,6 +34,14 @@ def load_existing_index(index_path):
 
 
 def main():
+    # Consume stdin if invoked as a hook (hooks pipe JSON on stdin)
+    import select
+    if select.select([sys.stdin], [], [], 0.0)[0]:
+        try:
+            sys.stdin.read()
+        except Exception:
+            pass
+
     warnings = 0
     today = date.today().isoformat()
 
