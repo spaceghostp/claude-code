@@ -7,6 +7,13 @@
         "timeout": 10
       }
     ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 scripts/stop-capture-check.py",
+        "timeout": 5
+      }
+    ],
     "SessionEnd": [
       {
         "type": "command",
