@@ -1,6 +1,7 @@
 ---
 type: question
 status: working
+lifecycle: active
 created: 2026-02-14
 last_touched: 2026-02-14
 links_out: 3

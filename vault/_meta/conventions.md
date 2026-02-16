@@ -48,6 +48,7 @@ This document defines how the cognitive vault works. All vault operations should
 ---
 type: atom | tension | encounter | position | question | revision | anti-library | falsification
 status: working | settled | unverified | falsified | dormant
+lifecycle: active | proposed | dormant | falsified
 created: YYYY-MM-DD
 last_touched: YYYY-MM-DD
 links_out: 0
@@ -55,7 +56,24 @@ origin: session | reflection | contradiction
 ---
 ```
 
-> **Note on link tracking:** `links_out` is maintained in frontmatter for programmatic tools (resurface hook, vault-maintain). Inbound link tracking is handled by Obsidian's native backlink system — do not track `links_in` manually.
+### Field Definitions
+
+- **`status`** — Epistemic state: how confident is this note's content?
+  - `working` = provisional, mid-thought
+  - `settled` = tested, I stand behind this
+  - `unverified` = assumed but not tested
+  - `falsified` = was wrong, see linked revision
+  - `dormant` = not linked in 90+ days
+
+- **`lifecycle`** — Vault integration state: where is this note in the review process?
+  - `active` = in the graph, surfaces in sessions, fully integrated
+  - `proposed` = auto-captured, awaiting review via `/vault-maintain`
+  - `dormant` = deprioritized, does not surface in sessions
+  - `falsified` = superseded by a revision
+
+`status` and `lifecycle` are orthogonal. A note can be `status: working` + `lifecycle: proposed` (freshly captured, not yet reviewed). Or `status: settled` + `lifecycle: active` (confident and integrated). Default for manually created notes: `lifecycle: active`. Default for auto-captured notes: `lifecycle: proposed`.
+
+> **Note on link tracking:** `links_out` is maintained in frontmatter for programmatic tools (resurface hook, vault-maintain). Inbound link tracking is computed by the vault index (`vault/_meta/index.json`) — do not track `links_in` manually.
 
 ## Linking Rules
 
