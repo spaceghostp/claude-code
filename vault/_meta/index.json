@@ -3,6 +3,36 @@
   "last_maintained": "2026-02-16",
   "notes_since_maintenance": 0,
   "notes": {
+    "atoms/claude-code-hook-schema": {
+      "type": "atom",
+      "status": "unverified",
+      "lifecycle": "proposed",
+      "created": "2026-02-16",
+      "last_touched": "2026-02-16",
+      "origin": "session",
+      "keywords": [
+        "2026",
+        "claude",
+        "cognitive",
+        "concept",
+        "designing",
+        "details",
+        "format",
+        "gotcha",
+        "json",
+        "key",
+        "level",
+        "links",
+        "project",
+        "settings",
+        "vault"
+      ],
+      "links_out": [
+        "encounters/2026-02-14-designing-the-cognitive-vault"
+      ],
+      "links_in": [],
+      "title": "Claude Code Hook Schema"
+    },
     "encounters/2026-02-14-designing-the-cognitive-vault": {
       "type": "encounter",
       "status": "working",
@@ -33,7 +63,10 @@
         "falsifications/things-i-was-wrong-about",
         "_meta/conventions"
       ],
-      "links_in": [],
+      "links_in": [
+        "atoms/claude-code-hook-schema",
+        "positions/two-vault-architecture"
+      ],
       "title": "Designing the Cognitive Vault"
     },
     "falsifications/things-i-was-wrong-about": {
@@ -62,6 +95,40 @@
         "questions/my-own-cognition"
       ],
       "title": "Things I Was Wrong About"
+    },
+    "positions/two-vault-architecture": {
+      "type": "position",
+      "status": "unverified",
+      "lifecycle": "proposed",
+      "created": "2026-02-16",
+      "last_touched": "2026-02-16",
+      "origin": "session",
+      "keywords": [
+        "2026",
+        "actually",
+        "claims",
+        "code",
+        "cognition",
+        "cognitive",
+        "designing",
+        "dynamic",
+        "evidence",
+        "falsifiable",
+        "good",
+        "interface",
+        "links",
+        "need",
+        "position",
+        "revise",
+        "vault"
+      ],
+      "links_out": [
+        "questions/my-own-cognition",
+        "positions/what-good-code-actually-is",
+        "encounters/2026-02-14-designing-the-cognitive-vault"
+      ],
+      "links_in": [],
+      "title": "Two-Vault Architecture"
     },
     "positions/what-good-code-actually-is": {
       "type": "position",
@@ -95,6 +162,7 @@
       ],
       "links_in": [
         "encounters/2026-02-14-designing-the-cognitive-vault",
+        "positions/two-vault-architecture",
         "questions/my-own-cognition"
       ],
       "title": "What Good Code Actually Is"
@@ -141,6 +209,7 @@
       "links_in": [
         "encounters/2026-02-14-designing-the-cognitive-vault",
         "falsifications/things-i-was-wrong-about",
+        "positions/two-vault-architecture",
         "positions/what-good-code-actually-is"
       ],
       "title": "My Own Cognition"
