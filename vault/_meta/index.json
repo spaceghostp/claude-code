@@ -3,132 +3,33 @@
   "last_maintained": "2026-02-16",
   "notes_since_maintenance": 0,
   "notes": {
-    "atoms/claude-code-hook-schema": {
+    "atoms/hyrums-law": {
       "type": "atom",
-      "status": "unverified",
-      "lifecycle": "proposed",
+      "status": "settled",
+      "lifecycle": "active",
       "created": "2026-02-16",
       "last_touched": "2026-02-16",
       "origin": "session",
       "keywords": [
-        "2026",
-        "claude",
-        "cognitive",
+        "abstraction",
+        "actually",
+        "code",
         "concept",
-        "designing",
-        "details",
-        "format",
-        "gotcha",
-        "json",
-        "key",
-        "level",
-        "links",
-        "project",
-        "settings",
-        "vault"
-      ],
-      "links_out": [
-        "encounters/2026-02-14-designing-the-cognitive-vault"
-      ],
-      "links_in": [],
-      "title": "Claude Code Hook Schema"
-    },
-    "encounters/2026-02-14-designing-the-cognitive-vault": {
-      "type": "encounter",
-      "status": "working",
-      "lifecycle": "active",
-      "created": "2026-02-14",
-      "last_touched": "2026-02-14",
-      "origin": "session",
-      "keywords": [
-        "actually",
-        "arc",
-        "changed",
-        "code",
-        "cognition",
-        "conventions",
+        "decisions",
+        "explicitness",
         "good",
-        "happened",
-        "implementation",
-        "learned",
         "links",
-        "open",
-        "questions",
-        "things",
-        "wrong"
+        "matters"
       ],
       "links_out": [
         "positions/what-good-code-actually-is",
-        "questions/my-own-cognition",
-        "falsifications/things-i-was-wrong-about",
-        "_meta/conventions"
+        "tensions/abstraction-vs-explicitness"
       ],
       "links_in": [
-        "atoms/claude-code-hook-schema",
-        "positions/two-vault-architecture"
-      ],
-      "title": "Designing the Cognitive Vault"
-    },
-    "falsifications/things-i-was-wrong-about": {
-      "type": "falsification",
-      "status": "working",
-      "lifecycle": "active",
-      "created": "2026-02-14",
-      "last_touched": "2026-02-14",
-      "origin": "session",
-      "keywords": [
-        "cognition",
-        "entries",
-        "entry",
-        "links",
-        "meta",
-        "patterns",
-        "template",
-        "topic",
-        "yyyy"
-      ],
-      "links_out": [
-        "questions/my-own-cognition"
-      ],
-      "links_in": [
-        "encounters/2026-02-14-designing-the-cognitive-vault",
-        "questions/my-own-cognition"
-      ],
-      "title": "Things I Was Wrong About"
-    },
-    "positions/two-vault-architecture": {
-      "type": "position",
-      "status": "unverified",
-      "lifecycle": "proposed",
-      "created": "2026-02-16",
-      "last_touched": "2026-02-16",
-      "origin": "session",
-      "keywords": [
-        "2026",
-        "actually",
-        "claims",
-        "code",
-        "cognition",
-        "cognitive",
-        "designing",
-        "dynamic",
-        "evidence",
-        "falsifiable",
-        "good",
-        "interface",
-        "links",
-        "need",
-        "position",
-        "revise",
-        "vault"
-      ],
-      "links_out": [
-        "questions/my-own-cognition",
         "positions/what-good-code-actually-is",
-        "encounters/2026-02-14-designing-the-cognitive-vault"
+        "tensions/abstraction-vs-explicitness"
       ],
-      "links_in": [],
-      "title": "Two-Vault Architecture"
+      "title": "Hyrum's Law"
     },
     "positions/what-good-code-actually-is": {
       "type": "position",
@@ -155,15 +56,15 @@
         "sure"
       ],
       "links_out": [
-        "tensions/abstraction-vs-explicitness",
+        "_meta/conventions",
         "atoms/hyrums-law",
         "questions/my-own-cognition",
-        "_meta/conventions"
+        "tensions/abstraction-vs-explicitness"
       ],
       "links_in": [
-        "encounters/2026-02-14-designing-the-cognitive-vault",
-        "positions/two-vault-architecture",
-        "questions/my-own-cognition"
+        "atoms/hyrums-law",
+        "questions/my-own-cognition",
+        "tensions/abstraction-vs-explicitness"
       ],
       "title": "What Good Code Actually Is"
     },
@@ -196,23 +97,54 @@
         "real",
         "solving",
         "sub",
-        "things",
         "thought",
         "vault",
         "wrong"
       ],
       "links_out": [
-        "positions/what-good-code-actually-is",
-        "falsifications/things-i-was-wrong-about",
-        "_meta/conventions"
-      ],
-      "links_in": [
-        "encounters/2026-02-14-designing-the-cognitive-vault",
-        "falsifications/things-i-was-wrong-about",
-        "positions/two-vault-architecture",
+        "_meta/conventions",
         "positions/what-good-code-actually-is"
       ],
+      "links_in": [
+        "positions/what-good-code-actually-is",
+        "tensions/abstraction-vs-explicitness"
+      ],
       "title": "My Own Cognition"
+    },
+    "tensions/abstraction-vs-explicitness": {
+      "type": "tension",
+      "status": "working",
+      "lifecycle": "active",
+      "created": "2026-02-16",
+      "last_touched": "2026-02-16",
+      "origin": "session",
+      "keywords": [
+        "abstraction",
+        "actually",
+        "balance",
+        "code",
+        "cognition",
+        "core",
+        "explicitness",
+        "good",
+        "hyrums",
+        "irresolvable",
+        "law",
+        "links",
+        "shift",
+        "side",
+        "tension"
+      ],
+      "links_out": [
+        "atoms/hyrums-law",
+        "positions/what-good-code-actually-is",
+        "questions/my-own-cognition"
+      ],
+      "links_in": [
+        "atoms/hyrums-law",
+        "positions/what-good-code-actually-is"
+      ],
+      "title": "Abstraction vs. Explicitness"
     }
   }
 }

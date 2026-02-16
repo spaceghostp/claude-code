@@ -37,6 +37,7 @@ Good code is code that can be changed by someone who didn't write it, under time
 - A well-documented case study showing early abstraction (2 repetitions) outperforming delayed abstraction (3-4) in change velocity
 - A codebase where strong application-level types reduced defects without creating modification friction
 - A case where preserved dead code prevented a real production incident
+- Comparing defect rates in strongly-typed vs. loosely-typed application code across teams with similar size but different churn rates — team size may be a proxy variable, with the real drivers being contributor churn, codebase age, or domain complexity rather than headcount
 
 ## Links
 

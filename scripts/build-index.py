@@ -83,15 +83,23 @@ def main():
         # Normalize to forward slashes (should already be on Linux, but be safe)
         note_key = note_key.replace(os.sep, "/")
 
-        # Parse frontmatter
+        # Parse frontmatter — recover gracefully from malformed YAML
         fm, body_lines = parse_frontmatter(md_file)
+        parse_error = False
         if fm is None:
             print(
-                f"Warning: skipping {note_key} (malformed or missing frontmatter)",
+                f"Warning: malformed frontmatter in {note_key}, indexing with defaults",
                 file=sys.stderr,
             )
             warnings += 1
-            continue
+            parse_error = True
+            fm = {}
+            # Read raw body for link/keyword extraction
+            try:
+                with open(md_file, "r", encoding="utf-8") as f:
+                    body_lines = f.readlines()
+            except (OSError, UnicodeDecodeError):
+                body_lines = []
 
         # Extract fields from frontmatter
         note_type = fm.get("type", "")
@@ -114,7 +122,7 @@ def main():
         # Extract keywords (headings use raw body_lines, wikilinks from cleaned)
         keywords = extract_keywords(body_lines, links_out)
 
-        notes[note_key] = {
+        entry = {
             "type": note_type,
             "status": status,
             "lifecycle": lifecycle,
@@ -122,10 +130,13 @@ def main():
             "last_touched": last_touched,
             "origin": origin,
             "keywords": keywords,
-            "links_out": links_out,
+            "links_out": sorted(links_out),
             "links_in": [],  # Populated in second pass
             "title": title,
         }
+        if parse_error:
+            entry["parse_error"] = True
+        notes[note_key] = entry
 
     # Second pass: compute links_in (bidirectional)
     for source_key, source_data in notes.items():
@@ -146,12 +157,16 @@ def main():
         "notes": notes,
     }
 
-    # Write index.json
+    # Write index.json atomically (write to .tmp, fsync, rename)
     try:
         os.makedirs(vault_root / "_meta", exist_ok=True)
-        with open(index_path, "w", encoding="utf-8") as f:
+        tmp_path = str(index_path) + ".tmp"
+        with open(tmp_path, "w", encoding="utf-8") as f:
             json.dump(index, f, indent=2, ensure_ascii=False)
             f.write("\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.rename(tmp_path, index_path)
     except OSError as e:
         print(f"Warning: could not write index: {e}", file=sys.stderr)
         warnings += 1

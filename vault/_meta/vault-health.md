@@ -2,7 +2,7 @@
 type: meta
 status: working
 created: 2026-02-14
-last_touched: 2026-02-14
+last_touched: 2026-02-16
 links_out: 0
 origin: session
 ---
@@ -15,32 +15,32 @@ Updated by `/vault-maintain`. Metrics below are populated on each maintenance ru
 
 | Type | Count |
 |------|-------|
-| Atoms | 0 |
-| Tensions | 0 |
-| Encounters | 1 |
+| Atoms | 1 |
+| Tensions | 1 |
+| Encounters | 0 |
 | Positions | 1 |
 | Questions | 1 |
 | Revisions | 0 |
 | Anti-library | 0 |
-| Falsifications | 1 |
+| Falsifications | 0 |
 | **Total** | **4** |
 
 ## Orphans (zero inbound links)
 
-_None detected yet. Run `/vault-maintain orphans` to scan._
+None detected.
 
 ## Stale Notes (`#status/working` older than 30 days)
 
-_None yet. Run `/vault-maintain stale` to scan._
+None detected.
 
 ## Unverified Assumptions
 
-_None yet. Run `/vault-maintain anti-library` to audit._
+None — anti-library notes pruned. Proxy-variable analysis merged into position note.
 
 ## Emerging Patterns
 
-_None detected yet. Run `/vault-maintain patterns` to extract._
+None detected yet. Run `/vault-maintain patterns` to extract.
 
 ## Last Maintenance Run
 
-_Never — run `/vault-maintain` to populate this dashboard._
+2026-02-16 — Adversarial hardening prune. Reduced from 10 to 4 notes. All surviving notes pass quality bar.

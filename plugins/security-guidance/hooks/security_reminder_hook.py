@@ -2,11 +2,13 @@
 """
 Security Reminder Hook for Claude Code
 This hook checks for security patterns in file edits and warns about potential vulnerabilities.
+Uses compiled regex patterns for robust detection (handles whitespace, bracket access, etc.).
 """
 
 import json
 import os
 import random
+import re
 import sys
 from datetime import datetime
 
@@ -20,14 +22,13 @@ def debug_log(message):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
         with open(DEBUG_LOG_FILE, "a") as f:
             f.write(f"[{timestamp}] {message}\n")
-    except Exception as e:
-        # Silently ignore logging errors to avoid disrupting the hook
+    except Exception:
         pass
 
 
 # State file to track warnings shown (session-scoped using session ID)
 
-# Security patterns configuration
+# Security patterns configuration — uses compiled regex for robust matching
 SECURITY_PATTERNS = [
     {
         "ruleName": "github_actions_workflow",
@@ -68,7 +69,11 @@ Other risky inputs to be careful with:
     },
     {
         "ruleName": "child_process_exec",
-        "substrings": ["child_process.exec", "exec(", "execSync("],
+        "patterns": [
+            re.compile(r"child_process\s*\.\s*exec"),
+            re.compile(r"(?<!\w)exec\s*\("),
+            re.compile(r"execSync\s*\("),
+        ],
         "reminder": """⚠️ Security Warning: Using child_process.exec() can lead to command injection vulnerabilities.
 
 This codebase provides a safer alternative: src/utils/execFileNoThrow.ts
@@ -90,40 +95,62 @@ Only use exec() if you absolutely need shell features and the input is guarantee
     },
     {
         "ruleName": "new_function_injection",
-        "substrings": ["new Function"],
+        "patterns": [
+            re.compile(r"new\s+Function\s*\("),
+            re.compile(r"\[\s*['\"]Function['\"]?\s*\]"),
+        ],
         "reminder": "⚠️ Security Warning: Using new Function() with dynamic strings can lead to code injection vulnerabilities. Consider alternative approaches that don't evaluate arbitrary code. Only use new Function() if you truly need to evaluate arbitrary dynamic code.",
     },
     {
         "ruleName": "eval_injection",
-        "substrings": ["eval("],
+        "patterns": [
+            re.compile(r"(?<!\w)eval\s*\("),
+            re.compile(r"\[\s*['\"]eval['\"]?\s*\]"),
+        ],
         "reminder": "⚠️ Security Warning: eval() executes arbitrary code and is a major security risk. Consider using JSON.parse() for data parsing or alternative design patterns that don't require code evaluation. Only use eval() if you truly need to evaluate arbitrary code.",
     },
     {
         "ruleName": "react_dangerously_set_html",
-        "substrings": ["dangerouslySetInnerHTML"],
+        "patterns": [
+            re.compile(r"dangerouslySetInnerHTML"),
+        ],
         "reminder": "⚠️ Security Warning: dangerouslySetInnerHTML can lead to XSS vulnerabilities if used with untrusted content. Ensure all content is properly sanitized using an HTML sanitizer library like DOMPurify, or use safe alternatives.",
     },
     {
         "ruleName": "document_write_xss",
-        "substrings": ["document.write"],
+        "patterns": [
+            re.compile(r"document\s*\.\s*write\s*\("),
+        ],
         "reminder": "⚠️ Security Warning: document.write() can be exploited for XSS attacks and has performance issues. Use DOM manipulation methods like createElement() and appendChild() instead.",
     },
     {
         "ruleName": "innerHTML_xss",
-        "substrings": [".innerHTML =", ".innerHTML="],
+        "patterns": [
+            re.compile(r"\.\s*innerHTML\s*="),
+        ],
         "reminder": "⚠️ Security Warning: Setting innerHTML with untrusted content can lead to XSS vulnerabilities. Use textContent for plain text or safe DOM methods for HTML content. If you need HTML support, consider using an HTML sanitizer library such as DOMPurify.",
     },
     {
         "ruleName": "pickle_deserialization",
-        "substrings": ["pickle"],
+        "patterns": [
+            re.compile(r"(?<!\w)pickle\s*\."),
+            re.compile(r"import\s+pickle"),
+            re.compile(r"from\s+pickle\s+import"),
+        ],
         "reminder": "⚠️ Security Warning: Using pickle with untrusted content can lead to arbitrary code execution. Consider using JSON or other safe serialization formats instead. Only use pickle if it is explicitly needed or requested by the user.",
     },
     {
         "ruleName": "os_system_injection",
-        "substrings": ["os.system", "from os import system"],
+        "patterns": [
+            re.compile(r"os\s*\.\s*system\s*\("),
+            re.compile(r"from\s+os\s+import\s+system"),
+        ],
         "reminder": "⚠️ Security Warning: This code appears to use os.system. This should only be used with static arguments and never with arguments that could be user-controlled.",
     },
 ]
+
+# Rate limit: re-warn every N occurrences after first warning
+REWARN_INTERVAL = 3
 
 
 def get_state_file(session_id):
@@ -151,52 +178,60 @@ def cleanup_old_state_files():
                     if file_mtime < thirty_days_ago:
                         os.remove(file_path)
                 except (OSError, IOError):
-                    pass  # Ignore errors for individual file cleanup
+                    pass
     except Exception:
-        pass  # Silently ignore cleanup errors
+        pass
 
 
 def load_state(session_id):
-    """Load the state of shown warnings from file."""
+    """Load the state of shown warnings from file. Returns dict of {key: count}."""
     state_file = get_state_file(session_id)
     if os.path.exists(state_file):
         try:
             with open(state_file, "r") as f:
-                return set(json.load(f))
+                data = json.load(f)
+                # Migrate from old set format to count dict
+                if isinstance(data, list):
+                    return {k: 1 for k in data}
+                return data
         except (json.JSONDecodeError, IOError):
-            return set()
-    return set()
+            return {}
+    return {}
 
 
-def save_state(session_id, shown_warnings):
-    """Save the state of shown warnings to file."""
+def save_state(session_id, warning_counts):
+    """Save the state of warning counts to file."""
     state_file = get_state_file(session_id)
     try:
         os.makedirs(os.path.dirname(state_file), exist_ok=True)
         with open(state_file, "w") as f:
-            json.dump(list(shown_warnings), f)
+            json.dump(warning_counts, f)
     except IOError as e:
         debug_log(f"Failed to save state file: {e}")
-        pass  # Fail silently if we can't save state
 
 
 def check_patterns(file_path, content):
-    """Check if file path or content matches any security patterns."""
-    # Normalize path by removing leading slashes
+    """Check if file path or content matches any security patterns.
+
+    Returns list of (rule_name, reminder) for ALL matching rules.
+    """
     normalized_path = file_path.lstrip("/")
+    matches = []
 
     for pattern in SECURITY_PATTERNS:
         # Check path-based patterns
         if "path_check" in pattern and pattern["path_check"](normalized_path):
-            return pattern["ruleName"], pattern["reminder"]
+            matches.append((pattern["ruleName"], pattern["reminder"]))
+            continue
 
-        # Check content-based patterns
-        if "substrings" in pattern and content:
-            for substring in pattern["substrings"]:
-                if substring in content:
-                    return pattern["ruleName"], pattern["reminder"]
+        # Check regex-based patterns
+        if "patterns" in pattern and content:
+            for regex in pattern["patterns"]:
+                if regex.search(content):
+                    matches.append((pattern["ruleName"], pattern["reminder"]))
+                    break
 
-    return None, None
+    return matches
 
 
 def extract_content_from_input(tool_name, tool_input):
@@ -252,27 +287,34 @@ def main():
     # Extract content to check
     content = extract_content_from_input(tool_name, tool_input)
 
-    # Check for security patterns
-    rule_name, reminder = check_patterns(file_path, content)
+    # Check for ALL matching security patterns
+    matched_rules = check_patterns(file_path, content)
 
-    if rule_name and reminder:
-        # Create unique warning key
+    if not matched_rules:
+        sys.exit(0)
+
+    # Load existing warning counts for this session
+    warning_counts = load_state(session_id)
+
+    reminders_to_show = []
+    for rule_name, reminder in matched_rules:
         warning_key = f"{file_path}-{rule_name}"
+        count = warning_counts.get(warning_key, 0)
 
-        # Load existing warnings for this session
-        shown_warnings = load_state(session_id)
+        # Show on first occurrence, then every REWARN_INTERVAL occurrences
+        if count == 0 or (count > 0 and count % REWARN_INTERVAL == 0):
+            reminders_to_show.append(reminder)
 
-        # Check if we've already shown this warning in this session
-        if warning_key not in shown_warnings:
-            # Add to shown warnings and save
-            shown_warnings.add(warning_key)
-            save_state(session_id, shown_warnings)
+        warning_counts[warning_key] = count + 1
 
-            # Output the warning to stderr and block execution
-            print(reminder, file=sys.stderr)
-            sys.exit(2)  # Block tool execution (exit code 2 for PreToolUse hooks)
+    save_state(session_id, warning_counts)
 
-    # Allow tool to proceed
+    if reminders_to_show:
+        # Output all matching warnings to stderr and block execution
+        print("\n\n".join(reminders_to_show), file=sys.stderr)
+        sys.exit(2)  # Block tool execution
+
+    # Allow tool to proceed (warnings already shown recently)
     sys.exit(0)
 
 

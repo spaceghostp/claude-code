@@ -39,14 +39,30 @@ def find_vault_root():
 # CWD keyword extraction
 # ---------------------------------------------------------------------------
 
+CWD_STOP_WORDS = frozenset({
+    "test", "tests", "data", "ws", "code", "src", "lib", "bin", "tmp",
+    "build", "dist", "out", "output", "node_modules", "vendor", "pkg",
+    "app", "apps", "main", "dev", "prod", "staging", "config", "scripts",
+    "docs", "doc", "project", "projects", "workspace", "workspaces",
+    "home", "user", "users", "desktop", "downloads", "documents",
+})
+
+
 def cwd_keywords():
-    """Extract lowercase keyword tokens from the current working directory name."""
+    """Extract lowercase keyword tokens from the current working directory name.
+
+    Filters out generic directory tokens, pure digits, and short fragments
+    that would dominate scoring without adding project-specific relevance.
+    """
     cwd_name = Path.cwd().name
     parts = re.split(r"[-_.\s]+", cwd_name)
     expanded = []
     for part in parts:
         expanded.extend(re.sub(r"([a-z])([A-Z])", r"\1 \2", part).split())
-    return [w.lower() for w in expanded if len(w) > 1]
+    return [
+        w.lower() for w in expanded
+        if len(w) >= 3 and not w.isdigit() and w.lower() not in CWD_STOP_WORDS
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -54,7 +70,16 @@ def cwd_keywords():
 # ---------------------------------------------------------------------------
 
 def score_note_from_index(note_key, note_data, now, project_keywords):
-    """Score a note using index data only. Returns (score, matched_keyword)."""
+    """Score a note using index data only. Returns (score, matched_keyword).
+
+    Weight rationale:
+    - working (+6): active development, likely relevant but not dominant
+    - unverified (+4): needs attention but less urgent than working
+    - keyword match (up to +8): project relevance is the strongest signal
+    - link density (up to +5): well-connected notes are more useful
+    - staleness (+3/+5): old notes need revisiting
+    - recent capture (+3): fresh notes may need follow-up
+    """
     lifecycle = note_data.get("lifecycle", "active")
     if lifecycle == "dormant":
         return -1, False
@@ -64,9 +89,9 @@ def score_note_from_index(note_key, note_data, now, project_keywords):
 
     # Status scoring
     if status == "working":
-        score += 10
-    if status == "unverified":
-        score += 5
+        score += 6
+    elif status == "unverified":
+        score += 4
 
     # Link density from index
     links_out = note_data.get("links_out", [])
@@ -96,7 +121,7 @@ def score_note_from_index(note_key, note_data, now, project_keywords):
         matches = sum(1 for pk in project_keywords if pk in keywords)
         if matches > 0:
             matched_keyword = True
-            score += min(matches * 2, 6)
+            score += min(matches * 3, 8)
 
     return score, matched_keyword
 
@@ -167,7 +192,7 @@ def surface_from_index(vault_root, now):
         scored = []
         for key, data in notes_map.items():
             score, matched_kw = score_note_from_index(key, data, now, project_kw)
-            if score > 0:
+            if score >= 0:
                 scored.append((score, key, data, matched_kw))
         scored.sort(key=lambda x: x[0], reverse=True)
         selected = scored[:5]
