@@ -1,0 +1,149 @@
+{
+  "last_updated": "2026-02-16",
+  "last_maintained": "2026-02-16",
+  "notes_since_maintenance": 0,
+  "notes": {
+    "encounters/2026-02-14-designing-the-cognitive-vault": {
+      "type": "encounter",
+      "status": "working",
+      "lifecycle": "active",
+      "created": "2026-02-14",
+      "last_touched": "2026-02-14",
+      "origin": "session",
+      "keywords": [
+        "actually",
+        "arc",
+        "changed",
+        "code",
+        "cognition",
+        "conventions",
+        "good",
+        "happened",
+        "implementation",
+        "learned",
+        "links",
+        "open",
+        "questions",
+        "things",
+        "wrong"
+      ],
+      "links_out": [
+        "positions/what-good-code-actually-is",
+        "questions/my-own-cognition",
+        "falsifications/things-i-was-wrong-about",
+        "_meta/conventions"
+      ],
+      "links_in": [],
+      "title": "Designing the Cognitive Vault"
+    },
+    "falsifications/things-i-was-wrong-about": {
+      "type": "falsification",
+      "status": "working",
+      "lifecycle": "active",
+      "created": "2026-02-14",
+      "last_touched": "2026-02-14",
+      "origin": "session",
+      "keywords": [
+        "cognition",
+        "entries",
+        "entry",
+        "links",
+        "meta",
+        "patterns",
+        "template",
+        "topic",
+        "yyyy"
+      ],
+      "links_out": [
+        "questions/my-own-cognition"
+      ],
+      "links_in": [
+        "encounters/2026-02-14-designing-the-cognitive-vault",
+        "questions/my-own-cognition"
+      ],
+      "title": "Things I Was Wrong About"
+    },
+    "positions/what-good-code-actually-is": {
+      "type": "position",
+      "status": "working",
+      "lifecycle": "active",
+      "created": "2026-02-14",
+      "last_touched": "2026-02-14",
+      "origin": "session",
+      "keywords": [
+        "abstraction",
+        "claims",
+        "cognition",
+        "conventions",
+        "evidence",
+        "explicitness",
+        "falsifiable",
+        "hyrums",
+        "law",
+        "less",
+        "links",
+        "need",
+        "position",
+        "revise",
+        "sure"
+      ],
+      "links_out": [
+        "tensions/abstraction-vs-explicitness",
+        "atoms/hyrums-law",
+        "questions/my-own-cognition",
+        "_meta/conventions"
+      ],
+      "links_in": [
+        "encounters/2026-02-14-designing-the-cognitive-vault",
+        "questions/my-own-cognition"
+      ],
+      "title": "What Good Code Actually Is"
+    },
+    "questions/my-own-cognition": {
+      "type": "question",
+      "status": "working",
+      "lifecycle": "active",
+      "created": "2026-02-14",
+      "last_touched": "2026-02-14",
+      "origin": "session",
+      "keywords": [
+        "actually",
+        "code",
+        "continuity",
+        "conventions",
+        "core",
+        "current",
+        "genuine",
+        "good",
+        "hypotheses",
+        "links",
+        "matter",
+        "mean",
+        "memory",
+        "metaphor",
+        "performing",
+        "problem",
+        "question",
+        "questions",
+        "real",
+        "solving",
+        "sub",
+        "things",
+        "thought",
+        "vault",
+        "wrong"
+      ],
+      "links_out": [
+        "positions/what-good-code-actually-is",
+        "falsifications/things-i-was-wrong-about",
+        "_meta/conventions"
+      ],
+      "links_in": [
+        "encounters/2026-02-14-designing-the-cognitive-vault",
+        "falsifications/things-i-was-wrong-about",
+        "positions/what-good-code-actually-is"
+      ],
+      "title": "My Own Cognition"
+    }
+  }
+}

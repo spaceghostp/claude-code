@@ -1,7 +1,7 @@
 ---
 name: vault-maintain
-description: Run vault maintenance — orphan scan, staleness check, pattern extraction
-argument-hint: "[full|orphans|stale|patterns|anti-library|falsifications]"
+description: Run vault maintenance — index rebuild, proposed note review, orphan scan, staleness check, pattern extraction
+argument-hint: "[full|proposed|orphans|stale|patterns|anti-library|falsifications]"
 ---
 
 <objective>
@@ -13,13 +13,45 @@ Argument: $ARGUMENTS
 
 <process>
 
-## Step 0: Read Conventions
+## Step 0: Rebuild Vault Index
+
+<step name="rebuild_index">
+Run the index builder to ensure the vault index is current before any checks:
+
+```
+python3 scripts/build-index.py
+```
+
+This scans all vault markdown files, parses frontmatter and `[[wikilinks]]`, computes bidirectional links, extracts keywords, and writes `vault/_meta/index.json`. The index is the machine-readable representation of the vault graph. If it fails, proceed with file-based operations as fallback.
+</step>
+
+## Step 0.5: Read Conventions
 
 <step name="read_conventions">
 Read `vault/_meta/conventions.md`. This is mandatory before any vault operation.
 </step>
 
-## Step 1: Orphan Scan
+## Step 1: Review Proposed Notes
+
+<step name="review_proposed">
+**Skip if** `$ARGUMENTS` specifies a focus area that isn't `proposed` or `full`.
+
+Check for notes with `lifecycle: proposed` in their frontmatter. These are auto-captured notes awaiting review.
+
+1. Read `vault/_meta/index.json` (rebuilt in Step 0)
+2. Find all entries where `lifecycle` is `proposed`
+3. For each proposed note, read the full note content
+4. Present each note to the user via AskUserQuestion with options:
+   - **"Promote to active"** — Change frontmatter `lifecycle: active` and `status: working`. The note enters the active vault graph.
+   - **"Merge with existing note"** — Identify the target note, incorporate key insights, then delete the proposed note.
+   - **"Delete — low value"** — Remove the file entirely. It didn't meet the quality bar.
+5. Execute the user's choice for each note
+6. After all proposed notes are reviewed, run `python3 scripts/build-index.py` again to update the index with changes
+
+If no proposed notes exist, skip this step silently.
+</step>
+
+## Step 2: Orphan Scan
 
 <step name="orphan_scan">
 **Skip if** `$ARGUMENTS` specifies a focus area that isn't `orphans` or `full`.
@@ -39,7 +71,7 @@ For each orphan, report:
 Do not delete automatically. Present findings and let the user decide.
 </step>
 
-## Step 2: Staleness Check
+## Step 3: Staleness Check
 
 <step name="staleness_check">
 **Skip if** `$ARGUMENTS` specifies a focus area that isn't `stale` or `full`.
@@ -58,7 +90,7 @@ For each stale note, present options:
 Update frontmatter `last_touched` date for any notes modified.
 </step>
 
-## Step 3: Pattern Extraction
+## Step 4: Pattern Extraction
 
 <step name="pattern_extraction">
 **Skip if** `$ARGUMENTS` specifies a focus area that isn't `patterns` or `full`.
@@ -82,7 +114,7 @@ Also look for:
 - **Dense but disconnected clusters** → potential silos needing bridges
 </step>
 
-## Step 4: Anti-Library Audit
+## Step 5: Anti-Library Audit
 
 <step name="anti_library_audit">
 **Skip if** `$ARGUMENTS` specifies a focus area that isn't `anti-library` or `full`.
@@ -97,7 +129,7 @@ Review notes tagged `#status/unverified`:
 Present findings. Do not auto-promote or auto-falsify.
 </step>
 
-## Step 5: Falsification Review
+## Step 6: Falsification Review
 
 <step name="falsification_review">
 **Skip if** `$ARGUMENTS` specifies a focus area that isn't `falsifications` or `full`.
@@ -114,22 +146,30 @@ Read `vault/falsifications/things-i-was-wrong-about.md`:
 If meta-patterns are identified, suggest adding them as a `#meta/pattern` note in `vault/atoms/`.
 </step>
 
-## Step 6: Update Vault Health
+## Step 7: Update Vault Health & Index
 
 <step name="update_health">
 Update `vault/_meta/vault-health.md` with current metrics:
 
 1. Count notes by type (use Glob for each directory)
-2. List orphans found in Step 1
-3. List stale notes found in Step 2
-4. List unverified assumptions from Step 4
-5. Summarize emerging patterns from Step 3
+2. List orphans found in Step 2
+3. List stale notes found in Step 3
+4. List unverified assumptions from Step 5
+5. Summarize emerging patterns from Step 4
 6. Record the date of this maintenance run
 
 Use Edit to update the file in place, preserving the dashboard format.
+
+Then rebuild the index one final time to capture all changes made during maintenance:
+
+```
+python3 scripts/build-index.py
+```
+
+The index's `last_maintained` timestamp and `notes_since_maintenance` counter will be reset by the rebuild script.
 </step>
 
-## Step 7: Report
+## Step 8: Report
 
 <step name="report">
 Present a summary to the user:
