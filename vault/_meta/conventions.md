@@ -89,3 +89,30 @@ Most people stop at capture. Some reach connect. Almost nobody does falsify. Tha
 3. **Contradiction is a feature** — When two notes disagree, write a third about why.
 4. **Tag uncertainty** — `#status/working` changes the relationship to certainty. Present provisional ideas as provisional.
 5. **Prune ruthlessly** — If a note hasn't been linked in 90 days, it's dead weight. Connect or delete.
+
+## Two-Tier Capture & Maintenance
+
+The vault uses a two-tier model for autonomous operation with human oversight.
+
+### Tier 1: Capture (Haiku — broad, fast, per-session)
+
+Signal detection runs via `/vault-evaluate`. Haiku subagents scan session context in parallel for vault-worthy insights across six categories (domain expertise, tool knowledge, architecture decisions, patterns, contradictions, open questions). See `[[_meta/capture-signals]]` for the full signal schema.
+
+**Nothing enters the vault without human approval.** All detected signals are presented via AskUserQuestion for the human to approve, reject, or modify before any note is created. Bias toward capturing excess — the human filters, Claude proposes.
+
+### Tier 2: Maintenance (Opus — deep, scheduled)
+
+Vault maintenance runs via `/vault-maintain` and uses the most capable model for deep analysis. Triggers:
+- **Explicit**: Human invokes `/vault-maintain`
+- **Threshold**: Vault crosses capacity markers (15+ notes, 10+ working notes)
+- **Periodic**: Recommended frequency scales with vault size (see `[[_meta/capture-signals]]`)
+
+Operations: orphan scan, staleness check, pattern extraction, link refinement, signal effectiveness review, anti-library audit, falsification review.
+
+### Human-in-the-Loop Guarantee
+
+The human is the final authority on vault content. This means:
+1. **Capture**: Every proposed note requires explicit approval before creation
+2. **Maintenance**: Findings are reported; modifications require human confirmation
+3. **Falsification**: Position changes are documented and presented, not silently applied
+4. **Pruning**: Dormant notes are flagged for review, never auto-deleted

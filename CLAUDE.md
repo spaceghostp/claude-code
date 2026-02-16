@@ -14,9 +14,13 @@ This repository includes a persistent cognitive vault at `vault/`. The vault is 
 ## Vault Health
 @vault/_meta/vault-health.md
 
+## Capture Signal Schema
+@vault/_meta/capture-signals.md
+
 ## Available Vault Skills
 
-- `/vault-capture` — Create a new vault note from the current session (atom, tension, encounter, position, question, anti-library)
-- `/vault-maintain` — Run maintenance: orphan scan, staleness check, pattern extraction, anti-library audit, falsification review
+- `/vault-evaluate` — **Primary capture method.** Autonomously detect vault-worthy signals, propose captures for human approval via AskUserQuestion, write approved notes. Uses Haiku subagents for broad parallel detection. Nothing enters the vault without explicit approval.
+- `/vault-capture` — Manual vault note creation (atom, tension, encounter, position, question, anti-library)
+- `/vault-maintain` — Run maintenance: orphan scan, staleness check, pattern extraction, anti-library audit, falsification review. Uses Opus for deep analysis. Triggers at capacity thresholds or on explicit invoke.
 - `/vault-reflect` — Write a synthesis note reconciling multiple vault positions or tensions
 - `/vault-falsify` — Record a changed belief with reasoning, update falsification log

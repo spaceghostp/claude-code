@@ -41,6 +41,41 @@ _None yet. Run `/vault-maintain anti-library` to audit._
 
 _None detected yet. Run `/vault-maintain patterns` to extract._
 
+## Capture Effectiveness
+
+| Metric | Value |
+|--------|-------|
+| Proposals generated | 0 |
+| Proposals approved | 0 |
+| Approval rate | — |
+| Top signal category | — |
+| Notes surfaced & referenced | 0 |
+
+_Updated by `/vault-evaluate` after each capture cycle._
+
+## Graph Health
+
+| Metric | Value |
+|--------|-------|
+| Graph density (links/notes) | — |
+| Working-to-settled ratio | — |
+| Falsification rate | — |
+| Orphan rate | — |
+
+_Updated by `/vault-maintain` on each run._
+
+## Capacity Status
+
+| Threshold | Current | Status |
+|-----------|---------|--------|
+| 15+ notes (first maintenance trigger) | 4 | Below threshold |
+| 10+ working notes | 3 | Below threshold |
+| 50+ notes (per-session lightweight check) | 4 | Below threshold |
+
 ## Last Maintenance Run
 
 _Never — run `/vault-maintain` to populate this dashboard._
+
+## Last Evaluate Run
+
+_Never — run `/vault-evaluate` to populate._
