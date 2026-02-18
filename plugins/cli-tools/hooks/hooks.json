@@ -1,0 +1,17 @@
+{
+  "description": "External CLI tool integration — PostToolUse shellcheck for shell files",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/shellcheck_post_edit.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

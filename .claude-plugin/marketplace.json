@@ -136,6 +136,13 @@
       "category": "development"
     },
     {
+      "name": "cli-tools",
+      "description": "External CLI tool integration for Claude Code: security scanning (shellcheck, bandit, gitleaks, semgrep), codebase metrics (scc), and PostToolUse shell linting",
+      "version": "0.1.0",
+      "source": "./plugins/cli-tools",
+      "category": "development"
+    },
+    {
       "name": "security-guidance",
       "description": "Security reminder hook that warns about potential security issues when editing files, including command injection, XSS, and unsafe code patterns",
       "version": "1.0.0",

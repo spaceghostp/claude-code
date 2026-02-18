@@ -1,0 +1,5 @@
+{
+  "name": "cli-tools",
+  "version": "0.1.0",
+  "description": "External CLI tool integration: security scanning (shellcheck, bandit, gitleaks, semgrep), codebase metrics (scc), and PostToolUse shell linting"
+}

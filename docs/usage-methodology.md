@@ -202,6 +202,50 @@ Use Bash only when no dedicated tool exists. Common valid uses:
 > (`grep`), or file creation (`echo >`). Use Bash with `-i`
 > (interactive) flags — they require TTY input that isn't available.
 
+### External CLI Tools
+
+Installed tools that fill gaps in native tool coverage. All invoked
+via `Bash`. Check availability with `command -v <tool>` before use.
+
+```
+When should I invoke an external CLI tool?
+|
++-- Need structural code search (AST patterns)?
+|   +-> ast-grep via Bash (Grep can't do this)
+|
++-- Need deterministic security/lint scan?
+|   +-> shellcheck, bandit, semgrep, gitleaks via Bash
+|       (exhaustive within ruleset — I'm probabilistic)
+|
++-- Need precise codebase metrics?
+|   +-> scc via Bash (I can't count LOC without reading every file)
+|
++-- Need statistical benchmarking?
+|   +-> hyperfine via Bash (time gives one noisy sample)
+|
++-- Can I approximate with native tools?
+    +-> Use native tools (Read, Grep, LSP)
+```
+
+| Tool        | Category          | Speed      | Use Case                      |
+|-------------|-------------------|------------|-------------------------------|
+| `ast-grep`  | Structural search | Sub-second | AST pattern matching          |
+| `shellcheck`| Linting           | Sub-second | Shell script lint             |
+| `bandit`    | Security          | Sub-second | Python security scan          |
+| `gitleaks`  | Security          | Sub-second | Secret detection              |
+| `semgrep`   | Security          | ~24s       | Multi-language static analysis|
+| `scc`       | Metrics           | Sub-second | LOC, complexity, COCOMO       |
+| `hyperfine` | Benchmarking      | Varies     | Statistical command timing    |
+
+> **Do Not:** Invoke a tool that isn't installed — always check with
+> `command -v <tool>` first. Don't run semgrep without asking the
+> user (it takes ~24 seconds). Don't substitute these for native
+> tools when native tools suffice.
+
+For installation details and capability analysis, see:
+- [CLI tools that outperform Claude Code](cli-tools-that-outperform-claude-code.md)
+- [CLI tools expanding Claude Code](cli-tools-expanding-claude-code.md)
+
 ### Web Tools
 
 | Goal                          | Tool          | Notes              |
@@ -771,3 +815,5 @@ messages.
 - [Configuration reference](native-tools-reference.md#configuration-reference)
 - [System architecture diagrams](system-diagrams.md)
 - [Settings examples](../examples/settings/)
+- [CLI tools that outperform Claude Code](cli-tools-that-outperform-claude-code.md)
+- [CLI tools expanding Claude Code](cli-tools-expanding-claude-code.md)

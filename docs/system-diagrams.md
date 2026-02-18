@@ -35,9 +35,10 @@ WS-000-03/
 |   +-- BMAD-CALIBRATION-PROMPT.md
 |   +-- GSD-CALIBRATION-PROMPT.md
 |
-+-- plugins/                  13 plugins (see Diagram 2)
++-- plugins/                  14 plugins (see Diagram 2)
 |   +-- README.md
 |   +-- agent-sdk-dev/
+|   +-- cli-tools/
 |   +-- claude-opus-4-5-migration/
 |   +-- code-review/
 |   +-- commit-commands/
@@ -69,7 +70,7 @@ WS-000-03/
 
 ## 2. Plugin Ecosystem
 
-All 13 plugins grouped by primary type, showing entry points.
+All 14 plugins grouped by primary type, showing entry points.
 
 ```
 +-----------------------------------------------------------+
@@ -82,6 +83,7 @@ All 13 plugins grouped by primary type, showing entry points.
 |  | learning-output-style     SessionStart hook          | |
 |  | security-guidance         PreToolUse hook            | |
 |  |                           (matcher: Edit|Write)      | |
+|  | cli-tools                 PostToolUse hook, 2 skills | |
 |  +-----------------------------------------------------+ |
 |                                                           |
 |  COMMAND-BASED (user-invoked slash commands)              |
@@ -355,4 +357,41 @@ All 27 native tools grouped by category with permission indicators.
   YES = requires user permission
   no  = auto-allowed or no permission needed
   conditional = depends on command analysis
+```
+
+---
+
+## 7. External CLI Tools (Capability Extensions)
+
+Tools invoked via Bash that fill gaps in native tool coverage.
+See [cli-tools-expanding-claude-code.md](cli-tools-expanding-claude-code.md)
+for full analysis.
+
+```
++-----------------------------------------------------------+
+|           EXTERNAL CLI TOOLS (via Bash)                    |
++-----------------------------------------------------------+
+|                                                            |
+|  STRUCTURAL SEARCH          Installed?                     |
+|  -----------------          ----------                     |
+|  ast-grep .................. YES                           |
+|                                                            |
+|  SECURITY SCANNING                                         |
+|  -----------------                                         |
+|  semgrep ................... YES  (24s — use on demand)    |
+|  gitleaks .................. YES                           |
+|  shellcheck ................ YES                           |
+|  bandit .................... YES                           |
+|                                                            |
+|  CODEBASE METRICS                                          |
+|  ----------------                                          |
+|  scc ....................... YES                           |
+|                                                            |
+|  BENCHMARKING                                              |
+|  ------------                                              |
+|  hyperfine ................. YES                           |
+|                                                            |
++-----------------------------------------------------------+
+  All invoked via Bash tool. Permission required.
+  Check availability: command -v <tool>
 ```
