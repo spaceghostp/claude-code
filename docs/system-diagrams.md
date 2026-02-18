@@ -1,0 +1,358 @@
+# System Diagrams
+
+ASCII architecture diagrams for the WS-000-03 repository and its
+supporting systems. All diagrams are 76 characters wide or less.
+
+---
+
+## 1. Repo Directory Architecture
+
+Top-level layout of the plugins marketplace repository.
+
+```
+WS-000-03/
+|
++-- .claude/                  Project settings + vault symlink
+|   +-- settings.json         Hook config (project-level)
+|   +-- settings.local.json   Local permissions
+|   +-- vault -> ~/.claude/vault   (symlink)
+|
++-- .claude-plugin/
+|   +-- marketplace.json      Plugin registry manifest
+|
++-- .github/
+|   +-- ISSUE_TEMPLATE/       5 templates
+|   +-- workflows/            12 CI/CD workflows
+|
++-- .devcontainer/            Codespace config + firewall
+|
++-- docs/                     Reference documentation
+|   +-- native-tools-reference.md
+|   +-- system-diagrams.md    (this file)
+|   +-- obsidian-cognitive-infrastructure.md
+|   +-- obsidian-personal-workflow.md
+|   +-- autonomous-vault-plan.md
+|   +-- BMAD-CALIBRATION-PROMPT.md
+|   +-- GSD-CALIBRATION-PROMPT.md
+|
++-- plugins/                  13 plugins (see Diagram 2)
+|   +-- README.md
+|   +-- agent-sdk-dev/
+|   +-- claude-opus-4-5-migration/
+|   +-- code-review/
+|   +-- commit-commands/
+|   +-- explanatory-output-style/
+|   +-- feature-dev/
+|   +-- frontend-design/
+|   +-- hookify/
+|   +-- learning-output-style/
+|   +-- plugin-dev/
+|   +-- pr-review-toolkit/
+|   +-- ralph-wiggum/
+|   +-- security-guidance/
+|
++-- examples/
+|   +-- hooks/                Example hook scripts
+|   +-- settings/             Example settings files
+|
++-- scripts/                  11 migration/CI scripts
+|
++-- Script/                   Windows devcontainer launcher
+|
++-- README.md
++-- CHANGELOG.md
++-- LICENSE.md
++-- SECURITY.md
+```
+
+---
+
+## 2. Plugin Ecosystem
+
+All 13 plugins grouped by primary type, showing entry points.
+
+```
++-----------------------------------------------------------+
+|                    PLUGIN ECOSYSTEM                        |
++-----------------------------------------------------------+
+|                                                           |
+|  HOOK-BASED (modify agent behavior via lifecycle events)  |
+|  +-----------------------------------------------------+ |
+|  | explanatory-output-style  SessionStart hook          | |
+|  | learning-output-style     SessionStart hook          | |
+|  | security-guidance         PreToolUse hook            | |
+|  |                           (matcher: Edit|Write)      | |
+|  +-----------------------------------------------------+ |
+|                                                           |
+|  COMMAND-BASED (user-invoked slash commands)              |
+|  +-----------------------------------------------------+ |
+|  | commit-commands    /commit, /push, /pr               | |
+|  +-----------------------------------------------------+ |
+|                                                           |
+|  SKILL-BASED (guided workflows with SKILL.md)            |
+|  +-----------------------------------------------------+ |
+|  | claude-opus-4-5-migration   1 skill                  | |
+|  | frontend-design             1 skill                  | |
+|  +-----------------------------------------------------+ |
+|                                                           |
+|  AGENT + COMMAND (agents orchestrated via commands)       |
+|  +-----------------------------------------------------+ |
+|  | agent-sdk-dev       2 agents, 1 command              | |
+|  | code-review         1 agent,  1 command              | |
+|  | feature-dev         3 agents, 1 command              | |
+|  | pr-review-toolkit   6 agents, 1 command              | |
+|  +-----------------------------------------------------+ |
+|                                                           |
+|  TOOLKIT (full-spectrum: hooks + commands + agents)       |
+|  +-----------------------------------------------------+ |
+|  | hookify      4 hooks, 4 commands, 1 agent, 1 skill  | |
+|  | plugin-dev   7 skills, 3 agents, 1 command           | |
+|  +-----------------------------------------------------+ |
+|                                                           |
+|  HYBRID                                                   |
+|  +-----------------------------------------------------+ |
+|  | ralph-wiggum   3 commands, 1 Stop hook               | |
+|  +-----------------------------------------------------+ |
+|                                                           |
++-----------------------------------------------------------+
+```
+
+---
+
+## 3. Vault System Architecture
+
+The cognitive vault at `~/.claude/vault/`, showing note types,
+scripts, meta files, and skill entry points.
+
+```
+~/.claude/vault/
+|
++== NOTE TYPES (8) =============================+
+|                                                |
+|  atoms/           Single irreducible concepts  |
+|  tensions/        Ideas pulling against each   |
+|  encounters/      Situations where applied     |
+|  positions/       Staked falsifiable claims     |
+|  questions/       Active unknowns              |
+|  revisions/       Documented mind-changes      |
+|  anti-library/    Unverified assumptions        |
+|  falsifications/  Records of being wrong       |
+|                                                |
++================================================+
+|
++== _meta/ (governance) ========================+
+|                                                |
+|  conventions.md      Ontology + rules          |
+|  capture-signals.md  When/what to capture      |
+|  vault-health.md     Maintained by /maintain   |
+|  index.json          Link graph + stats        |
+|  position-claims.json                          |
+|  quality-baseline.json                         |
+|  source-queue.json   Ingestion queue           |
+|  source-log.jsonl    Ingestion history         |
+|  token-budget.json   Budget tracking           |
+|                                                |
++================================================+
+|
++== _scripts/ (13 scripts) =====================+
+|                                                |
+|  build-index.py      Rebuild index.json        |
+|  resurface.py        SessionStart hook          |
+|  stop-capture-check.py  Stop hook              |
+|  validate.py         Schema validation         |
+|  vault_parsing.py    Shared parsing utils      |
+|  budget-tracker.py   Token budget enforcement  |
+|  queue-manager.py    Source queue CLI           |
+|  calibration-reveal.py                         |
+|  yt-extract.sh       YouTube transcript+OCR    |
+|  yt-compress.py      Transcript -> claims      |
+|  yt-triage.py        Claims -> vault triage    |
+|  repo-extract.py     GitHub repo -> digest     |
+|  repo-analyze.py     Digest -> vault analysis  |
+|                                                |
++================================================+
+|
++== ~/.claude/skills/ (7 vault skills) =========+
+|                                                |
+|  vault-capture/           Create new note      |
+|  vault-maintain/          Index + review        |
+|  vault-calibrate-reveal/  Calibration probe    |
+|  vault-queue/             Manage ingestion Q   |
+|  vault-next/              Session recommender  |
+|  vault-ingest-youtube/    YouTube pipeline     |
+|  vault-ingest-repo/       GitHub pipeline      |
+|                                                |
++================================================+
+```
+
+---
+
+## 4. Ingestion Pipeline
+
+Two parallel pipelines for external source ingestion.
+
+```
+YOUTUBE INGESTION                GITHUB REPO INGESTION
+=================                =====================
+
++----------------+               +----------------+
+| YouTube URL    |               | Repo URL       |
++-------v--------+               +-------v--------+
+        |                                |
++-------v--------+               +-------v--------+
+| yt-extract.sh  |               | repo-extract.py|
+| transcript+OCR |               | clone + digest |
++-------v--------+               +-------v--------+
+        |                                |
++-------v--------+               +-------v--------+
+| yt-compress.py |               | repo-analyze.py|
+| raw -> claims  |               | digest -> vault|
++-------v--------+               |   evidence     |
+        |                        +-------v--------+
++-------v--------+                       |
+| yt-triage.py   |                       |
+| claims -> vault|                       |
+| position check |                       |
++-------v--------+                       |
+        |                                |
+        +-------->  VAULT  <-------------+
+                  +------+
+                  | atoms, encounters,   |
+                  | positions updated    |
+                  | source-log.jsonl     |
+                  +----------------------+
+```
+
+---
+
+## 5. Hook Event System
+
+Lifecycle events and which components fire at each stage.
+
+```
+SESSION LIFECYCLE
+=================
+
+SessionStart
+    |
+    +-- [global] resurface.py      Surface vault notes
+    +-- [plugin] explanatory-output-style/session-start.sh
+    +-- [plugin] learning-output-style/session-start.sh
+    |
+    v
+UserPromptSubmit  (each user message)
+    |
+    +-- [plugin] hookify/userpromptsubmit.py
+    |
+    v
+PreToolUse  (before each tool call)
+    |
+    +-- [plugin] hookify/pretooluse.py     (all tools)
+    +-- [plugin] security-guidance/        (Edit|Write)
+    |
+    v
+  [ Tool Executes ]
+    |
+    v
+PostToolUse  (after each tool call)
+    |
+    +-- [plugin] hookify/posttooluse.py
+    |
+    v
+Stop  (agent turn ends)
+    |
+    +-- [global] stop-capture-check.py  Vault capture reminder
+    +-- [global] afplay Submarine.aiff  Audio notification
+    +-- [plugin] hookify/stop.py
+    +-- [plugin] ralph-wiggum/stop-hook.sh
+    |
+    v
+SessionEnd
+    |
+    +-- [global] build-index.py   Rebuild vault index
+    |
+    v
+Notification  (idle/permission prompts)
+    |
+    +-- [global] afplay Glass.aiff  Audio alert
+```
+
+---
+
+## 6. Tool Categories
+
+All 27 native tools grouped by category with permission indicators.
+
+```
++-----------------------------------------------------------+
+|               NATIVE TOOLS (27 total)                     |
++-----------------------------------------------------------+
+|                                                           |
+|  FILE I/O                          Perm?                  |
+|  --------                          -----                  |
+|  Read ............................ no    (auto-allowed)    |
+|  Edit ............................ YES                     |
+|  Write ........................... YES                     |
+|  NotebookEdit .................... YES                     |
+|                                                           |
+|  SEARCH                                                   |
+|  ------                                                   |
+|  Grep ............................ no    (auto-allowed)    |
+|  Glob ............................ no    (auto-allowed)    |
+|                                                           |
+|  SHELL                                                    |
+|  -----                                                    |
+|  Bash ............................ conditional             |
+|                                                           |
+|  WEB                                                      |
+|  ---                                                      |
+|  WebFetch ........................ no    (auto-allowed)    |
+|  WebSearch ....................... no    (auto-allowed)    |
+|                                                           |
+|  SUB-AGENT EXECUTION                                      |
+|  -------------------                                      |
+|  Task ............................ YES                     |
+|  TaskStop ........................ no                      |
+|  TaskOutput ...................... no    (auto-allowed)    |
+|                                                           |
+|  TASK MANAGEMENT                                          |
+|  ---------------                                          |
+|  TaskCreate ...................... no    (auto-allowed)    |
+|  TaskGet ......................... no    (auto-allowed)    |
+|  TaskUpdate ...................... no    (auto-allowed)    |
+|  TaskList ........................ no    (auto-allowed)    |
+|                                                           |
+|  PLANNING                                                 |
+|  --------                                                 |
+|  TodoWrite (deprecated) ......... no    (auto-allowed)    |
+|  EnterPlanMode ................... no                      |
+|  ExitPlanMode .................... no                      |
+|                                                           |
+|  MULTI-AGENT                                              |
+|  -----------                                              |
+|  Teammate ........................ YES   (swarm only)      |
+|                                                           |
+|  USER INTERACTION                                         |
+|  ----------------                                         |
+|  AskUserQuestion ................. no    (auto-allowed)    |
+|                                                           |
+|  CODE INTELLIGENCE                                        |
+|  -----------------                                        |
+|  LSP ............................. no    (auto-allowed)    |
+|                                                           |
+|  TOOL DISCOVERY                                           |
+|  --------------                                           |
+|  Skill ........................... YES                     |
+|  ToolSearch ...................... no    (auto-allowed)    |
+|                                                           |
+|  MCP                                                      |
+|  ---                                                      |
+|  mcp ............................. YES                     |
+|  ListMcpResourcesTool ............ no    (auto-allowed)    |
+|  ReadMcpResourceTool ............. no    (auto-allowed)    |
+|                                                           |
++-----------------------------------------------------------+
+  YES = requires user permission
+  no  = auto-allowed or no permission needed
+  conditional = depends on command analysis
+```

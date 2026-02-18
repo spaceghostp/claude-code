@@ -1,6 +1,6 @@
 # Claude Code Native Tools Reference
 
-This document provides a comprehensive reference for all native tools available in the Claude Code CLI (v2.1.19). Each tool listing includes its parameters, types, behavioral characteristics, usage examples, and common patterns.
+This document provides a comprehensive reference for all native tools available in the Claude Code CLI (v2.1.45+). Each tool listing includes its parameters, types, behavioral characteristics, usage examples, and common patterns.
 
 ## Table of Contents
 
@@ -99,7 +99,7 @@ This document provides a comprehensive reference for all native tools available 
 | Search the web | `WebSearch` | — |
 | Fetch a URL | `WebFetch` | `Bash` with `curl` |
 | Complex multi-step task | `Task` (sub-agent) | — |
-| Track progress | `TodoWrite` | — |
+| Track progress | `TaskCreate`/`TaskUpdate` | — |
 
 ### Full Tool Matrix
 
@@ -157,10 +157,8 @@ This document provides a comprehensive reference for all native tools available 
 ### Task Orchestration
 
 - **Complex multi-step workflow** → Use `Task` to spawn a sub-agent with its own tool access.
-- **Track your own progress** → Use `TodoWrite` for the agent's internal checklist.
+- **Track your own progress** → Use `TaskCreate`/`TaskUpdate` for structured task tracking.
 - **Cross-agent task management** → Use `TaskCreate`/`TaskGet`/`TaskUpdate`/`TaskList`.
-
-> **Note:** `TodoWrite` and the `TaskCreate`/`TaskGet`/`TaskUpdate`/`TaskList` family are mutually exclusive — only one set is active at a time depending on the active feature flag.
 
 ---
 
@@ -271,6 +269,7 @@ Reads files from the local filesystem. Supports text files, images (returns base
 | `file_path` | `string` | Yes      | Absolute path to the file to read          |
 | `offset`    | `number` | No       | Line number to start reading from          |
 | `limit`     | `number` | No       | Number of lines to read (default: 2000)    |
+| `pages`     | `string` | No       | Page range for PDFs (e.g. `"1-5"`, `"3"`, `"10-20"`). Max 20 pages per request. |
 
 - **Read-only:** Yes
 - **Concurrency-safe:** Yes
@@ -291,6 +290,7 @@ Reads files from the local filesystem. Supports text files, images (returns base
 
 - Always read a file before editing or overwriting it.
 - Use `offset`/`limit` for large files (>2000 lines) to paginate through content.
+- For large PDFs (>10 pages), you **must** provide `pages` to read specific page ranges. Reading without `pages` will fail.
 - Read multiple independent files in parallel for speed.
 - Output uses `cat -n` format with 1-based line numbers.
 - Lines longer than 2000 characters are truncated.
@@ -399,6 +399,7 @@ User-facing name: **Search**. A regex search tool built on [ripgrep](https://git
 | `-A`          | `number`  | No       | Lines to show after each match                                 |
 | `-B`          | `number`  | No       | Lines to show before each match                                |
 | `-C`          | `number`  | No       | Lines to show around each match                                |
+| `context`     | `number`  | No       | Alias for `-C`                                                 |
 | `-n`          | `boolean` | No       | Show line numbers (default: `true`)                            |
 | `-i`          | `boolean` | No       | Case-insensitive search                                        |
 | `type`        | `string`  | No       | File type filter (e.g. `"js"`, `"py"`, `"rust"`)              |
@@ -527,7 +528,7 @@ User-facing name: **Web Search**. Searches the web using the Anthropic `web_sear
 - **Concurrency-safe:** Yes
 - **Requires permission:** No
 - **Max uses per invocation:** 8
-- **Availability:** Platform-dependent — always available on firstParty; on Vertex, requires claude-opus-4/sonnet-4/haiku-4 models.
+- **Availability:** Platform-dependent — always available on firstParty; on Vertex, requires Opus 4.6, Sonnet 4.6, or Haiku 4.5 models.
 - **Max result size:** 100,000 characters
 
 ---
@@ -542,15 +543,15 @@ Launches a sub-agent to handle complex, multi-step tasks autonomously.
 | ------------------- | ---------- | -------- | ---------------------------------------------------------------------- |
 | `description`       | `string`   | Yes      | Short (3-5 word) task description                                      |
 | `prompt`            | `string`   | Yes      | Detailed task instructions                                             |
-| `subagent_type`     | `string`   | Yes      | Agent type (e.g. `"Bash"`, `"Explore"`, `"Plan"`, `"general-purpose"`) |
-| `model`             | `enum`     | No       | `"sonnet"`, `"opus"`, or `"haiku"`. Inherits from parent if omitted.   |
+| `subagent_type`     | `string`   | Yes      | Agent type (e.g. `"Bash"`, `"Explore"`, `"Plan"`, `"general-purpose"`, `"statusline-setup"`, `"claude-code-guide"`) |
+| `model`             | `enum`     | No       | `"sonnet"` (Sonnet 4.6), `"opus"` (Opus 4.6), or `"haiku"` (Haiku 4.5). Inherits from parent if omitted. |
 | `resume`            | `string`   | No       | Agent ID to resume a previous execution                                |
 | `run_in_background` | `boolean`  | No       | Run in background                                                      |
 | `max_turns`         | `number`   | No       | Maximum agentic turns before stopping (positive integer)               |
-| `allowed_tools`     | `string[]` | No       | Tools granted to this agent (e.g. `["Read", "Bash(git *)"]`)          |
-| `name`              | `string`   | No       | Name for the spawned agent                                             |
-| `team_name`         | `string`   | No       | Team name for spawning. Uses current team context if omitted.          |
-| `mode`              | `enum`     | No       | Permission mode: `"acceptEdits"`, `"bypassPermissions"`, `"default"`, `"delegate"`, `"dontAsk"`, or `"plan"` |
+| `allowed_tools`     | `string[]` | No       | Tools granted to this agent. *Swarm mode only.* |
+| `name`              | `string`   | No       | Name for the spawned agent. *Swarm mode only.*  |
+| `team_name`         | `string`   | No       | Team name for spawning. *Swarm mode only.*      |
+| `mode`              | `enum`     | No       | Permission mode: `"acceptEdits"`, `"bypassPermissions"`, `"default"`, `"delegate"`, `"dontAsk"`, or `"plan"`. *Swarm mode only.* |
 
 - **Read-only:** No
 - **Concurrency-safe:** No
@@ -559,7 +560,7 @@ Launches a sub-agent to handle complex, multi-step tasks autonomously.
 
 #### Notes
 
-- Sub-agents cannot access the parent's conversation context — provide all needed information in `prompt`.
+- Most sub-agent types cannot access the parent's conversation context — provide all needed information in `prompt`. Some types (e.g. `"claude-code-guide"`) receive full conversation history.
 - When `max_turns` is reached, partial results are returned. Use `resume` with the agent ID to continue.
 - Prefer `"haiku"` model for quick, straightforward sub-tasks to minimize cost and latency.
 
@@ -607,7 +608,7 @@ User-facing name: **Task Output**. Retrieves output from a running or completed 
 
 ## Task Management Tools
 
-> **Note:** These tools are only available when the task management feature flag is active. They are mutually exclusive with `TodoWrite` — only one system is active at a time.
+> **Note:** These are the active task management tools, replacing the deprecated `TodoWrite` system.
 
 ### TaskCreate
 
@@ -650,7 +651,7 @@ Updates an existing task's status, description, or dependencies.
 | `subject`      | `string`   | No       | New subject                                       |
 | `description`  | `string`   | No       | New description                                   |
 | `activeForm`   | `string`   | No       | Present continuous form for display               |
-| `status`       | `enum`     | No       | `"pending"`, `"in_progress"`, or `"completed"`    |
+| `status`       | `enum`     | No       | `"pending"`, `"in_progress"`, `"completed"`, or `"deleted"` |
 | `addBlocks`    | `string[]` | No       | Task IDs that this task blocks                    |
 | `addBlockedBy` | `string[]` | No       | Task IDs that block this task                     |
 | `owner`        | `string`   | No       | New owner for the task                            |
@@ -659,6 +660,10 @@ Updates an existing task's status, description, or dependencies.
 - **Read-only:** No
 - **Concurrency-safe:** Yes
 - **Requires permission:** No
+
+#### Notes
+
+- Setting status to `"deleted"` permanently removes the task from the list.
 
 ---
 
@@ -676,9 +681,9 @@ Lists all tasks. **No parameters.**
 
 ### TodoWrite
 
-Manages the agent's internal todo/checklist. Auto-allowed (no permission prompt).
+> **Deprecated.** Replaced by the `TaskCreate`/`TaskGet`/`TaskUpdate`/`TaskList` system. TodoWrite may still appear in older configurations but is no longer the active task management tool.
 
-> **Note:** Only available when the task management feature flag is **inactive**. Mutually exclusive with `TaskCreate`/`TaskGet`/`TaskUpdate`/`TaskList`.
+Manages the agent's internal todo/checklist. Auto-allowed (no permission prompt).
 
 | Parameter            | Type     | Required | Description                                     |
 | -------------------- | -------- | -------- | ----------------------------------------------- |
@@ -714,8 +719,6 @@ Prompts the user to exit plan mode and begin implementation.
 | `remoteSessionId`     | `string`  | No       | Remote session ID                        |
 | `remoteSessionUrl`    | `string`  | No       | Remote session URL                       |
 | `remoteSessionTitle`  | `string`  | No       | Remote session title                     |
-| `launchSwarm`         | `boolean` | No       | Launch a multi-agent swarm               |
-| `teammateCount`       | `number`  | No       | Number of teammates to spawn             |
 
 - **Read-only:** Yes
 - **Concurrency-safe:** Yes
@@ -774,8 +777,10 @@ Asks the user structured multiple-choice questions (1-4 questions).
 | `questions[].options`               | `array`   | Yes      | 2-4 choice objects (labels must be unique within each question) |
 | `questions[].options[].label`       | `string`  | Yes      | Display text (1-5 words)                        |
 | `questions[].options[].description` | `string`  | Yes      | Explanation of the option                       |
+| `questions[].options[].markdown`    | `string`  | No       | Preview content shown when option is focused (ASCII mockups, code snippets, diagrams). Enables side-by-side layout. Single-select only. |
 | `questions[].multiSelect`           | `boolean` | No       | Allow multiple selections (default: `false`)    |
 | `answers`                           | `record<string, string>` | No | User answers collected by the permission component |
+| `annotations`                       | `record<string, object>` | No | Per-question annotations from user, keyed by question text. Each value has optional `markdown` (string) and `notes` (string) sub-fields. |
 | `metadata`                          | `object`  | No       | Optional metadata for tracking (e.g. `{source: "remember"}`) |
 
 - **Read-only:** Yes
@@ -796,6 +801,8 @@ Asks the user structured multiple-choice questions (1-4 questions).
 Interacts with Language Server Protocol servers for code intelligence features.
 
 **Availability:** Only enabled when LSP servers are configured and running (non-error state).
+
+> **Note:** In IDE integrations, LSP operations are now delivered via MCP (`mcp__ide__getDiagnostics`, `mcp__ide__executeCode`). The native LSP tool remains available in standalone CLI mode.
 
 | Parameter   | Type     | Required | Description                                                                                                                  |
 | ----------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -921,6 +928,13 @@ Reads an MCP resource by URI.
 | `--disallowedTools=<tools>` | Comma-separated list of denied tools |
 | `--mcp-config <path>` | One-off MCP server configuration file |
 | `--mcp-debug` | Enable MCP debugging output |
+| `login` | Authenticate with Anthropic API |
+| `status` | Show current authentication and session status |
+| `logout` | Clear stored authentication credentials |
+
+### Hooks Configuration
+
+Hooks are shell commands that execute in response to lifecycle events (e.g. `PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`, `UserPromptSubmit`). Hook entries support an `"async": true` property for non-blocking execution — the hook runs in the background without delaying the agent loop.
 
 ### Configuration Files
 
@@ -959,5 +973,6 @@ Reads an MCP resource by URI.
 | `Read` | `View` | v0.2.x |
 | `TaskStop` | `KillShell` | — (alias still supported) |
 | `TaskOutput` | `BashOutputTool` / `AgentOutputTool` | — (aliases still supported) |
+| `TaskCreate`/`TaskUpdate`/`TaskList`/`TaskGet` | `TodoWrite` | v2.1.30+ (TodoWrite deprecated) |
 
-All tool definitions extracted from the installed Claude Code package (`@anthropic-ai/claude-code` v2.1.19). Schemas are validated at runtime using [Zod](https://zod.dev).
+All tool definitions extracted from the installed Claude Code package (`@anthropic-ai/claude-code` v2.1.45+). Schemas are validated at runtime using [Zod](https://zod.dev).
