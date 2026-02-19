@@ -264,14 +264,18 @@ filtering. WebFetch auto-upgrades HTTP to HTTPS and includes a
 15-minute cache.
 
 > **Do Not:** Use `WebFetch` for authenticated/private URLs (Google
-> Docs, Jira, Confluence). Check for MCP tools (prefixed `mcp__`)
-> that provide authenticated access.
+> Docs, Jira, Confluence). Use `MCPSearch` to find an MCP tool with
+> authenticated access, or check for MCP tools (prefixed `mcp__`)
+> already loaded in the session.
 
 ### MCP and IDE Tools
 
 When MCP tools are available (prefixed `mcp__`), prefer them for
 domain-specific operations. MCP tools appear automatically in the
-session's available tools when their servers are configured.
+session's available tools when their servers are configured. When
+many MCP tools are installed, some may be deferred — use `MCPSearch`
+to discover them (auto-activates on Sonnet 4+/Opus 4+ when MCP tool
+descriptions exceed 10% of context window).
 
 IDE tools (`mcp__ide__getDiagnostics`, `mcp__ide__executeCode`)
 provide language server integration. Prefer `mcp__ide__getDiagnostics`
@@ -452,6 +456,7 @@ Should I delegate to a sub-agent?
 | `Explore`         | Codebase search and understanding  | All read-only tools |
 | `Plan`            | Architecture and design            | All read-only tools |
 | `general-purpose` | Multi-step research, complex tasks | All tools           |
+| `statusline-setup`| Configure status line display      | Read, Edit          |
 | `claude-code-guide`| Questions about Claude Code itself| Read-only + web     |
 
 ### Model Selection

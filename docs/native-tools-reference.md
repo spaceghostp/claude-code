@@ -40,6 +40,7 @@ This document provides a comprehensive reference for all native tools available 
   - [Skill](#skill)
 - [MCP Tools](#mcp-tools)
   - [mcp](#mcp)
+  - [MCPSearch](#mcpsearch)
 - [Configuration Reference](#configuration-reference)
 - [Summary](#summary)
 
@@ -199,8 +200,7 @@ Parallel:
 ```
 Task(description="Run tests and fix failures",
      prompt="Execute npm test, analyze failures, and fix them",
-     subagent_type="general-purpose",
-     allowed_tools=["Read", "Edit", "Bash", "Grep"])
+     subagent_type="general-purpose")
 ```
 
 ---
@@ -211,7 +211,7 @@ Task(description="Run tests and fix failures",
 
 Read-only and informational tools execute immediately:
 
-`Read`, `Grep`, `Glob`, `WebFetch`, `WebSearch`, `TaskOutput`, `TaskList`, `TaskGet`, `AskUserQuestion`, `EnterPlanMode`, `ExitPlanMode`
+`Read`, `Grep`, `Glob`, `WebFetch`, `WebSearch`, `TaskOutput`, `TaskStop`, `TaskList`, `TaskGet`, `TaskCreate`, `TaskUpdate`, `AskUserQuestion`, `EnterPlanMode`, `ExitPlanMode`
 
 ### Permission-Required Tools
 
@@ -530,10 +530,10 @@ Launches a sub-agent to handle complex, multi-step tasks autonomously.
 | `resume`            | `string`   | No       | Agent ID to resume a previous execution                                |
 | `run_in_background` | `boolean`  | No       | Run in background                                                      |
 | `max_turns`         | `number`   | No       | Maximum agentic turns before stopping (positive integer)               |
-| `allowed_tools`     | `string[]` | No       | Tools granted to this agent. *Swarm mode only.* |
-| `name`              | `string`   | No       | Name for the spawned agent. *Swarm mode only.*  |
-| `team_name`         | `string`   | No       | Team name for spawning. *Swarm mode only.*      |
-| `mode`              | `enum`     | No       | Permission mode: `"acceptEdits"`, `"bypassPermissions"`, `"default"`, `"delegate"`, `"dontAsk"`, or `"plan"`. *Swarm mode only.* |
+| `allowed_tools`     | `string[]` | No       | Tools granted to this agent. *Agent Teams only (experimental).* |
+| `name`              | `string`   | No       | Name for the spawned agent. *Agent Teams only (experimental).*  |
+| `team_name`         | `string`   | No       | Team name for spawning. *Agent Teams only (experimental).*      |
+| `mode`              | `enum`     | No       | Permission mode: `"acceptEdits"`, `"bypassPermissions"`, `"default"`, `"delegate"`, `"dontAsk"`, or `"plan"`. *Agent Teams only (experimental).* |
 
 - **Read-only:** No
 - **Concurrency-safe:** No
@@ -762,6 +762,24 @@ Generic passthrough for MCP server tools. Acts as a bridge for dynamically loade
 
 ---
 
+### MCPSearch
+
+Discovers deferred MCP tools on demand. Auto-activates when MCP tool descriptions exceed 10% of context window. Not always present — only loads when needed.
+
+**Availability:** Requires Sonnet 4+ or Opus 4+. Not available on Haiku.
+
+| Parameter     | Type     | Required | Description                                              |
+| ------------- | -------- | -------- | -------------------------------------------------------- |
+| `query`       | `string` | Yes      | Search query or `"select:<tool_name>"` for direct lookup |
+| `max_results` | `number` | No       | Maximum number of results (default: 5)                   |
+
+- **Read-only:** Yes
+- **Concurrency-safe:** Yes
+- **Requires permission:** No
+- **Configurable:** `ENABLE_TOOL_SEARCH` env var (`auto` (default), `auto:<N>`, `true`, `false`)
+
+---
+
 ## Configuration Reference
 
 ### Environment Variables
@@ -774,6 +792,11 @@ Generic passthrough for MCP server tools. Acts as a bridge for dynamically loade
 | `ANTHROPIC_MODEL` | — | Task | Override default model (e.g., Bedrock ARN) |
 | `ANTHROPIC_SMALL_FAST_MODEL` | — | Task | Override model for sub-tasks |
 | `ANTHROPIC_LOG` | — | All | Set to `debug` for API request logging |
+| `ENABLE_TOOL_SEARCH` | `auto` | MCPSearch | Controls MCPSearch activation: `auto`, `auto:<N>`, `true`, `false` |
+| `MAX_MCP_OUTPUT_TOKENS` | `25000` | MCP | Maximum output tokens for MCP tool results |
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | — | Task | Set to `1` to enable Agent Teams (experimental) |
+| `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` | — | Task | Set to `1` to disable background task functionality |
+| `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `95` | All | Auto-compaction trigger threshold (percentage) |
 
 ### CLI Flags
 
@@ -815,9 +838,9 @@ Hooks are shell commands that execute in response to lifecycle events (e.g. `Pre
 | **Planning**            | `EnterPlanMode`, `ExitPlanMode`                                            |
 | **User Interaction**    | `AskUserQuestion`                                                          |
 | **Workflow Discovery**  | `Skill`                                                                    |
-| **MCP**                 | `mcp`                                                                      |
+| **MCP**                 | `mcp`, `MCPSearch` (conditional)                                           |
 
-**Total: 21 native tools**
+**Total: 21 native tools + 1 conditional (`MCPSearch`)**
 
 ### Historical Names
 
