@@ -283,11 +283,12 @@ Notification  (idle/permission prompts)
 
 ## 6. Tool Categories
 
-All 27 native tools grouped by category with permission indicators.
+All 21 native tools (+ 1 conditional) grouped by category with
+permission indicators.
 
 ```
 +-----------------------------------------------------------+
-|               NATIVE TOOLS (27 total)                     |
+|          NATIVE TOOLS (21 + 1 conditional)                |
 +-----------------------------------------------------------+
 |                                                           |
 |  FILE I/O                          Perm?                  |
@@ -314,7 +315,7 @@ All 27 native tools grouped by category with permission indicators.
 |  SUB-AGENT EXECUTION                                      |
 |  -------------------                                      |
 |  Task ............................ YES                     |
-|  TaskStop ........................ no                      |
+|  TaskStop ........................ no    (auto-allowed)    |
 |  TaskOutput ...................... no    (auto-allowed)    |
 |                                                           |
 |  TASK MANAGEMENT                                          |
@@ -326,32 +327,21 @@ All 27 native tools grouped by category with permission indicators.
 |                                                           |
 |  PLANNING                                                 |
 |  --------                                                 |
-|  TodoWrite (deprecated) ......... no    (auto-allowed)    |
 |  EnterPlanMode ................... no                      |
 |  ExitPlanMode .................... no                      |
-|                                                           |
-|  MULTI-AGENT                                              |
-|  -----------                                              |
-|  Teammate ........................ YES   (swarm only)      |
 |                                                           |
 |  USER INTERACTION                                         |
 |  ----------------                                         |
 |  AskUserQuestion ................. no    (auto-allowed)    |
 |                                                           |
-|  CODE INTELLIGENCE                                        |
-|  -----------------                                        |
-|  LSP ............................. no    (auto-allowed)    |
-|                                                           |
-|  TOOL DISCOVERY                                           |
-|  --------------                                           |
+|  WORKFLOW DISCOVERY                                       |
+|  ------------------                                       |
 |  Skill ........................... YES                     |
-|  ToolSearch ...................... no    (auto-allowed)    |
 |                                                           |
 |  MCP                                                      |
 |  ---                                                      |
 |  mcp ............................. YES                     |
-|  ListMcpResourcesTool ............ no    (auto-allowed)    |
-|  ReadMcpResourceTool ............. no    (auto-allowed)    |
+|  MCPSearch (conditional) ......... no    (auto-allowed)    |
 |                                                           |
 +-----------------------------------------------------------+
   YES = requires user permission

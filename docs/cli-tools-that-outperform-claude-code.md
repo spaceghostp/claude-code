@@ -16,7 +16,7 @@ These tools provide capabilities Claude Code has no native equivalent for, even 
 
 | Tool | Stars | License | Gap Filled |
 |------|-------|---------|------------|
-| **[ast-grep](https://github.com/ast-grep/ast-grep)** | ~10k | MIT | AST-level search/rewrite using tree-sitter. Patterns like `console.log($ARG)` match by syntax structure, ignoring whitespace/comments. Claude Code has LSP (symbol navigation) and Grep (text regex), but neither does structural pattern matching across codebases. |
+| **[ast-grep](https://github.com/ast-grep/ast-grep)** | ~10k | MIT | AST-level search/rewrite using tree-sitter. Patterns like `console.log($ARG)` match by syntax structure, ignoring whitespace/comments. Claude Code has Grep (text regex) and IDE LSP via MCP (symbol navigation), but neither does structural pattern matching across codebases. |
 | **[comby](https://github.com/comby-tools/comby)** | ~2.6k | Apache-2.0 | Structural search-replace that understands balanced delimiters across any format (code, JSON, YAML, HTML). Language-agnostic. Claude Code's Edit does exact string match only. **Note:** Last release June 2024 — stable/mature rather than actively developed. |
 | **[jscodeshift](https://github.com/facebook/jscodeshift)** | ~9.9k | MIT | JS/TS AST codemods across thousands of files in parallel, preserving original formatting. Claude Code edits one file at a time with no AST awareness. |
 | **[OpenRewrite](https://github.com/openrewrite/rewrite)** | ~3.3k | Apache-2.0 | Recipe-based JVM migrations (Spring Boot 2→3, Java 11→17) with type-aware transforms across entire codebases. No Claude Code equivalent. |
@@ -169,7 +169,7 @@ Tools that fill genuine gaps without duplicating what Claude Code already does w
 
 ## Cross-Reference: Claude Code Native Coverage (from `docs/native-tools-reference.md`)
 
-Claude Code ships **27 native tools** across 12 categories. Key capabilities that reduce the external tool surface:
+Claude Code ships **21 native tools** (+ 1 conditional) across 10 categories. Key capabilities that reduce the external tool surface:
 
 | Native Capability | What It Covers | What It Doesn't |
 |---|---|---|
@@ -178,8 +178,8 @@ Claude Code ships **27 native tools** across 12 categories. Key capabilities tha
 | **Edit** | Exact string replacement, `replace_all` | No AST transforms, no bulk codemod |
 | **Bash** | Shell execution, background tasks, sandboxed | No `-i` interactive, no file watch, no streaming |
 | **Task** (subagents) | Parallel delegation, model routing, resumable | Cannot share state between agents cleanly |
-| **LSP** | Go-to-definition, find references, hover, call hierarchy | Requires configured language server |
-| **Teammate** (swarm) | Multi-agent coordination, broadcast, task ownership | Experimental, high token cost |
+| **IDE LSP** (via MCP) | Go-to-definition, find references, hover, call hierarchy | IDE integration only, not standalone CLI |
+| **Agent Teams** (experimental) | Multi-agent coordination, shared task list, messaging | Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` |
 | **Hooks** | 12 lifecycle events, command/prompt/agent types, async | Cannot call Claude API, cannot cancel later hooks |
 | **Skills** | Custom slash commands, on-demand loading, agent attachment | Not discoverable without docs |
 | **MCP** | 100+ external integrations, OAuth, resource references | 25k token output limit, silent connection failures |
@@ -188,7 +188,7 @@ Claude Code ships **27 native tools** across 12 categories. Key capabilities tha
 
 ### Where the docs reveal genuine blind spots:
 
-1. **No structural code search** — LSP provides symbol navigation (go-to-definition, find references) and Grep provides text regex, but neither does structural pattern matching like "find all try/catch blocks catching generic Exception." ast-grep fills this.
+1. **No structural code search** — Grep provides text regex and IDE LSP (via MCP) provides symbol navigation, but neither does structural pattern matching like "find all try/catch blocks catching generic Exception." ast-grep fills this.
 2. **No interactive git** — Bash explicitly blocks `-i` flags. Some rebase outcomes achievable via non-interactive commands, but complex multi-commit reorganization is impractical. lazygit fills this.
 3. **No file watching** — Bash runs commands, it doesn't monitor. watchexec fills this.
 4. **No streaming/real-time** — Tools return results, they don't stream. btop/lazydocker fill monitoring.
@@ -207,7 +207,7 @@ Claude Code ships **27 native tools** across 12 categories. Key capabilities tha
 ## Adversarial Validation Notes
 
 This document was stress-tested against the following failure modes:
-- **Factual errors found and corrected:** git-branchless license (was GPL-2.0, actually Apache-2.0/MIT), semgrep "never miss" framing (academic research shows 15.3% baseline detection), Claude Code "text-only regex" (incorrect since LSP added in v2.0.74), lazygit "impossible" overclaim (impractical, not impossible)
+- **Factual errors found and corrected:** git-branchless license (was GPL-2.0, actually Apache-2.0/MIT), semgrep "never miss" framing (academic research shows 15.3% baseline detection), Claude Code "text-only regex" (incorrect since IDE LSP available via MCP), lazygit "impossible" overclaim (impractical, not impossible)
 - **Staleness risks flagged:** git-branchless (last release Oct 2024), comby (last release June 2024)
 - **License nuances added:** trufflehog AGPL copyleft warning, semgrep rules relicensing, opengrep fork reference
 - **Omission categories evaluated and excluded:** linting/formatting, API testing, database CLI, process management, scaffolding — all are "just run via Bash" with no genuine capability gap
