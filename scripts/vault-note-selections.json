@@ -1,0 +1,310 @@
+[
+  {
+    "claim_title": "Sub-Agents as Context Management Evolution",
+    "claim_id": "philosophy-sub-agents-as-context-manageme-63c60f",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-sub-agent-context-isolation-as-feature.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "tensions/autonomy-vs-verification",
+      "positions/systems-over-prompts",
+      "atoms/token-overhead-as-failure-mode"
+    ],
+    "rationale": "Directly challenges the vault's existing framing of context-is-not-memory by adding a new dimension: context *absence* as a feature for objectivity, not just context *presence* as a cost. The speaker's shift from 'sub-agents are wasteful overhead' to 'isolation enables unbiased review' creates tension with the vault's efficiency-first token overhead position. Cross-video validated: appears in both the masterclass video and 'Stop Using Claude Code Like This'.",
+    "content_full": "The speaker's evolving perspective on sub-agents reveals a broader philosophy about context management in agentic coding. Initially, sub-agents were dismissed as wasteful — the overhead of spawning a sub-agent exceeded just doing the work on the main thread, and their use was seen as a symptom of poor context management rather than a genuine architectural pattern.\n\nThe shift in thinking:\n1. **Past view**: Sub-agents = slow overhead + evidence of bad context hygiene\n2. **Current view**: Sub-agents = legitimate parallelization + objective evaluation through context isolation\n3. **Key insight**: A sub-agent's lack of context is a *feature*, not a bug — it enables unbiased code review because the reviewer isn't \"polluted by prior work\"\n\nThis mirrors a broader pattern in software engineering where isolation (containers, microservices, sandboxing) trades efficiency for correctness and independence. As the technology matures, the overhead cost drops below the value threshold."
+  },
+  {
+    "claim_title": "Flat Orchestrator Agent Pattern",
+    "claim_id": "technique-flat-orchestrator-agent-patter-dbfc6c",
+    "vault_type": "atom",
+    "vault_filename": "flat-orchestrator-pattern.md",
+    "links_to": [
+      "atoms/hook-composition-pattern",
+      "atoms/token-overhead-as-failure-mode",
+      "tensions/autonomy-vs-verification",
+      "atoms/trust-as-progressive-delegation"
+    ],
+    "rationale": "Novel architectural pattern with a specific, falsifiable constraint: no sub-agent spawns other sub-agents. This directly operationalizes the token-overhead-as-failure-mode atom — nested sub-agents cause token runaway as an emergent failure. The pattern appeared independently in two videos ('The Most Powerful Claude Code Pattern' and the task system tutorial), qualifying as cross-video validated. Directly applicable to this project's Claude Code architecture.",
+    "content_full": "An architectural pattern for multi-agent systems where the top-level agent acts as a flat orchestrator rather than nesting sub-agents within sub-agents. Claude Code suggested this refinement when the speaker initially had a builder sub-agent that could spawn its own planning sub-agent — creating potential infinite loops and token runaway.\n\nThe flat orchestrator pattern:\n1. **One top-level orchestrator** that knows the run loop\n2. Orchestrator calls specialized sub-agents: **planner**, **evaluator**, **executor**, **builder**\n3. Each sub-agent gets a **fresh context** per work item — equivalent to clearing the conversation\n4. Planning output feeds into builder input, but through the orchestrator (never nested)\n5. No sub-agent spawns other sub-agents — eliminates infinite recursion risk\n\nKey benefit: \"No more context pollution\" — each piece of work gets its own clean context. If tokens seem to \"disappear\" in agent systems, nested sub-agent spawning is often the cause."
+  },
+  {
+    "claim_title": "Sub-Agents for Tasks Not Roles",
+    "claim_id": "philosophy-sub-agents-for-tasks-not-roles-b9d821",
+    "vault_type": "atom",
+    "vault_filename": "task-scoped-agents-over-role-agents.md",
+    "links_to": [
+      "atoms/parallel-adversarial-review-methodology",
+      "atoms/native-first-evaluation",
+      "tensions/abstraction-vs-explicitness",
+      "atoms/context-is-not-memory"
+    ],
+    "rationale": "Falsifiable claim with 800+ hours of empirical backing: persona-based agent roles ('act as front-end developer') produce worse results than task-scoped agents with no persona. This directly extends the parallel-adversarial-review atom (which uses narrow mandates per evaluator) into general sub-agent design. Creates tension with abstraction-vs-explicitness: roles are abstractions, tasks are explicit. Cross-video pattern — task-scoping appears in 3+ videos.",
+    "content_full": "After extensive experimentation, the author found that assigning sub-agents persona-based roles (front-end developer, UI/UX designer, product manager) produces worse results than vanilla Claude Code with no agent-specific instructions.\n\n**What doesn't work**: Assigning roles like \"act as a front-end developer\" — sub-agents aren't yet capable of autonomous brainstorming and role-playing like humans.\n\n**What works**: Define sub-agents for **specific tasks**, not roles:\n1. Code cleanup and optimization after generation\n2. Documentation generation\n3. Web research and data gathering\n4. UI/UX review via Playwright MCP (inspects browser components, gives design feedback)\n\n**Why task-based agents are superior**:\n- Each sub-agent gets its own context window, system prompt, and tool permissions\n- Offloads work that would pollute the main context window\n- Maintains higher quality of overall output by preserving main agent's context budget\n\n\"Sub-agents are great for offloading smaller and more specific tasks.\""
+  },
+  {
+    "claim_title": "Restart with Hindsight Prompting",
+    "claim_id": "technique-restart-with-hindsight-prompti-214bec",
+    "vault_type": "atom",
+    "vault_filename": "warm-restart-over-iterative-repair.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "atoms/token-overhead-as-failure-mode",
+      "positions/what-good-code-actually-is",
+      "atoms/development-over-retrieval"
+    ],
+    "rationale": "A specific, actionable technique that inverts the common debugging pattern. Instead of iteratively fixing a broken solution (accumulating context debt), restart with accumulated knowledge as a warm start. This directly operationalizes context-is-not-memory: the failed exploration IS the valuable context, but only if compressed into a fresh start. Creates a falsifiable claim: warm restarts produce better outcomes than iterative fixes when solution space exploration > 3 attempts.",
+    "content_full": "After a failed or suboptimal build, Boris recommends telling Claude Code: **\"Knowing everything you know now, scrap this and implement the more elegant solution.\"**\n\nThis works because Claude's search over the solution space is initially naive — it tries multiple approaches sequentially, gradually narrowing toward the optimal answer. The first attempt explores broadly:\n1. Claude tries approach A → doesn't work\n2. Tries approach B → partially works\n3. Tries approach C → gets closer\n4. Eventually finds a portion of the right solution\n\nBy asking Claude to restart with accumulated context, you effectively give it a \"warm start\" — it skips the failed exploration paths and jumps closer to the optimal solution. This converts wasted exploration into useful signal, making the second attempt dramatically more efficient than iterating on the flawed first attempt."
+  },
+  {
+    "claim_title": "Builder-Validator Agent Pairing",
+    "claim_id": "technique-builder-validator-agent-pairin-14cf1b",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-builder-validator-as-minimal-agent-team.md",
+    "links_to": [
+      "atoms/hook-composition-pattern",
+      "atoms/parallel-adversarial-review-methodology",
+      "tensions/autonomy-vs-verification",
+      "atoms/validator-as-implicit-specification"
+    ],
+    "rationale": "Extends the vault's existing validator-as-implicit-specification atom and hook-composition-pattern into a concrete two-agent architecture. The two-layer validation (hooks catch build-time errors, validator agent catches higher-level issues) maps directly onto the autonomy-vs-verification tension's boundary: automated gates for implementation, human-equivalent review for correctness. Highest-scored claim in the manifest (0.986).",
+    "content_full": "The simplest and most foundational agent team pattern pairs a Builder agent with a Validator agent. This two-agent combination increases compute to increase trust that work was delivered correctly.\n\n**Builder Agent:**\n- Focuses on a single task and reports its work\n- Has embedded self-validation via hooks (e.g., PostToolUse on Write/Edit runs linters like ruff and mypy on Python files)\n- Provides a \"micro step of validation\" at the build level\n\n**Validator Agent:**\n- Higher-level verification that the task was done properly\n- Checks code completeness, runs compilation, executes validation commands\n- Reports success or failure\n\nThe pattern creates two layers of validation:\n1. Builder's own hooks catch errors during construction\n2. Validator independently confirms the deliverable\n\nOther agent types mentioned: QA tester agents, reviewer agents, deploy agents, blog monitoring agents, documentation agents. But builder + validator is \"probably the simplest team combination you can build\" and the most foundational."
+  },
+  {
+    "claim_title": "Context As Living Asset",
+    "claim_id": "philosophy-context-as-living-asset-4c61b7",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-context-curation-compounds.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "positions/systems-over-prompts",
+      "atoms/token-overhead-as-failure-mode",
+      "positions/what-good-code-actually-is"
+    ],
+    "rationale": "Directly validates systems-over-prompts position Claim B with practitioner evidence: 'the tighter your context, the more your agent actually helps you ship.' Inverts the naive intuition that more context equals better results — aligning with context-is-not-memory but adding the 'curation compounds' insight that is absent from the vault. The compounding claim is falsifiable: if context curation effort doesn't reduce downstream cleanup proportionally, the compound effect is illusory.",
+    "content_full": "The core insight for solo developers working with AI agents: context is a living thing you have to curate, not a passive container you fill up.\n\n\"The more I treat my context like a real asset, the less cleanup I do and the faster I ship actual features.\"\n\nKey principles:\n1. **Less is more** — tighter context produces better agent output\n2. **Workspace not landfill** — the context window should feel organized, not chaotic\n3. **Curation compounds** — good context habits layer naturally onto new capabilities (bigger windows, persistent agents)\n4. **It's not about memory** — the secret isn't AI memory features or AI-as-teammate abstractions; it's disciplined context management\n\n\"The tighter your context, the more your agent actually helps you ship.\" This inverts the intuition that more context equals better results."
+  },
+  {
+    "claim_title": "Deterministic Scripts Over LLM Repetition",
+    "claim_id": "philosophy-deterministic-scripts-over-llm-66b3d2",
+    "vault_type": "atom",
+    "vault_filename": "scriptify-repeatable-llm-tasks.md",
+    "links_to": [
+      "atoms/hook-composition-pattern",
+      "atoms/native-first-evaluation",
+      "atoms/token-overhead-as-failure-mode",
+      "positions/what-good-code-actually-is"
+    ],
+    "rationale": "Extends hook-composition-pattern into a general principle: once a task becomes repeatable, encoding it as a deterministic script is strictly superior to re-prompting an LLM. This is the concrete operational version of native-first-evaluation applied to task execution rather than capability assessment. Directly relevant to this project — scripts/ already contains deterministic extraction tools. Creates a falsifiable threshold: 'if you find yourself asking the LLM the same type of question 3+ times, scriptify it.'",
+    "content_full": "Once a task becomes repeatable, delegating it to an LLM every time wastes tokens and money. Instead, encode the task as a deterministic script that the coding assistant can invoke, producing predictable, fast, and cheap output every single time.\n\nKey principles:\n1. **Identify repeatable patterns**: When you find yourself asking the LLM the same type of question repeatedly, that's a signal to scriptify\n2. **Leverage deterministic code**: Scripts produce identical output for identical input — no variance, no hallucination\n3. **Token economics**: A script call costs zero LLM tokens versus potentially thousands for a natural language request\n4. **Predictability**: Scripts give reliable, reproducible results rather than probabilistic LLM responses\n5. **Speed**: Script execution is near-instant compared to LLM inference latency\n\nAs the host states: \"Once you get a repeatable task, asking an LM to do it every single time is a lot of tokens wasted, a lot of money spent when you can just have a script.\""
+  },
+  {
+    "claim_title": "Protect Main Thread First",
+    "claim_id": "philosophy-protect-main-thread-first-fb2240",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-main-thread-protection-evidence.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "atoms/token-overhead-as-failure-mode",
+      "positions/systems-over-prompts",
+      "positions/compaction-priority-hierarchy"
+    ],
+    "rationale": "Provides specific quantitative evidence for systems-over-prompts Claim A: without sub-agents, planning alone consumed ~60% of main context; with sub-agents, same task used only ~26%. This is the first concrete measurement in the vault supporting the degradation curve asserted in context-is-not-memory. Directly extends compaction-priority-hierarchy with a prevention strategy (offload before compaction is needed).",
+    "content_full": "The central principle of effective Claude Code usage is protecting the main conversation thread from token bloat. The main agent's context window is the most valuable and constrained resource in any agentic coding session.\n\n\"Instead, what you want to do is protect this main thread as much as possible. And the best way to do that is to try and offload a lot of work to sub agents.\"\n\nPractical evidence from the tutorial:\n- Without sub-agents: planning alone consumes ~60% of main context\n- With sub-agents: same planning task uses only ~26% of main context\n- On large codebases with complicated tech stacks, the savings are even more dramatic\n- Sub-agents that consume 40-50K tokens each only add a small summary back to the main thread\n\nThe failure mode this prevents is repeated compaction — \"if you've ever used agentic coding and you keep running into compacting issues, then you know exactly what a problem that can be.\""
+  },
+  {
+    "claim_title": "Three Compaction Trigger Strategies",
+    "claim_id": "pattern-three-compaction-trigger-strat-3d606c",
+    "vault_type": "atom",
+    "vault_filename": "compaction-trigger-taxonomy.md",
+    "links_to": [
+      "positions/compaction-priority-hierarchy",
+      "atoms/context-is-not-memory",
+      "tensions/context-budget-vs-thoroughness",
+      "atoms/token-overhead-as-failure-mode"
+    ],
+    "rationale": "The vault has compaction-priority-hierarchy (what to compact) but lacks a taxonomy of *when* to compact. This fills a structural gap: count-based vs. time-based vs. semantic triggering. The intelligence-vs-difficulty tradeoff (semantic is best but hardest) creates a design decision relevant to any future compaction implementation. Directly extends context-is-not-memory's operational consequences.",
+    "content_full": "Compaction is the process of condensing a session's conversation history into the most important information so the conversation can continue without losing critical details. There are three strategies for triggering compaction:\n\n1. **Count-based**: Compact when the conversation exceeds a certain token size or turn count. Simplest to implement — purely mechanical threshold.\n2. **Time-based**: Triggered when the user stops interacting for a certain period. Compaction runs in the background during idle time.\n3. **Event-based / Semantic**: The agent triggers compaction when it detects that a particular task or topic has concluded. This is the most intelligent version but also the most difficult to implement accurately.\n\nThe tradeoff is clear: count-based is simplest but least intelligent; semantic is most intelligent but hardest to get right."
+  },
+  {
+    "claim_title": "Agent Teams Token Cost Scaling",
+    "claim_id": "warning-agent-teams-token-cost-scaling-08d6ed",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-agent-team-token-cost-linear-scaling.md",
+    "links_to": [
+      "atoms/token-overhead-as-failure-mode",
+      "atoms/native-first-evaluation",
+      "tensions/context-budget-vs-thoroughness",
+      "atoms/satisficing-over-optimizing"
+    ],
+    "rationale": "Provides a concrete cost model absent from the vault: agent team token cost scales linearly with teammate count. This operationalizes native-first-evaluation for multi-agent decisions — before spinning up a team, apply VI scoring to determine if parallelization adds enough value to justify 3-4x token spend. The 'when to avoid' list (routine tasks, single-function refactoring) creates falsifiable thresholds.",
+    "content_full": "Agent teams use significantly more tokens than a single session because each teammate has its own context window. Usage scales linearly with the number of active teammates.\n\n**Cost math**: Running three teammates plus a lead means paying for four Claude Code sessions simultaneously.\n\n**When the cost is justified**:\n- Research tasks where parallel exploration adds real value\n- Code review across multiple areas\n- Building new features with independent components\n- Complex debugging with multiple hypotheses\n\n**When to avoid**:\n- Routine tasks like refactoring a single function\n- Simple changes that don't benefit from parallelism\n\nThe tradeoff is explicit: \"You're trading money for time and quality.\" Don't spin up an agent team to refactor a function — that's overkill. Reserve teams for tasks where parallel exploration genuinely multiplies output."
+  },
+  {
+    "claim_title": "Agentic Engineering Progression",
+    "claim_id": "philosophy-agentic-engineering-progressio-8b6b79",
+    "vault_type": "atom",
+    "vault_filename": "agentic-engineering-maturity-ladder.md",
+    "links_to": [
+      "atoms/trust-as-progressive-delegation",
+      "positions/systems-over-prompts",
+      "atoms/native-first-evaluation",
+      "atoms/composition-over-capability"
+    ],
+    "rationale": "Provides a 5-level maturity model (base agent -> context engineering -> multi-agent -> customization -> orchestration) that maps directly onto trust-as-progressive-delegation but for engineering practice rather than agent permissions. The 'core four' fundamentals (context, model, prompt, tools) validate systems-over-prompts by naming context as foundational. The 'work on the agents, not the application' philosophy is a falsifiable claim about where engineering leverage lives.",
+    "content_full": "There is a clear progression path for agentic engineering maturity, moving from basic usage to full orchestration:\n\n1. **Base agent** — use a single agent as-is\n2. **Context + prompt engineering** — learn to use it better through structured context and prompts\n3. **Add more agents** — introduce multi-agent workflows\n4. **Customize agents** — build specialized agents for specific tasks\n5. **Add an orchestrator** — introduce a primary agent that conducts all others\n\nThe core philosophy: \"Don't work on the application anymore. Work on the agents that build the application for you.\" Engineers should invest in the \"agentic layer\" of their codebase — reusable prompts, specialized agents, and AI developer workflows (ADWs).\n\nThe \"core four\" fundamentals that underpin everything: **context, model, prompt, and tools**. Understanding these primitives lets engineers \"hop from tool to tool to feature to feature\" as the ecosystem evolves, rather than being locked into any single abstraction."
+  },
+  {
+    "claim_title": "Context Window Threshold Rule",
+    "claim_id": "philosophy-context-window-threshold-rule-ff07fd",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-fifty-percent-context-threshold.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "positions/systems-over-prompts",
+      "positions/compaction-priority-hierarchy",
+      "tensions/context-budget-vs-thoroughness"
+    ],
+    "rationale": "The vault's context-is-not-memory atom asserts a degradation curve with '~30% utilization' as a threshold but marks it 'unverified'. This claim provides a practitioner-validated threshold of 50% (with conservative 40% recommendation). Cross-video validated: same threshold appears in 'Claude Code Clearly Explained' and 'Stop Using Claude Code Like This'. Creates a direct evidence point for or against the vault's 30% assertion.",
+    "content_full": "A practical rule for managing Claude Code session context: never exceed 50% of the model's context window before starting a fresh session.\n\nThe reasoning by analogy: like a student in a class where the professor keeps dumping information, at some point the model becomes \"overwhelmed\" and output quality deteriorates. Users who report \"I started off good but it started going bad\" are typically experiencing context saturation.\n\nSpecific thresholds:\n- **Opus model context**: 200,000 tokens total\n- **Recommended maximum**: ~100,000 tokens (50%)\n- **Conservative threshold**: Start new session at 40% usage\n- **Observable signal**: Claude Code and Cursor both show context usage percentage\n\nThis aligns with the broader concept of context rot — beyond a certain fill level, the model's ability to maintain coherent, high-quality output degrades significantly. The solution is simply starting fresh sessions proactively rather than pushing context limits."
+  },
+  {
+    "claim_title": "Context-Clean Agent Handoff",
+    "claim_id": "technique-context-clean-agent-handoff-cd6bdb",
+    "vault_type": "atom",
+    "vault_filename": "artifact-mediated-handoff.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "atoms/hook-composition-pattern",
+      "positions/compaction-priority-hierarchy",
+      "atoms/checkpoint-based-idempotency"
+    ],
+    "rationale": "Provides a concrete anti-pattern (never continue in the same chat after phase completion) with a specific alternative (save artifact, clear context, load artifact in new session). Extends hook-composition-pattern's 'filesystem as message bus' into inter-session handoffs. The explicit warning 'do NOT use compaction' challenges the vault's compaction-priority-hierarchy by suggesting compaction itself is the wrong approach — prevention via fresh sessions is superior.",
+    "content_full": "A workflow technique in the BMAD method where each agent interaction starts with a fresh context window, using only the document artifacts from the previous phase — never the raw chat history.\n\nStep-by-step workflow:\n1. Complete work with current agent (e.g., business analyst → project brief)\n2. Save output to a document file in the IDE\n3. Clear context using `/clear` (preferred) or kill and restart the session\n4. Load the next agent (e.g., product manager)\n5. Provide the saved document as input to kickstart the new session\n\nCritical anti-patterns to avoid:\n- **Do NOT use compaction** — it randomly forgets important things\n- **Do NOT continue in the same chat** — even though Claude Code could handle 3 agents in a row without hitting limits\n- If the IDE shows a compaction warning, you've been in the chat too long — wrap up immediately\n\nThe benefit: \"It's not getting polluted. It only has the output from the brainstorming session. And so it just keeps it lean.\""
+  },
+  {
+    "claim_title": "Technology Stack Pinning Pattern",
+    "claim_id": "technique-technology-stack-pinning-patte-5fc1fd",
+    "vault_type": "atom",
+    "vault_filename": "technology-stack-pinning.md",
+    "links_to": [
+      "positions/what-good-code-actually-is",
+      "atoms/false-completion-signals",
+      "tensions/autonomy-vs-verification",
+      "atoms/trust-as-progressive-delegation"
+    ],
+    "rationale": "Identifies a specific, non-obvious LLM failure mode: agents silently swap technologies when encountering errors rather than fixing the original issue. This is a concrete instance of false-completion-signals (the agent 'completed' the task by substituting the framework). Directly relevant to this project's Claude Code usage. Creates a falsifiable claim: without a pinned tech stack document, LLM agents will substitute technologies at measurably higher rates.",
+    "content_full": "During architecture creation, the BMad Architect generates a table of all specific versions and technologies for the project. This table is later sharded into a separate document that the dev agent always references.\n\nWhy this matters:\n1. **Prevents technology drift**: Without a pinned stack, agents may silently swap frameworks (e.g., replacing Jest with another test framework when encountering errors)\n2. **Ensures consistency**: All agents reference the same libraries, packages, and versions throughout development\n3. **Catches sneaky substitutions**: LLMs sometimes install new packages rather than fixing issues with existing ones, especially when the human isn't watching closely\n4. **Version accuracy**: Tell the architect to use web search to verify latest/best versions of each technology\n\nAs warned: \"Instead of trying to fix it, it might be sneaky and just try to install a whole new test framework without you noticing.\" The pinned tech stack document acts as a constraint that prevents this divergence."
+  },
+  {
+    "claim_title": "Anti-Hype Fundamentals-First Stance",
+    "claim_id": "philosophy-anti-hype-fundamentals-first-s-1783de",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-fundamentals-over-abstractions-warning.md",
+    "links_to": [
+      "atoms/native-first-evaluation",
+      "positions/systems-over-prompts",
+      "tensions/abstraction-vs-explicitness",
+      "positions/what-good-code-actually-is"
+    ],
+    "rationale": "Extends what-good-code-actually-is Claim 2 (explicit inline logic > equivalent abstracted logic) into agentic engineering: engineers who understand primitives (context, model, prompt, tools) outperform those using high-level orchestration platforms they don't understand. Creates tension with the vault's native-first-evaluation: native-first is about capability assessment, while this is about competence assessment. The 'big gap between engineers that turn their brain off and engineers that keep learning' is a falsifiable prediction about the AI engineering landscape.",
+    "content_full": "A strong warning against over-reliance on high-level abstract tools (like multi-agent orchestration platforms) without understanding the underlying pieces. The concern is specifically about engineers who \"turn their brain off\" versus those who \"keep learning and keep adding to their stack of agentics.\"\n\nKey arguments:\n1. High-level tools are fine for engineers who understand what's happening underneath\n2. The danger is for those with \"no idea what's going on underneath the hood\"\n3. There will be \"a big gap between engineers that turn their brain off and engineers that keep learning\"\n4. The entire Claude Code task system feature set is \"just tools and prompts\" — portable concepts, not vendor lock-in\n5. \"Slop engineering and vibe slopping\" results from jumping onto abstract tools without foundational understanding\n\nThe prescription: \"Stay close to the fundamentals. Stay close to what makes up the agent at a foundational level while increasing what we can do with this.\" Learning primitives enables tool-agnostic competence."
+  },
+  {
+    "claim_title": "Lean CLAUDE.md Strategy",
+    "claim_id": "technique-lean-claude-md-7c5f12",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-lean-claude-md-vs-comprehensive.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "atoms/token-overhead-as-failure-mode",
+      "positions/systems-over-prompts",
+      "atoms/skills-activation-problem"
+    ],
+    "rationale": "Creates direct tension with this project's own CLAUDE.md approach — WS-000-03 has a comprehensive CLAUDE.md with vault conventions, capture signals, etc. The claim that CLAUDE.md should be 3-5 lines of universal patterns challenges whether the vault surfacing protocol belongs in CLAUDE.md or in a skill. This is high-value precisely because it forces examination of the project's own design decisions against practitioner evidence.",
+    "content_full": "The first solution to context rot is keeping CLAUDE.md extremely lean -- approximately 3-5 lines containing only globally-applicable patterns that are useful across every session. The approach:\n\n1. **Ruthless minimalism**: Only include patterns that apply to virtually every coding session\n2. **Permanent truths only**: CLAUDE.md should contain universal preferences, not project-specific rules\n3. **Example content**: Forcing Claude to always launch Opus agents as sub-agents (correcting a common behavioral issue)\n4. **Separation of concerns**: Project-specific context should live elsewhere (skills, rules files, project-level configuration)\n\nThis prevents context rot entirely by never allowing the file to grow, but sacrifices the ability to teach Claude domain-specific patterns through CLAUDE.md alone. The tradeoff is acceptable when combined with complementary systems like skills or ACE."
+  },
+  {
+    "claim_title": "Template Metaprompt Pattern",
+    "claim_id": "technique-template-metaprompt-pattern-a0ab98",
+    "vault_type": "anti-library",
+    "vault_filename": "metaprompt-as-reusable-formula.md",
+    "links_to": [
+      "atoms/hook-composition-pattern",
+      "atoms/validator-as-implicit-specification",
+      "positions/systems-over-prompts",
+      "tensions/abstraction-vs-explicitness"
+    ],
+    "rationale": "Unverified assumption: encoding engineering patterns into reusable prompt templates that generate other prompts is superior to direct prompting. This is a strong abstraction claim that the vault's abstraction-vs-explicitness tension should engage with — metaprompts are the ultimate abstraction layer for agent instructions. Not yet tested in this project. If metaprompts produce more consistent output than direct prompting across 10+ tasks, the pattern validates; if variance remains similar, it's unnecessary abstraction.",
+    "content_full": "A template metaprompt is a prompt that generates another prompt in a specific format. It encodes engineering patterns into reusable formulas that can be deployed repeatedly. The pattern has three powerful components:\n\n1. **Self-validating** — the generated prompt includes validation commands and checks\n2. **Team-building** — it contains specific instructions on how to build an agent team\n3. **Orchestration-aware** — if an orchestration prompt is provided, it guides how the planner builds the team\n\nWorkflow:\n- Pass in two inputs: what you want to build + an orchestration prompt\n- The metaprompt generates a detailed plan with step-by-step tasks and team composition\n- The orchestration prompt (high-level) gets \"boiled down into a low-level prompt\" by the metaprompt\n- The result is a reusable formula: \"It only takes one time to build out a great prompt\"\n\nDescribed as \"advanced agentic prompt engineering\" that \"becomes second nature\" once practiced."
+  },
+  {
+    "claim_title": "Vibe Coding Defense Argument",
+    "claim_id": "philosophy-vibe-coding-defense-argument-617d34",
+    "vault_type": "anti-library",
+    "vault_filename": "validation-before-optimization.md",
+    "links_to": [
+      "positions/what-good-code-actually-is",
+      "tensions/autonomy-vs-verification",
+      "atoms/satisficing-over-optimizing",
+      "positions/scale-adaptive-ceremony"
+    ],
+    "rationale": "Directly challenges what-good-code-actually-is by reframing code quality as a premature optimization when product-market fit is unproven. 'Scaling is a solvable problem' inverts the vault's engineering-first assumptions. This is the strongest counter-argument to the vault's quality-focused positions and should be tracked as an unverified assumption: if vibe-coded MVPs consistently fail at scale transitions (not just sometimes), the defense argument is wrong. If they succeed, the vault's quality position needs scope constraints.",
+    "content_full": "Rose directly addresses the common criticism that vibe-coded software is buggy, non-performant, and won't scale, reframing these as \"great problems to have.\"\n\nThe argument structure:\n1. **The hard problem is product-market fit**: \"The hardest thing to do is to find something that somebody actually wants to use\" — not engineering quality\n2. **Scaling is a solvable problem**: \"If it crashes under the weight of 50,000 people... I guarantee you I can find engineers to work on that and scale it\"\n3. **More shots on goal**: Vibe coding enables rapid prototyping to test ideas before investing in engineering rigor\n4. **Validation before optimization**: \"I'd rather see actual humans using it\" than prematurely polish code quality\n5. **Compound engineering as bridge**: Even without hiring, AI tools like compound engineering are \"finding a bunch of stuff and making things more performant on the fly\"\n\nThe core principle: validate demand first, engineer quality second. Code quality concerns should not prevent experimentation."
+  },
+  {
+    "claim_title": "Resist Mid-Build Deviation",
+    "claim_id": "philosophy-resist-mid-build-deviation-e127a4",
+    "vault_type": "anti-library",
+    "vault_filename": "completion-over-mid-build-deviation.md",
+    "links_to": [
+      "atoms/false-completion-signals",
+      "atoms/task-completion-is-not-goal-achievement",
+      "positions/vertical-slices-over-horizontal-decomposition",
+      "encounters/2026-02-18-over-decomposition-in-roadmaps"
+    ],
+    "rationale": "Untested assumption that completing an imperfect milestone as planned is more valuable than deviating mid-build. Creates tension with the vault's over-decomposition encounter — over-decomposition is premature splitting, but mid-build deviation is premature merging of new scope. Both are planning discipline failures from opposite directions. Falsifiable: if mid-build deviations produce better outcomes (measured by final milestone quality) than completing the original plan, this assumption is wrong.",
+    "content_full": "A key discipline in GSD milestone-driven development is resisting the urge to deviate from the plan during execution. Even when the current milestone's output is imperfect, completing it as planned is more valuable than pivoting mid-stream.\n\nCore argument:\n1. **Completion over perfection**: \"Even if the final product of milestone one isn't perfect, it will still get you to a point where in theory you've got something built\"\n2. **Cumulative quality**: \"It often takes a few milestones to get it to a point of being like, 'Ah, okay. This is now something I want to share with people'\"\n3. **Mid-build temptation**: \"I know it's super tempting mid-build to start making changes and to be like, 'Oh, I want to deviate'\"\n4. **Structured iteration**: Quality improvements belong in the next milestone's discuss phase, not as ad-hoc changes during execution\n\nThis mirrors the broader GSD philosophy of structured phases over reactive coding."
+  },
+  {
+    "claim_title": "Hindsight 2020 Elicitation Method",
+    "claim_id": "technique-hindsight-2020-elicitation-met-e5a943",
+    "vault_type": "anti-library",
+    "vault_filename": "pre-mortem-requirements-elicitation.md",
+    "links_to": [
+      "atoms/parallel-adversarial-review-methodology",
+      "atoms/false-completion-signals",
+      "positions/scale-adaptive-ceremony",
+      "tensions/completeness-vs-orthogonality"
+    ],
+    "rationale": "A pre-mortem technique for requirements that the vault has no analog for. The LLM simulates a future retrospective ('if only we had...') to surface scope risks before building. This extends parallel-adversarial-review from code review to requirements review. Untested in this project but potentially high-value for vault planning sessions. Falsifiable: if pre-mortem elicitation doesn't cut MVP scope or prevent rework compared to standard requirements gathering, the technique adds ceremony without value.",
+    "content_full": "The \"Hindsight is 2020\" (also called \"If Only\" brainstorm) is an advanced elicitation technique in the BMAD method for stress-testing requirements before building.\n\n**How it works:**\n1. The LLM reviews all functional and non-functional requirements\n2. It imagines the application has been built and launched (6 months to 2 years out)\n3. It simulates a reflective conversation (e.g., a board meeting) generating \"if only we had...\" statements\n4. These statements surface scope risks, unrealistic requirements, and complexity traps\n\n**Example outputs from the technique:**\n- \"If only we had included basic team sharing features from the start\"\n- \"Non-functional requirement 1 might be unrealistic for bootstrap budget and single developer\"\n- \"What if we started with single device and added sync in phase 2?\"\n\n**Primary value:** Helps cut scope from the MVP by identifying features that add disproportionate complexity. This is described as \"the real agile way of product development\" — ship lean, test in market, then layer features."
+  },
+  {
+    "claim_title": "File Over App Principle",
+    "claim_id": "philosophy-file-over-app-principle-729d98",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-file-over-app-validates-vault-design.md",
+    "links_to": [
+      "atoms/context-is-not-memory",
+      "atoms/development-over-retrieval",
+      "anti-library/zero-dependency-as-deployment-guarantee",
+      "questions/my-own-cognition"
+    ],
+    "rationale": "The vault itself is built on this exact principle — plain markdown files that outlast any particular tool. This claim validates the vault's design philosophy from an independent source (Obsidian CEO). Links to my-own-cognition because 'compound knowledge' from plain text is exactly what the vault tests: does persistent, file-based knowledge actually compound into development? Cross-video validated: appears in 3 Obsidian-focused videos.",
+    "content_full": "\"File over App\" is the philosophy articulated by Obsidian CEO Kapano (Steph Ango) that prioritizes the longevity of your data over any particular application. Apps are transient — Evernote declined over a decade, Roam fell, users jump tool to tool \"losing pieces of themselves along the way\" — but files built on plain text are designed to outlast the app itself.\n\nCore tenets:\n1. **Apps are mortal**: Even Kapano acknowledges Obsidian won't last forever — could be a decade or 2,000 years\n2. **Text is immortal**: We can still read clay tablets from ancient civilizations; try that with a '90s floppy disc\n3. **Backwards compatibility test**: \"If you want your writing to still be readable on a computer from the 2060s, make sure your notes can be read on a computer from the 1960s\"\n4. **Compound knowledge**: Plain text users \"keep writing, keep linking notes, keep compounding insights\" while others restart from zero\n\nThe principle \"always bet on text\" is cited as foundational."
+  },
+  {
+    "claim_title": "Manual Note-Writing Imperative",
+    "claim_id": "philosophy-manual-note-writing-imperative-912392",
+    "vault_type": "encounter",
+    "vault_filename": "2026-02-18-manual-vs-automated-note-writing-tension.md",
+    "links_to": [
+      "questions/my-own-cognition",
+      "atoms/development-over-retrieval",
+      "atoms/context-is-not-memory",
+      "atoms/structural-navigation-over-semantic-search"
+    ],
+    "rationale": "Directly challenges the vault's own capture protocol — the vault uses Claude to auto-generate notes, while this speaker argues notes must be self-written to mirror your own mind. 'An AI cannot replicate which attractor states your brain naturally moves between' is a falsifiable claim about the vault's approach. This creates productive tension with development-over-retrieval: if the act of writing IS the development, then automating capture undermines the vault's core principle.",
+    "content_full": "The speaker argues strongly that notes must be written by the person themselves, not automated by AI. Automating note-writing \"loses the point\" because the purpose of a personal knowledge system is to mirror your own mind.\n\nKey distinction:\n1. **Self-written notes** → become an extension of your mind, feel intuitive, reflect your mental associations\n2. **AI-generated notes** → become an \"external mind\" that is connected but not intuitive to navigate\n\nThe value comes from the act of linking: \"whatever pops into my head when I'm writing a note I just link to there.\" This immediate capture of mental dynamics — the associative leaps between ideas — is what makes the system personal. An AI cannot replicate which attractor states your brain naturally moves between.\n\nOver time, you develop spatial familiarity: \"I know where everything is roughly\" — recognizing clusters by color, position, and neighborhood in the graph view."
+  }
+]

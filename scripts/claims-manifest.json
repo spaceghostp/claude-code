@@ -1,0 +1,1576 @@
+[
+  {
+    "id": "technique-builder-validator-agent-pairin-14cf1b",
+    "title": "Builder-Validator Agent Pairing",
+    "type": "technique",
+    "confidence": 0.972,
+    "score": 0.986,
+    "keywords": [
+      "builder-validator",
+      "agent-teams",
+      "self-validation",
+      "hooks",
+      "quality-assurance",
+      "multi-agent"
+    ],
+    "video_id": "4_2j5wgt_ds",
+    "video_title": "Claude Code Task System: ANTI-HYPE Agentic Coding (Advanced)",
+    "has_visual_support": true,
+    "content_preview": "The simplest and most foundational agent team pattern pairs a Builder agent with a Validator agent. This two-agent combination increases compute to increase trust that work was delivered correctly.\n\n*",
+    "content_full": "The simplest and most foundational agent team pattern pairs a Builder agent with a Validator agent. This two-agent combination increases compute to increase trust that work was delivered correctly.\n\n**Builder Agent:**\n- Focuses on a single task and reports its work\n- Has embedded self-validation via hooks (e.g., PostToolUse on Write/Edit runs linters like ruff and mypy on Python files)\n- Provides a \"micro step of validation\" at the build level\n\n**Validator Agent:**\n- Higher-level verification that the task was done properly\n- Checks code completeness, runs compilation, executes validation commands\n- Reports success or failure\n\nThe pattern creates two layers of validation:\n1. Builder's own hooks catch errors during construction\n2. Validator independently confirms the deliverable\n\nOther agent types mentioned: QA tester agents, reviewer agents, deploy agents, blog monitoring agents, documentation agents. But builder + validator is \"probably the simplest team combination you can build\" and the most foundational."
+  },
+  {
+    "id": "technique-git-worktree-parallel-developm-f2efc2",
+    "title": "Git Worktree Parallel Development",
+    "type": "technique",
+    "confidence": 0.968,
+    "score": 0.984,
+    "keywords": [
+      "git-worktree",
+      "parallel-development",
+      "claude-code",
+      "branching",
+      "ghosttty",
+      "workflow-speedup"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": true,
+    "content_preview": "Git worktrees enable parallelized AI-assisted development by running multiple Claude Code instances on separate branches simultaneously. Each branch lives in its own folder, allowing independent featu",
+    "content_full": "Git worktrees enable parallelized AI-assisted development by running multiple Claude Code instances on separate branches simultaneously. Each branch lives in its own folder, allowing independent feature development that merges back to main when complete.\n\nWorkflow steps:\n1. **Create branch folders**: Duplicate your main project folder into separate directories (e.g., `project-about`, `project-contact`, `project-services`)\n2. **Launch parallel agents**: Open a Claude Code instance in each folder, each working on a different feature\n3. **Develop independently**: Each agent builds its feature without interfering with others\n4. **Merge via AI**: Ask Claude Code to merge all branches back to main, resolving any conflicts\n\nThis approach yields 3-5x speedup depending on the number of parallel panes. The merge process adds some overhead but the parallelization gains outweigh it. Works for websites, full-stack apps, automated workflows, and agentic workflows. The terminal tool GhostTTY facilitates running 4-15 simultaneous instances with quick switching between them."
+  },
+  {
+    "id": "technique-sub-agent-code-reviewer-patter-1c8353",
+    "title": "Sub-Agent Code Reviewer Pattern",
+    "type": "technique",
+    "confidence": 0.968,
+    "score": 0.984,
+    "keywords": [
+      "sub-agents",
+      "code-review",
+      "task-tool",
+      "context-isolation",
+      "quality-assurance",
+      "claude-code"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": true,
+    "content_preview": "A sub-agent can be created in Claude Code to act as an independent code reviewer that evaluates code after the main agent writes it. The sub-agent's key advantage is having no prior context \u2014 it evalu",
+    "content_full": "A sub-agent can be created in Claude Code to act as an independent code reviewer that evaluates code after the main agent writes it. The sub-agent's key advantage is having no prior context \u2014 it evaluates code objectively, unpolluted by the iterative process that produced it.\n\nSetup process:\n1. **Instruct Claude** to create a sub-agent for code review (Claude doesn't natively know how yet \u2014 you must tell it to look up sub-agent functionality)\n2. **Claude creates a markdown file** (e.g., `code-reviewer.md`) serving as the sub-agent's CLAUDE.md with review instructions and allowed tools (Read, Grep, Glob)\n3. **Invoke the sub-agent** by saying \"use the code-reviewer sub-agent to review [file]\"\n4. **The main agent spawns a Task** with its own isolated context and review prompt\n5. **Results flow back** to the main agent for continuous quality improvement\n\nThe speaker initially dismissed sub-agents as a \"symptom of shitty context management\" but reconsidered as the technology improved, now finding them solid for parallelizing tasks."
+  },
+  {
+    "id": "technique-plan-mode-before-implementatio-1d54c3",
+    "title": "Plan Mode Before Implementation",
+    "type": "technique",
+    "confidence": 0.96,
+    "score": 0.98,
+    "keywords": [
+      "plan-mode",
+      "claude-code",
+      "planning",
+      "scope-clarification",
+      "boris-cherny",
+      "workflow-efficiency"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": true,
+    "content_preview": "Boris Cherny recommends spending time in Claude Code's plan mode before writing any code, arguing that a minute of effective planning saves hours of building and many dollars.\n\nThe planning workflow:\n",
+    "content_full": "Boris Cherny recommends spending time in Claude Code's plan mode before writing any code, arguing that a minute of effective planning saves hours of building and many dollars.\n\nThe planning workflow:\n1. **Activate plan mode**: Switch Claude Code to plan mode at the bottom of the interface\n2. **Describe your goal naturally**: Use voice transcription or text to explain what you want built, including known pitfalls\n3. **Review the generated plan**: Claude researches libraries, architectures, and approaches, then presents a structured plan with implementation steps and tunable parameters\n4. **Iterate on the plan**: Edit the plan rather than editing the built application \u2014 \"research occurs 10-100x faster than actual building\"\n5. **Execute only after plan is perfected**: Only start implementation once you're satisfied\n\nBoris compares this to freelance client work: clarifying scope upfront prevents costly revisions later. The analogy is spending energy on a statement of work rather than saying \"I'll figure it out\" and facing unhappy revision cycles."
+  },
+  {
+    "id": "technique-plan-with-team-prompt-pattern-13b957",
+    "title": "Plan-with-Team Prompt Pattern",
+    "type": "technique",
+    "confidence": 0.96,
+    "score": 0.98,
+    "keywords": [
+      "metaprompt",
+      "template-prompting",
+      "self-validation",
+      "agent-teams",
+      "plan-mode",
+      "hooks"
+    ],
+    "video_id": "4_2j5wgt_ds",
+    "video_title": "Claude Code Task System: ANTI-HYPE Agentic Coding (Advanced)",
+    "has_visual_support": true,
+    "content_preview": "The 'Plan with Team' pattern is a metaprompt technique that combines three components to reliably create and execute agent teams:\n\n1. **Self-validation**: Hooks in the frontmatter run specialized scri",
+    "content_full": "The 'Plan with Team' pattern is a metaprompt technique that combines three components to reliably create and execute agent teams:\n\n1. **Self-validation**: Hooks in the frontmatter run specialized scripts (e.g., `validate_new_file`, `validate_file_contains`) on the stop hook to verify the agent created the correct file type in the correct directory with required content sections. If validation fails, the script feeds corrective instructions back to the planner agent.\n\n2. **Agent orchestration**: The orchestration prompt defines team members (builder and validator agents) with properties: name, role, agent type, and resume behavior. The primary agent creates a plan that assigns specific team members to specific tasks with dependency ordering.\n\n3. **Templating**: A template metaprompt that generates new prompts in a \"highly vetted, consistent format.\" The plan format contains embedded prompts with placeholder content that gets filled in. This teaches agents to \"build as we would\" \u2014 producing predictable, structured output rather than freeform generation."
+  },
+  {
+    "id": "technique-skills-as-shareable-sops-a36b47",
+    "title": "Skills as Shareable SOPs",
+    "type": "technique",
+    "confidence": 0.952,
+    "score": 0.976,
+    "keywords": [
+      "skills",
+      "claude-code",
+      "github",
+      "team-sharing",
+      "standard-operating-procedure",
+      "reusability"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": true,
+    "content_preview": "Claude Code skills are standardized operating procedures that ensure consistent execution of repeated tasks. Boris Cherny recommends storing skills in a shared GitHub repository so team members can pu",
+    "content_full": "Claude Code skills are standardized operating procedures that ensure consistent execution of repeated tasks. Boris Cherny recommends storing skills in a shared GitHub repository so team members can pull them into their own projects on demand.\n\nWorkflow:\n1. **Create skills locally**: Build skills in a dedicated workspace (e.g., `claude-skills-workspace`)\n2. **Push to GitHub**: Tell Claude Code to create a repository and push the skills there\n3. **Pull into other projects**: In any Claude Code instance, tell it to grab a specific skill from the GitHub repo\n4. **Team sharing**: Anyone on your team can pull skills as needed into their own repos\n\nSkills are similar to directives, orchestrations, and executions in other frameworks. The key insight is treating them as version-controlled, distributable assets rather than local configuration \u2014 enabling organizational knowledge sharing."
+  },
+  {
+    "id": "technique-template-metaprompt-pattern-a0ab98",
+    "title": "Template Metaprompt Pattern",
+    "type": "technique",
+    "confidence": 0.952,
+    "score": 0.976,
+    "keywords": [
+      "metaprompt",
+      "prompt-engineering",
+      "reusable-prompts",
+      "orchestration",
+      "template",
+      "agentic-coding"
+    ],
+    "video_id": "4_2j5wgt_ds",
+    "video_title": "Claude Code Task System: ANTI-HYPE Agentic Coding (Advanced)",
+    "has_visual_support": true,
+    "content_preview": "A template metaprompt is a prompt that generates another prompt in a specific format. It encodes engineering patterns into reusable formulas that can be deployed repeatedly. The pattern has three powe",
+    "content_full": "A template metaprompt is a prompt that generates another prompt in a specific format. It encodes engineering patterns into reusable formulas that can be deployed repeatedly. The pattern has three powerful components:\n\n1. **Self-validating** \u2014 the generated prompt includes validation commands and checks\n2. **Team-building** \u2014 it contains specific instructions on how to build an agent team\n3. **Orchestration-aware** \u2014 if an orchestration prompt is provided, it guides how the planner builds the team\n\nWorkflow:\n- Pass in two inputs: what you want to build + an orchestration prompt\n- The metaprompt generates a detailed plan with step-by-step tasks and team composition\n- The orchestration prompt (high-level) gets \"boiled down into a low-level prompt\" by the metaprompt\n- The result is a reusable formula: \"It only takes one time to build out a great prompt\"\n\nDescribed as \"advanced agentic prompt engineering\" that \"becomes second nature\" once practiced."
+  },
+  {
+    "id": "technique-restart-with-hindsight-prompti-214bec",
+    "title": "Restart with Hindsight Prompting",
+    "type": "technique",
+    "confidence": 0.94,
+    "score": 0.97,
+    "keywords": [
+      "prompting-technique",
+      "restart-with-context",
+      "solution-search",
+      "claude-code",
+      "boris-cherny",
+      "iteration"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": true,
+    "content_preview": "After a failed or suboptimal build, Boris recommends telling Claude Code: **\"Knowing everything you know now, scrap this and implement the more elegant solution.\"**\n\nThis works because Claude's search",
+    "content_full": "After a failed or suboptimal build, Boris recommends telling Claude Code: **\"Knowing everything you know now, scrap this and implement the more elegant solution.\"**\n\nThis works because Claude's search over the solution space is initially naive \u2014 it tries multiple approaches sequentially, gradually narrowing toward the optimal answer. The first attempt explores broadly:\n1. Claude tries approach A \u2192 doesn't work\n2. Tries approach B \u2192 partially works\n3. Tries approach C \u2192 gets closer\n4. Eventually finds a portion of the right solution\n\nBy asking Claude to restart with accumulated context, you effectively give it a \"warm start\" \u2014 it skips the failed exploration paths and jumps closer to the optimal solution. This converts wasted exploration into useful signal, making the second attempt dramatically more efficient than iterating on the flawed first attempt."
+  },
+  {
+    "id": "philosophy-sub-agents-as-context-manageme-63c60f",
+    "title": "Sub-Agents as Context Management Evolution",
+    "type": "philosophy",
+    "confidence": 0.928,
+    "score": 0.964,
+    "keywords": [
+      "sub-agents",
+      "context-management",
+      "isolation-principle",
+      "code-quality",
+      "architectural-evolution"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": true,
+    "content_preview": "The speaker's evolving perspective on sub-agents reveals a broader philosophy about context management in agentic coding. Initially, sub-agents were dismissed as wasteful \u2014 the overhead of spawning a ",
+    "content_full": "The speaker's evolving perspective on sub-agents reveals a broader philosophy about context management in agentic coding. Initially, sub-agents were dismissed as wasteful \u2014 the overhead of spawning a sub-agent exceeded just doing the work on the main thread, and their use was seen as a symptom of poor context management rather than a genuine architectural pattern.\n\nThe shift in thinking:\n1. **Past view**: Sub-agents = slow overhead + evidence of bad context hygiene\n2. **Current view**: Sub-agents = legitimate parallelization + objective evaluation through context isolation\n3. **Key insight**: A sub-agent's lack of context is a *feature*, not a bug \u2014 it enables unbiased code review because the reviewer isn't \"polluted by prior work\"\n\nThis mirrors a broader pattern in software engineering where isolation (containers, microservices, sandboxing) trades efficiency for correctness and independence. As the technology matures, the overhead cost drops below the value threshold."
+  },
+  {
+    "id": "technique-research-then-act-workflow-dfe7b7",
+    "title": "Research-Then-Act Workflow",
+    "type": "technique",
+    "confidence": 0.952,
+    "score": 0.941,
+    "keywords": [
+      "workflow-pattern",
+      "context-priming",
+      "prompt-chaining",
+      "research-automation",
+      "vibe-coding"
+    ],
+    "video_id": "71ES9jzqa0Q",
+    "video_title": "The Claude Code Skill My Smartest Friends Use",
+    "has_visual_support": true,
+    "content_preview": "A two-phase workflow pattern where you first use real-time research to prime the AI's context, then immediately task it with producing deliverables \u2014 without needing to read the research yourself. Mat",
+    "content_full": "A two-phase workflow pattern where you first use real-time research to prime the AI's context, then immediately task it with producing deliverables \u2014 without needing to read the research yourself. Matt Van Horn describes this as \"learning kung fu\" \u2014 absorbing expert knowledge through the tool rather than through personal reading.\n\nWorkflow steps:\n1. **Research phase**: Run `/last30days` with a topic query (e.g., \"highest performing cold email frameworks\")\n2. **Skip reading**: The research output enriches the AI's context window \u2014 you don't need to read it\n3. **Action phase**: Immediately follow up with a task prompt (e.g., \"write me three cold email variants\")\n4. **Result**: The AI produces output informed by current best practices, frameworks, and community wisdom\n\nExample: Researching cold email frameworks surfaced the 3 Ps framework (Praise, Picture, Push), AIDA, and intent-based data trigger framework \u2014 then produced three email variants applying these patterns automatically."
+  },
+  {
+    "id": "technique-master-context-files-6efb44",
+    "title": "Master Context Files",
+    "type": "technique",
+    "confidence": 0.874,
+    "score": 0.937,
+    "keywords": [
+      "context-files",
+      "claude-code",
+      "obsidian",
+      "workflow",
+      "project-management"
+    ],
+    "video_id": "VLbH6Vx2Ww8",
+    "video_title": "Program Your Computer with Notes, Not Code | Obsidian + AI Agents",
+    "has_visual_support": true,
+    "content_preview": "Maintain specific master context files in Obsidian that are repeatedly passed into Claude Code instead of explaining things repeatedly. Create one context file for every major project or area of life ",
+    "content_full": "Maintain specific master context files in Obsidian that are repeatedly passed into Claude Code instead of explaining things repeatedly. Create one context file for every major project or area of life to preserve and reuse context across sessions."
+  },
+  {
+    "id": "technique-gsd-phased-development-cycle-71164f",
+    "title": "GSD Phased Development Cycle",
+    "type": "technique",
+    "confidence": 0.872,
+    "score": 0.936,
+    "keywords": [
+      "gsd-framework",
+      "phased-development",
+      "saas-building",
+      "iterative-workflow",
+      "claude-code",
+      "verification"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "The GSD (Get Shit Done) framework structures SaaS development into isolated phases, each following a four-step cycle:\n\n1. **Discuss**: Ask clarifying questions about the specific phase scope and requi",
+    "content_full": "The GSD (Get Shit Done) framework structures SaaS development into isolated phases, each following a four-step cycle:\n\n1. **Discuss**: Ask clarifying questions about the specific phase scope and requirements\n2. **Plan**: Generate detailed technical plans with per-wave breakdowns (e.g., 01-04 plans within Phase 1)\n3. **Execute**: Build out the code using `GSD execute phase [N]`, creating files and implementing features\n4. **Verify**: Run `GSD verify work [N]` to generate UAT tests and validate everything works\n\nEach phase is self-contained \u2014 Phase 1 covers foundation + authentication, Phase 2 covers data management + brand profiles. The framework asks targeted questions for each phase to deepen context before execution, rather than relying on a single upfront prompt. This takes longer upfront but \"will save so much rework when we come back to it.\""
+  },
+  {
+    "id": "philosophy-vibe-coding-versus-structured--7e8eff",
+    "title": "Vibe Coding Versus Structured Building",
+    "type": "philosophy",
+    "confidence": 0.868,
+    "score": 0.934,
+    "keywords": [
+      "vibe-coding",
+      "structured-development",
+      "planning",
+      "claude-code",
+      "context-quality",
+      "anti-pattern"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "Using Claude Code without a structured framework is effectively vibe coding \u2014 typing requests into a terminal and hoping the AI builds correctly. This approach fails for production SaaS because:\n\n1. *",
+    "content_full": "Using Claude Code without a structured framework is effectively vibe coding \u2014 typing requests into a terminal and hoping the AI builds correctly. This approach fails for production SaaS because:\n\n1. **Lots of rework**: Unplanned builds require constant correction\n2. **Wasted tokens and money**: Each debugging cycle consumes expensive API tokens\n3. **Hours debugging instead of selling**: Time spent fixing replaces time spent on business\n4. **Missing requirements**: Without structured planning, critical features (email verification, user data separation, payment webhooks) get overlooked\n\nThe solution is to frontload planning \u2014 giving the AI a comprehensive PRD (Product Requirements Document) broken into phases rather than a short brief. As stated in the video: \"Claude Code is incredibly powerful if you give it the context it needs. Most people don't.\" The analogy used: a bad prompt produces a bad response, and vibe coding an entire SaaS is equivalent to one long bad prompt."
+  },
+  {
+    "id": "technique-gsd-verification-with-uat-3a321a",
+    "title": "GSD Verification With UAT",
+    "type": "technique",
+    "confidence": 0.868,
+    "score": 0.934,
+    "keywords": [
+      "gsd-framework",
+      "user-acceptance-testing",
+      "verification",
+      "automated-testing",
+      "saas-building",
+      "quality-assurance"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "The GSD verification stage (`GSD verify work [phase]`) generates and executes a structured User Acceptance Testing file with automated and manual checkpoints:\n\n**Automated tests** (run by Claude Code)",
+    "content_full": "The GSD verification stage (`GSD verify work [phase]`) generates and executes a structured User Acceptance Testing file with automated and manual checkpoints:\n\n**Automated tests** (run by Claude Code):\n1. Dev server starts and returns HTTP 200\n2. Route navigation and redirect behavior\n3. Authentication flow validation (signup, login, password reset)\n\n**Manual checkpoint tests** (prompted to user):\n1. Visual verification \u2014 \"Open localhost in your browser, you should see a landing page with hero section\"\n2. Responsive design \u2014 \"Resize your browser, layout should adapt\"\n3. Navigation elements \u2014 verify logo, nav links, CTAs, footer\n4. Form validation \u2014 submit empty forms to check error messages\n\nResults are tracked in a UAT file with pass/fail status updated in real-time. When tests fail (e.g., placeholder page showing instead of landing page), GSD diagnoses the issue and fixes it before continuing. The framework ran 14 tests for Phase 1 alone, covering dev server, landing page, responsiveness, authentication flows, and protected route redirects."
+  },
+  {
+    "id": "philosophy-vibe-coding-vs-spec-driven-dev-f1fe65",
+    "title": "Vibe Coding vs Spec-Driven Development",
+    "type": "philosophy",
+    "confidence": 0.86,
+    "score": 0.93,
+    "keywords": [
+      "vibe-coding",
+      "spec-driven-development",
+      "context-engineering",
+      "planning-over-debugging",
+      "ai-code-quality"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "The video draws a sharp contrast between \"vibe coding\" and the spec-driven approach that GSD enables. Vibe coding \u2014 where you describe what you want and AI generates code directly \u2014 produces \"complete",
+    "content_full": "The video draws a sharp contrast between \"vibe coding\" and the spec-driven approach that GSD enables. Vibe coding \u2014 where you describe what you want and AI generates code directly \u2014 produces \"completely inconsistent rubbish outputs that you have to debug for longer than it would have taken you to build it in the first place.\"\n\nGSD fixes this by inserting a context engineering layer between the developer's intent and code execution:\n1. **Describe idea** \u2192 system extracts everything it needs via structured questions\n2. **Plan generation** \u2192 research agents investigate, create verified plans\n3. **Phased execution** \u2192 code written against verified specs, not ad-hoc descriptions\n4. **Automated verification** \u2192 output checked against original goals\n\nThe key insight is that \"what's going to make our project a success is actually brilliant planning\" \u2014 the framework shifts effort from debugging bad output to front-loading good specifications."
+  },
+  {
+    "id": "philosophy-modern-monorepos-are-finally-u-f8b27a",
+    "title": "Modern Monorepos Are Finally Usable",
+    "type": "philosophy",
+    "confidence": 0.928,
+    "score": 0.929,
+    "keywords": [
+      "monorepo",
+      "developer-experience",
+      "tooling-maturity",
+      "turborepo",
+      "bun-workspaces",
+      "solo-developer"
+    ],
+    "video_id": "ezb2neX9pIU",
+    "video_title": "I Hated Monorepos, Now I Can't Build Without Them",
+    "has_visual_support": true,
+    "content_preview": "Modern monorepo tooling (particularly Turborepo and Bun workspaces) has reached a maturity level where monorepos feel first-class rather than a burden. The key insight is that monorepos are not just f",
+    "content_full": "Modern monorepo tooling (particularly Turborepo and Bun workspaces) has reached a maturity level where monorepos feel first-class rather than a burden. The key insight is that monorepos are not just for large teams \u2014 they benefit solo developers and small projects equally.\n\nBenefits realized in practice:\n1. **Diverse project types coexist**: CLI tools published to npm, web apps, background workers, Raycast extensions, and Cloudflare workers all live in one repo\n2. **Low friction for new additions**: Spinning up a new sub-project (e.g., a one-off worker) is trivial rather than requiring a whole new repo setup\n3. **Shared infrastructure**: Database packages, type definitions, and utilities are shared without versioning overhead\n4. **Separate deployments**: Each app deploys independently to its own platform (Railway, Vercel, etc.) from the same repo\n\nThe speaker's core argument: the tooling has \"finally caught up\" and monorepos now feel natural rather than forced, removing friction that previously made developers engineer around the problem."
+  },
+  {
+    "id": "technique-gsd-phase-skipping-and-combini-4a3e29",
+    "title": "GSD Phase Skipping and Combining",
+    "type": "technique",
+    "confidence": 0.848,
+    "score": 0.924,
+    "keywords": [
+      "gsd-framework",
+      "phase-management",
+      "workflow-optimization",
+      "claude-code",
+      "planning-execution"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "The GSD (Get Stuff Done) framework supports skipping and combining phases to accelerate development. Specific optimizations include:\n\n1. **Skip research in planning**: When you already understand the ",
+    "content_full": "The GSD (Get Stuff Done) framework supports skipping and combining phases to accelerate development. Specific optimizations include:\n\n1. **Skip research in planning**: When you already understand the domain (e.g., from a pre-built n8n workflow), you can skip the research sub-phase to save time\n2. **Combine plan + execute**: You can instruct GSD to plan and execute a phase without reviewing the plan, removing the human approval step\n3. **GSD Quick command**: For ad hoc tasks, `GSD quick <task>` executes a specific task while still following the GSD framework structure and updating all tracking files\n4. **Background phase execution**: Run the next phase in the background while manually verifying the previous phase\n\nThe tradeoff is explicit: \"What you save in time now doesn't necessarily save you time in the future\" \u2014 skipping review means more verification work later, especially for integration-heavy phases like webhook connections."
+  },
+  {
+    "id": "technique-gsd-human-verification-process-e25517",
+    "title": "GSD Human Verification Process",
+    "type": "technique",
+    "confidence": 0.848,
+    "score": 0.924,
+    "keywords": [
+      "verification",
+      "uat-testing",
+      "gsd-framework",
+      "human-in-the-loop",
+      "error-handling",
+      "manual-testing"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "After GSD's automated verification, a human verification phase walks through testable user-observable outcomes (UAT). The process demonstrated for Phase 3 (AI generation pipeline):\n\n1. **Extract UAT t",
+    "content_full": "After GSD's automated verification, a human verification phase walks through testable user-observable outcomes (UAT). The process demonstrated for Phase 3 (AI generation pipeline):\n\n1. **Extract UAT tests**: GSD reads all summary files and generates testable criteria (e.g., \"Navigate to /dashboard/generate \u2014 page loads with two-step wizard\")\n2. **Execute tests manually**: The developer follows each test step in the browser\n3. **Mark pass/fail**: Each test gets a verdict with notes (e.g., \"Fail \u2014 there's no text area for entering your carousel idea\")\n4. **Blocker detection**: When a critical test fails, remaining tests are marked as skipped (e.g., missing subscription data blocks all generation tests)\n5. **Fix generation**: GSD analyzes failures and generates fixes \u2014 in this case, an SQL migration file to create subscription rows for existing users\n\nKey insight: Phase ordering dependencies can surface during verification. Phase 3 verification failed because Phase 4 (subscription tables) hadn't been created yet \u2014 demonstrating why phases aren't fully independent despite earlier assumptions."
+  },
+  {
+    "id": "technique-uat-driven-iterative-fix-cycle-a6219f",
+    "title": "UAT-Driven Iterative Fix Cycle",
+    "type": "technique",
+    "confidence": 0.848,
+    "score": 0.924,
+    "keywords": [
+      "user-acceptance-testing",
+      "iterative-development",
+      "claude-code",
+      "saas-building",
+      "quality-assurance",
+      "GSD-methodology"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "User Acceptance Testing (UAT) with Claude Code follows a structured cycle: run each test case, record pass/fail with notes, then fix critical failures before moving to the next phase.\n\nThe workflow ob",
+    "content_full": "User Acceptance Testing (UAT) with Claude Code follows a structured cycle: run each test case, record pass/fail with notes, then fix critical failures before moving to the next phase.\n\nThe workflow observed:\n1. **Execute each numbered test** against the running application (e.g., test 11: generation status, test 12: auto-refresh, test 13: slide thumbnails)\n2. **Record results in a UAT file** \u2014 pass, fail, or pass-with-notes for issues that work but need optimization\n3. **Identify blocking vs. non-blocking issues** \u2014 critical failures (slide enlargement missing, post copy not displayed) block phase completion; cosmetic issues (timing estimates, usage count direction) can defer to optimization phase\n4. **Fix critical issues inline** before moving on \u2014 Claude Code diagnoses root causes and applies fixes automatically\n5. **Re-verify after fixes** \u2014 reload the application and confirm the fix resolved the issue\n\nThis granular approach catches issues that would compound across phases if left unresolved."
+  },
+  {
+    "id": "technique-iterative-ux-testing-and-fixin-25d5ed",
+    "title": "Iterative UX Testing and Fixing",
+    "type": "technique",
+    "confidence": 0.848,
+    "score": 0.924,
+    "keywords": [
+      "ux-testing",
+      "iterative-development",
+      "claude-code",
+      "saas-development",
+      "test-fix-loop"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "During SaaS development with Claude Code, the presenter demonstrates a live test-fix-verify loop where UI issues are discovered through manual testing and immediately corrected by prompting the AI age",
+    "content_full": "During SaaS development with Claude Code, the presenter demonstrates a live test-fix-verify loop where UI issues are discovered through manual testing and immediately corrected by prompting the AI agent. This pattern treats testing as a generative activity rather than a gate.\n\nIssues discovered and fixed in real-time:\n1. **Character limits too restrictive**: Voice guidelines (1,000 chars), product description (500 chars), and idea field (2,000 chars) were artificially limited \u2014 removed limits then added a reasonable 15,000 character ceiling\n2. **Text area expansion**: Scrollable box at 200px height instead of infinitely expanding textarea that breaks page layout\n3. **Loading time messaging**: Updated \"30-60 seconds\" to \"1-5 minutes\" to match actual generation times\n4. **Schema changes**: Backend validation updated to accept longer inputs since the n8n workflow has no character limit on its side\n\nThe workflow is: encounter issue during manual test \u2192 describe fix to Claude Code \u2192 verify fix \u2192 continue testing. This keeps development momentum while catching UX friction points."
+  },
+  {
+    "id": "technique-agent-skills-installation-for--43a701",
+    "title": "Agent Skills Installation for Scraping",
+    "type": "technique",
+    "confidence": 0.84,
+    "score": 0.92,
+    "keywords": [
+      "agent-skills",
+      "apify",
+      "installation",
+      "opencode",
+      "claude-code",
+      "web-scraping"
+    ],
+    "video_id": "wk8joeKtXBA",
+    "video_title": "Scrape any website with Apify & OpenCode, here\u2019s how",
+    "has_visual_support": true,
+    "content_preview": "Agent skills are pre-built instructions that give AI coding agents (Claude Code, OpenCode, Cursor, etc.) new capabilities like web scraping without writing the logic yourself. Apify publishes agent sk",
+    "content_full": "Agent skills are pre-built instructions that give AI coding agents (Claude Code, OpenCode, Cursor, etc.) new capabilities like web scraping without writing the logic yourself. Apify publishes agent skills via a GitHub repository.\n\nInstallation steps:\n1. Open an empty project folder in your IDE\n2. Copy the installation command from Apify's agent skills GitHub repo\n3. Run the command in a global terminal\n4. Select which skills to install (11 available)\n5. Choose your target agent (Claude Code, OpenCode, Cursor, etc.)\n6. Select global install with symlink\n7. Create a `.env` file with `APIFY_TOKEN=<your-token>` (or `APIFY_API_TOKEN` as fallback)\n8. Get the token from Apify Console \u2192 Settings \u2192 API Integration\n9. Restart your coding agent to load the new skills\n\nOnce installed, the agent can be instructed in plain English to scrape any website, and it will know which Apify actor to use and how to call it."
+  },
+  {
+    "id": "technique-parallel-phase-execution-strat-75bc5e",
+    "title": "Parallel Phase Execution Strategy",
+    "type": "technique",
+    "confidence": 0.832,
+    "score": 0.916,
+    "keywords": [
+      "parallel-execution",
+      "gsd-framework",
+      "time-optimization",
+      "background-processing",
+      "claude-code"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "When GSD phases are not tightly interlinked, you can run the next phase in the background while verifying the previous one. The workflow:\n\n1. **Assess independence**: Determine if the next phase depen",
+    "content_full": "When GSD phases are not tightly interlinked, you can run the next phase in the background while verifying the previous one. The workflow:\n\n1. **Assess independence**: Determine if the next phase depends on the current one (e.g., Phase 4 \"usage tracking\" is mostly independent of Phase 3 \"AI generation pipeline\")\n2. **Launch background execution**: Start `GSD plan phase N, then execute phase N without review` in one Claude Code session\n3. **Verify previous phase**: Meanwhile, manually walk through the verification checklist for the completed phase\n4. **Batch verification**: Come back and verify both phases together\n\nLimitation: You cannot directly interact with the running session while background execution proceeds \u2014 messages queue up. The practical benefit is time-saving: instead of returning every 15-20 minutes to Claude Code, you batch multiple phases and verify them together. Each execution run takes approximately 45 minutes for complex phases with multiple plans/waves."
+  },
+  {
+    "id": "technique-gsd-phased-verification-workfl-311e9f",
+    "title": "GSD Phased Verification Workflow",
+    "type": "technique",
+    "confidence": 0.832,
+    "score": 0.916,
+    "keywords": [
+      "gsd-methodology",
+      "verification",
+      "phased-development",
+      "saas-building",
+      "quality-assurance",
+      "test-driven"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "The GSD (Get Sh*t Done) methodology uses a phased verification approach where each development phase is formally verified before moving to the next. The presenter invokes `/gsd verify work phase 3` as",
+    "content_full": "The GSD (Get Sh*t Done) methodology uses a phased verification approach where each development phase is formally verified before moving to the next. The presenter invokes `/gsd verify work phase 3` as a structured checkpoint.\n\nVerification workflow observed:\n1. **Numbered test cases**: Phase 3 verification includes tests 10-18, each checking a specific feature (e.g., loading state on generate, carousel display, history page)\n2. **Resume capability**: When verification is interrupted, the system asks whether to resume from the last test or start fresh\n3. **Cross-phase awareness**: During phase 3 verification, the presenter notes that phases 4-5 features (like usage tracking and credits) are already partially working\n4. **Iterative fix cycle**: When tests fail (e.g., loading page not rendering results), fixes are applied and re-verified before proceeding\n5. **Phase progression**: Phases 4-6 are expected to be simpler because functionality was partially built during phase 3\n\nThis structured approach prevents scope creep and ensures each layer is solid before building on it."
+  },
+  {
+    "id": "technique-gsd-framework-execution-patter-250da1",
+    "title": "GSD Framework Execution Pattern",
+    "type": "technique",
+    "confidence": 0.832,
+    "score": 0.916,
+    "keywords": [
+      "gsd-framework",
+      "project-planning",
+      "phased-execution",
+      "verification",
+      "ask-user-questions",
+      "claude-code"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "The GSD (Get Stuff Done) framework provides a structured methodology for building complete projects with AI assistance, organized around three core phases:\n\n1. **Plan** \u2014 Use Claude Code's \"Ask User Q",
+    "content_full": "The GSD (Get Stuff Done) framework provides a structured methodology for building complete projects with AI assistance, organized around three core phases:\n\n1. **Plan** \u2014 Use Claude Code's \"Ask User Questions\" feature to plan each phase in granular detail before any code is written. This interactive planning produces specific, actionable requirements.\n2. **Execute** \u2014 Each planned phase generates specific to-dos that are actioned sequentially. Claude Code orchestrates the implementation, writing code and triggering backend workflows through MCP connections.\n3. **Verify** \u2014 Each phase is verified upon completion before moving to the next, ensuring correctness at every stage rather than debugging at the end.\n\nThe framework's key differentiator is its use of Claude Code's native `AskUserQuestion` tool to drive detailed upfront planning, which produces phase-specific to-do lists that guide execution. This structure enables beginners to build production SaaS products by following the framework's guardrails."
+  },
+  {
+    "id": "technique-incremental-task-decomposition-8a66a8",
+    "title": "Incremental Task Decomposition for AI",
+    "type": "technique",
+    "confidence": 0.808,
+    "score": 0.904,
+    "keywords": [
+      "task-decomposition",
+      "ai-coding",
+      "incremental-development",
+      "claude-code",
+      "prompt-strategy"
+    ],
+    "video_id": "KeeU-_bLIwY",
+    "video_title": "Build & Sell a SaaS With Claude Code + n8n + GSD (Complete Beginners)",
+    "has_visual_support": true,
+    "content_preview": "When building complex SaaS features with AI coding agents, manually decompose tasks into smaller steps rather than giving the agent the full scope at once. The presenter recognizes the AI agent won't ",
+    "content_full": "When building complex SaaS features with AI coding agents, manually decompose tasks into smaller steps rather than giving the agent the full scope at once. The presenter recognizes the AI agent won't be able to handle the entire task and breaks it down himself.\n\nThe workflow demonstrated:\n1. **Start with one example**: Give the agent one template instead of all three, so it can build the infrastructure first\n2. **Prepare next inputs in parallel**: While the agent works on the first example, manually gather the remaining template URLs and image style data\n3. **Feed remaining data once infrastructure exists**: After the agent completes the scaffold, quickly update with remaining assets\n4. **Verify incrementally**: Test each addition before moving to the next batch\n\nThis approach prevents the agent from being overwhelmed and produces more reliable results than a single large prompt."
+  },
+  {
+    "id": "technique-ghostty-terminal-for-multi-age-9ebc0f",
+    "title": "Ghostty Terminal for Multi-Agent Workflows",
+    "type": "technique",
+    "confidence": 0.96,
+    "score": 0.892,
+    "keywords": [
+      "ghostty",
+      "terminal",
+      "multi-agent",
+      "parallel-execution",
+      "developer-tooling",
+      "anthropic"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": true,
+    "content_preview": "Ghostty is a terminal manager reportedly used by Anthropic team members (including those working with Boris) for running multiple Claude Code instances simultaneously. It offers specific advantages ov",
+    "content_full": "Ghostty is a terminal manager reportedly used by Anthropic team members (including those working with Boris) for running multiple Claude Code instances simultaneously. It offers specific advantages over standard terminals for agentic coding workflows.\n\nKey benefits:\n1. **Faster rendering** \u2014 quicker terminal output display\n2. **Better color support** \u2014 renders more colors for richer output\n3. **Lower compute overhead** \u2014 critical when running many instances (e.g., 50+ git worktrees)\n4. **Quick split shortcuts** \u2014 Cmd+D for horizontal split, Cmd+Shift+D for vertical split\n5. **Tab navigation** \u2014 Cmd+Arrow to switch between panes, Cmd+Shift+Enter to maximize/focus a tab\n\nThe workflow pattern is to open multiple Ghostty panes, launch separate Claude Code instances in each (potentially with different permission levels like `--dangerously-skip-permissions`), and navigate between them using keyboard shortcuts rather than mouse clicks."
+  },
+  {
+    "id": "philosophy-agentic-engineering-progressio-8b6b79",
+    "title": "Agentic Engineering Progression",
+    "type": "philosophy",
+    "confidence": 0.96,
+    "score": 0.892,
+    "keywords": [
+      "agentic-engineering",
+      "orchestration",
+      "fundamentals",
+      "agent-progression",
+      "ADW",
+      "primitives"
+    ],
+    "video_id": "4_2j5wgt_ds",
+    "video_title": "Claude Code Task System: ANTI-HYPE Agentic Coding (Advanced)",
+    "has_visual_support": true,
+    "content_preview": "There is a clear progression path for agentic engineering maturity, moving from basic usage to full orchestration:\n\n1. **Base agent** \u2014 use a single agent as-is\n2. **Context + prompt engineering** \u2014 l",
+    "content_full": "There is a clear progression path for agentic engineering maturity, moving from basic usage to full orchestration:\n\n1. **Base agent** \u2014 use a single agent as-is\n2. **Context + prompt engineering** \u2014 learn to use it better through structured context and prompts\n3. **Add more agents** \u2014 introduce multi-agent workflows\n4. **Customize agents** \u2014 build specialized agents for specific tasks\n5. **Add an orchestrator** \u2014 introduce a primary agent that conducts all others\n\nThe core philosophy: \"Don't work on the application anymore. Work on the agents that build the application for you.\" Engineers should invest in the \"agentic layer\" of their codebase \u2014 reusable prompts, specialized agents, and AI developer workflows (ADWs).\n\nThe \"core four\" fundamentals that underpin everything: **context, model, prompt, and tools**. Understanding these primitives lets engineers \"hop from tool to tool to feature to feature\" as the ecosystem evolves, rather than being locked into any single abstraction."
+  },
+  {
+    "id": "philosophy-agentic-engineering-vs-vibe-co-f997a6",
+    "title": "Agentic Engineering vs Vibe Coding",
+    "type": "philosophy",
+    "confidence": 0.872,
+    "score": 0.886,
+    "keywords": [
+      "vibe-coding",
+      "agentic-engineering",
+      "agent-control",
+      "predictability",
+      "template-prompting",
+      "anti-hype"
+    ],
+    "video_id": "4_2j5wgt_ds",
+    "video_title": "Claude Code Task System: ANTI-HYPE Agentic Coding (Advanced)",
+    "has_visual_support": false,
+    "content_preview": "The presenter draws a sharp distinction between agentic engineering and what he calls \"vibe coding\" or \"slop engineering\":\n\n**Vibe coding / slop engineering**: Running prompts to random tools (Clawbot",
+    "content_full": "The presenter draws a sharp distinction between agentic engineering and what he calls \"vibe coding\" or \"slop engineering\":\n\n**Vibe coding / slop engineering**: Running prompts to random tools (Clawbot or similar) where \"you don't know what the agent is actually going to do or how it's going to do the work.\" Results range from \"exactly what you wanted to not so great to this doesn't work at all.\"\n\n**Agentic engineering**: Teaching agents to build as you would through template metaprompts, self-validation, and structured orchestration. \"You want to know the outcome that your agent is generating for you.\"\n\nKey principle: \"More agents, more autonomy, and more compute doesn't always mean better outcomes. What we want is more organized agents that can communicate together to work toward a common goal.\"\n\nThe presenter acknowledges that as models improve, less prompting effort will be needed, but argues real engineering work should go in the opposite direction \u2014 toward more control and predictability, not less."
+  },
+  {
+    "id": "philosophy-anti-hype-fundamentals-first-s-1783de",
+    "title": "Anti-Hype Fundamentals-First Stance",
+    "type": "philosophy",
+    "confidence": 0.864,
+    "score": 0.882,
+    "keywords": [
+      "anti-hype",
+      "fundamentals",
+      "vibe-coding",
+      "engineering-discipline",
+      "primitives",
+      "tool-agnostic"
+    ],
+    "video_id": "4_2j5wgt_ds",
+    "video_title": "Claude Code Task System: ANTI-HYPE Agentic Coding (Advanced)",
+    "has_visual_support": false,
+    "content_preview": "A strong warning against over-reliance on high-level abstract tools (like multi-agent orchestration platforms) without understanding the underlying pieces. The concern is specifically about engineers ",
+    "content_full": "A strong warning against over-reliance on high-level abstract tools (like multi-agent orchestration platforms) without understanding the underlying pieces. The concern is specifically about engineers who \"turn their brain off\" versus those who \"keep learning and keep adding to their stack of agentics.\"\n\nKey arguments:\n1. High-level tools are fine for engineers who understand what's happening underneath\n2. The danger is for those with \"no idea what's going on underneath the hood\"\n3. There will be \"a big gap between engineers that turn their brain off and engineers that keep learning\"\n4. The entire Claude Code task system feature set is \"just tools and prompts\" \u2014 portable concepts, not vendor lock-in\n5. \"Slop engineering and vibe slopping\" results from jumping onto abstract tools without foundational understanding\n\nThe prescription: \"Stay close to the fundamentals. Stay close to what makes up the agent at a foundational level while increasing what we can do with this.\" Learning primitives enables tool-agnostic competence."
+  },
+  {
+    "id": "technique-iterative-solution-cleanup-0fbc09",
+    "title": "Iterative Solution Cleanup",
+    "type": "technique",
+    "confidence": 0.852,
+    "score": 0.876,
+    "keywords": [
+      "context-management",
+      "iterative-development",
+      "cleanup",
+      "solution-space",
+      "claude-code-workflow"
+    ],
+    "video_id": "zbCxi7CjiF0",
+    "video_title": "\"I built Claude Code. Here are my ten hacks\" (masterclass)",
+    "has_visual_support": false,
+    "content_preview": "When using Claude Code through multiple solution iterations (attempt 1, 2, 3, 4, 5), the repository accumulates artifacts from all attempts, creating a messy codebase. The recommended technique is to ",
+    "content_full": "When using Claude Code through multiple solution iterations (attempt 1, 2, 3, 4, 5), the repository accumulates artifacts from all attempts, creating a messy codebase. The recommended technique is to tell Claude to scrap everything except the valuable final solution and recreate it cleanly, as if the earlier iterations never happened.\n\nWorkflow:\n1. **Iterate freely** \u2014 let Claude explore the solution space across multiple attempts\n2. **Identify the winner** \u2014 determine which iteration actually contains what you need\n3. **Instruct cleanup** \u2014 tell Claude to discard all prior attempts and keep only the valuable bits\n4. **Benefit**: The context window now contains only high-quality, relevant code without noise from abandoned approaches\n\nThis is essentially a manual garbage collection step that preserves context window quality after exploratory coding sessions."
+  },
+  {
+    "id": "technique-turbo-dev-multi-service-orches-65b6e3",
+    "title": "Turbo Dev Multi-Service Orchestration",
+    "type": "technique",
+    "confidence": 0.92,
+    "score": 0.872,
+    "keywords": [
+      "turborepo",
+      "dev-server",
+      "workspace-orchestration",
+      "developer-experience",
+      "monorepo"
+    ],
+    "video_id": "ezb2neX9pIU",
+    "video_title": "I Hated Monorepos, Now I Can't Build Without Them",
+    "has_visual_support": true,
+    "content_preview": "Turborepo's `turbo dev` command spins up every project within the workspace that has a `dev` command defined, orchestrating multiple dev servers from a single command. The `--ui` flag provides a conso",
+    "content_full": "Turborepo's `turbo dev` command spins up every project within the workspace that has a `dev` command defined, orchestrating multiple dev servers from a single command. The `--ui` flag provides a consolidated log viewer for all running services.\n\nKey capabilities:\n1. **Single command startup**: `bun dev` triggers `turbo dev` which starts all workspace dev servers simultaneously\n2. **Unified log UI**: The `--ui` flag renders a multi-pane view showing logs from each service\n3. **Persistent mode**: Long-running servers (Convex, Vite, SvelteKit) stay up without restarting\n4. **Nested turbo repos**: A workspace's dev script can itself invoke another turbo command, enabling turbo-within-turbo orchestration (e.g., spinning up both a Convex dev server and a Vite dev server for SvelteKit)\n5. **Filter support**: `turbo dev --filter=package-name` runs dev only for a specific package and its dependencies\n\nThis pattern eliminates the need for multiple terminal windows or tools like `concurrently`."
+  },
+  {
+    "id": "technique-template-metaprompt-architectu-a4f9fa",
+    "title": "Template Metaprompt Architecture",
+    "type": "technique",
+    "confidence": 0.948,
+    "score": 0.869,
+    "keywords": [
+      "metaprompt",
+      "template",
+      "prompt-generation",
+      "self-validation",
+      "plan-format",
+      "consistency"
+    ],
+    "video_id": "4_2j5wgt_ds",
+    "video_title": "Claude Code Task System: ANTI-HYPE Agentic Coding (Advanced)",
+    "has_visual_support": true,
+    "content_preview": "A template metaprompt is a prompt that generates new prompts in a specific, consistent format. The architecture works as follows:\n\n1. **Define plan format**: The metaprompt includes a plan template wi",
+    "content_full": "A template metaprompt is a prompt that generates new prompts in a specific, consistent format. The architecture works as follows:\n\n1. **Define plan format**: The metaprompt includes a plan template with sections like task name, task description, objective, problem statement, solution approach, and team orchestration\n2. **Embed placeholder prompts**: Template sections contain instructions like \"replace nested content with the actual request\" that guide the generating agent\n3. **Agent fills template**: The primary agent researches the codebase and fills in each template section with specific, contextualized content\n4. **Self-validate output**: Stop hooks verify the generated file contains all required sections (e.g., checking that \"team orchestration\" section exists in the output)\n\nThe generated plan then becomes an executable specification \u2014 the presenter shows a side-by-side of the template (left) and generated plan (right), demonstrating exact structural correspondence. This ensures every generated plan has consistent structure regardless of the specific task being planned."
+  },
+  {
+    "id": "technique-turborepo-remote-caching-workf-69702c",
+    "title": "Turborepo Remote Caching Workflow",
+    "type": "technique",
+    "confidence": 0.912,
+    "score": 0.868,
+    "keywords": [
+      "turborepo",
+      "remote-caching",
+      "build-optimization",
+      "ci-cd",
+      "deployment",
+      "monorepo"
+    ],
+    "video_id": "ezb2neX9pIU",
+    "video_title": "I Hated Monorepos, Now I Can't Build Without Them",
+    "has_visual_support": true,
+    "content_preview": "Turborepo's remote caching solution allows build artifacts to be shared between local development and deployment environments. When you run a build locally, all build steps are cached in the cloud. Wh",
+    "content_full": "Turborepo's remote caching solution allows build artifacts to be shared between local development and deployment environments. When you run a build locally, all build steps are cached in the cloud. When the same build runs again in a deploy script (e.g., on Railway), it hits the remote cache and pulls everything down instantly, resulting in near-zero build times.\n\nWorkflow:\n1. **Local build**: Run `bun dev` or `turbo build` locally, which caches all steps to remote storage\n2. **Deploy build**: The deploy script runs the same build command on the hosting platform\n3. **Cache hit**: The deploy environment pulls cached artifacts instead of rebuilding from scratch\n4. **Instant builds**: Production deployments complete in seconds rather than minutes\n\nThis eliminates redundant computation between development and CI/CD environments, making monorepo builds practical at scale."
+  },
+  {
+    "id": "technique-lean-claude-md-7c5f12",
+    "title": "Lean CLAUDE.md Strategy",
+    "type": "technique",
+    "confidence": 0.82,
+    "score": 0.86,
+    "keywords": [
+      "claude-md",
+      "minimalism",
+      "context-management",
+      "configuration",
+      "best-practices",
+      "permanent-truths"
+    ],
+    "video_id": "XQWOdQ8GM4w",
+    "video_title": "Why your coding agent keeps getting DUMBER.",
+    "has_visual_support": false,
+    "content_preview": "The first solution to context rot is keeping CLAUDE.md extremely lean -- approximately 3-5 lines containing only globally-applicable patterns that are useful across every session. The approach:\n\n1. **",
+    "content_full": "The first solution to context rot is keeping CLAUDE.md extremely lean -- approximately 3-5 lines containing only globally-applicable patterns that are useful across every session. The approach:\n\n1. **Ruthless minimalism**: Only include patterns that apply to virtually every coding session\n2. **Permanent truths only**: CLAUDE.md should contain universal preferences, not project-specific rules\n3. **Example content**: Forcing Claude to always launch Opus agents as sub-agents (correcting a common behavioral issue)\n4. **Separation of concerns**: Project-specific context should live elsewhere (skills, rules files, project-level configuration)\n\nThis prevents context rot entirely by never allowing the file to grow, but sacrifices the ability to teach Claude domain-specific patterns through CLAUDE.md alone. The tradeoff is acceptable when combined with complementary systems like skills or ACE."
+  },
+  {
+    "id": "technique-turbo-filter-and-dependency-aw-8f0461",
+    "title": "Turbo Filter And Dependency-Aware Checks",
+    "type": "technique",
+    "confidence": 0.912,
+    "score": 0.851,
+    "keywords": [
+      "turborepo",
+      "filter",
+      "dependency-graph",
+      "ai-agents",
+      "monorepo",
+      "type-checking"
+    ],
+    "video_id": "ezb2neX9pIU",
+    "video_title": "I Hated Monorepos, Now I Can't Build Without Them",
+    "has_visual_support": true,
+    "content_preview": "Turborepo's `--filter` flag enables targeted command execution on specific packages while automatically including their dependency graph. This is particularly valuable for AI coding agents working in ",
+    "content_full": "Turborepo's `--filter` flag enables targeted command execution on specific packages while automatically including their dependency graph. This is particularly valuable for AI coding agents working in monorepos.\n\nWorkflow:\n1. **Root scripts**: Define package-specific scripts in root `package.json` (e.g., `check:cli`, `check:web`, `build:cli`)\n2. **Filter command**: Each script uses `turbo check --filter=package-name` to scope execution\n3. **Dependency awareness**: Turbo automatically detects that shared packages are dependencies and runs checks on them first\n4. **Cache integration**: If checks were already run and nothing changed, results return instantly from cache\n5. **Agent integration**: Tell AI agents in `CLAUDE.md`/`.cursor/rules` which packages exist and to run the appropriate check/format scripts after making changes\n\nThe `turbo prune` command complements this by extracting only the packages needed for a specific app during Docker builds, installing only relevant dependencies from the lockfile."
+  },
+  {
+    "id": "philosophy-file-over-app-principle-729d98",
+    "title": "File Over App Principle",
+    "type": "philosophy",
+    "confidence": 0.8,
+    "score": 0.85,
+    "keywords": [
+      "file-over-app",
+      "data-ownership",
+      "plain-text",
+      "longevity",
+      "obsidian",
+      "knowledge-compounding"
+    ],
+    "video_id": "y6YTk0C5pBY",
+    "video_title": "Obsidian Just Won",
+    "has_visual_support": false,
+    "content_preview": "\"File over App\" is the philosophy articulated by Obsidian CEO Kapano (Steph Ango) that prioritizes the longevity of your data over any particular application. Apps are transient \u2014 Evernote declined ov",
+    "content_full": "\"File over App\" is the philosophy articulated by Obsidian CEO Kapano (Steph Ango) that prioritizes the longevity of your data over any particular application. Apps are transient \u2014 Evernote declined over a decade, Roam fell, users jump tool to tool \"losing pieces of themselves along the way\" \u2014 but files built on plain text are designed to outlast the app itself.\n\nCore tenets:\n1. **Apps are mortal**: Even Kapano acknowledges Obsidian won't last forever \u2014 could be a decade or 2,000 years\n2. **Text is immortal**: We can still read clay tablets from ancient civilizations; try that with a '90s floppy disc\n3. **Backwards compatibility test**: \"If you want your writing to still be readable on a computer from the 2060s, make sure your notes can be read on a computer from the 1960s\"\n4. **Compound knowledge**: Plain text users \"keep writing, keep linking notes, keep compounding insights\" while others restart from zero\n\nThe principle \"always bet on text\" is cited as foundational."
+  },
+  {
+    "id": "philosophy-vibe-coding-defense-argument-617d34",
+    "title": "Vibe Coding Defense Argument",
+    "type": "philosophy",
+    "confidence": 0.792,
+    "score": 0.846,
+    "keywords": [
+      "vibe-coding",
+      "product-market-fit",
+      "rapid-prototyping",
+      "scaling",
+      "compound-engineering",
+      "validation-first"
+    ],
+    "video_id": "QPAy9R9V1rA",
+    "video_title": "Screensharing Kevin Rose's AI Workflow/New App",
+    "has_visual_support": false,
+    "content_preview": "Rose directly addresses the common criticism that vibe-coded software is buggy, non-performant, and won't scale, reframing these as \"great problems to have.\"\n\nThe argument structure:\n1. **The hard pro",
+    "content_full": "Rose directly addresses the common criticism that vibe-coded software is buggy, non-performant, and won't scale, reframing these as \"great problems to have.\"\n\nThe argument structure:\n1. **The hard problem is product-market fit**: \"The hardest thing to do is to find something that somebody actually wants to use\" \u2014 not engineering quality\n2. **Scaling is a solvable problem**: \"If it crashes under the weight of 50,000 people... I guarantee you I can find engineers to work on that and scale it\"\n3. **More shots on goal**: Vibe coding enables rapid prototyping to test ideas before investing in engineering rigor\n4. **Validation before optimization**: \"I'd rather see actual humans using it\" than prematurely polish code quality\n5. **Compound engineering as bridge**: Even without hiring, AI tools like compound engineering are \"finding a bunch of stuff and making things more performant on the fly\"\n\nThe core principle: validate demand first, engineer quality second. Code quality concerns should not prevent experimentation."
+  },
+  {
+    "id": "philosophy-sub-agents-preserve-context-wi-41a944",
+    "title": "Sub-Agents Preserve Context Window",
+    "type": "philosophy",
+    "confidence": 0.792,
+    "score": 0.846,
+    "keywords": [
+      "context-window",
+      "context-rot",
+      "sub-agents",
+      "compaction",
+      "quality-degradation"
+    ],
+    "video_id": "P60LqQg1RH8",
+    "video_title": "Stop Using Claude Code Like This (Use Sub-Agents Instead)",
+    "has_visual_support": false,
+    "content_preview": "The primary reason to use sub-agents instead of having the main agent do all work is context window preservation. LLMs have a maximum context window size (200,000 tokens for Claude). When you use up o",
+    "content_full": "The primary reason to use sub-agents instead of having the main agent do all work is context window preservation. LLMs have a maximum context window size (200,000 tokens for Claude). When you use up or exceed this window, response quality drastically decreases because early conversation content gets dropped during compaction.\n\nThe problem chain:\n1. Main agent doing all work \u2192 tool responses and analysis fill context rapidly\n2. Complex features quickly reach the compaction threshold (~80% of context)\n3. Compaction drops critical early context about the changes being implemented\n4. Result: degraded output quality, which users blame on the agent itself\n\n\"This is typically when people start complaining about the abilities of these agents... that's because they're trying to do everything in the main thread of the main agent. This is really really not ideal.\"\n\nUsing sub-agents offloads work to separate context windows, keeping the main conversation clean and clutter-free."
+  },
+  {
+    "id": "philosophy-sub-agents-for-tasks-not-roles-b9d821",
+    "title": "Sub-Agents for Tasks Not Roles",
+    "type": "philosophy",
+    "confidence": 0.792,
+    "score": 0.846,
+    "keywords": [
+      "sub-agents",
+      "task-decomposition",
+      "context-window",
+      "parallel-execution",
+      "agent-architecture",
+      "anti-pattern"
+    ],
+    "video_id": "Ffh9OeJ7yxw",
+    "video_title": "800+ hours of Learning Claude Code in 8 minutes (2026 tutorial / unknown tricks / newest model)",
+    "has_visual_support": false,
+    "content_preview": "After extensive experimentation, the author found that assigning sub-agents persona-based roles (front-end developer, UI/UX designer, product manager) produces worse results than vanilla Claude Code w",
+    "content_full": "After extensive experimentation, the author found that assigning sub-agents persona-based roles (front-end developer, UI/UX designer, product manager) produces worse results than vanilla Claude Code with no agent-specific instructions.\n\n**What doesn't work**: Assigning roles like \"act as a front-end developer\" \u2014 sub-agents aren't yet capable of autonomous brainstorming and role-playing like humans.\n\n**What works**: Define sub-agents for **specific tasks**, not roles:\n1. Code cleanup and optimization after generation\n2. Documentation generation\n3. Web research and data gathering\n4. UI/UX review via Playwright MCP (inspects browser components, gives design feedback)\n\n**Why task-based agents are superior**:\n- Each sub-agent gets its own context window, system prompt, and tool permissions\n- Offloads work that would pollute the main context window\n- Maintains higher quality of overall output by preserving main agent's context budget\n\n\"Sub-agents are great for offloading smaller and more specific tasks.\""
+  },
+  {
+    "id": "technique-five-claude-code-tips-f48500",
+    "title": "Five Claude Code Tips",
+    "type": "technique",
+    "confidence": 0.792,
+    "score": 0.846,
+    "keywords": [
+      "claude-code-tips",
+      "context-management",
+      "planning",
+      "autonomous-loops",
+      "taste",
+      "workflow"
+    ],
+    "video_id": "zxMjOqM7DFs",
+    "video_title": "Claude Code Clearly Explained (and how to use it)",
+    "has_visual_support": false,
+    "content_preview": "A prioritized list of five practical tips for getting the most out of Claude Code, ordered by importance:\n\n1. **Use the AskUserQuestion tool**: Described as \"slept on\" and underappreciated. Use it dur",
+    "content_full": "A prioritized list of five practical tips for getting the most out of Claude Code, ordered by importance:\n\n1. **Use the AskUserQuestion tool**: Described as \"slept on\" and underappreciated. Use it during planning to force thorough requirements elicitation before building\n2. **Don't over-obsess on MCP, skills, etc.**: These tools help but are almost never the reason your product isn't working. Focus on plan quality instead\n3. **Build without RALPH first**: Only use autonomous loops after you've manually built and deployed something. \"If there isn't a URL that we can click on that you've built, you have no business using RALPH\"\n4. **Manage context aggressively**: Don't exceed 50% of context window (e.g., 100K of 200K tokens). Start a new session at 40-50% usage \u2014 output quality deteriorates as context fills up\n5. **Have audacity and taste**: Software development is getting easy but software engineering remains hard. Building something tasteful, with great UX and thought behind design choices, is the real differentiator"
+  },
+  {
+    "id": "anti-pattern-business-logic-as-primary-key-01613f",
+    "title": "Business Logic As Primary Key",
+    "type": "anti-pattern",
+    "confidence": 0.792,
+    "score": 0.846,
+    "keywords": [
+      "primary-key",
+      "anti-pattern",
+      "business-logic",
+      "email-as-key",
+      "database-design",
+      "uuid"
+    ],
+    "video_id": "Lim_T_BJ8-s",
+    "video_title": "Designing a Database Like a Senior Engineer (ERD & PRD)",
+    "has_visual_support": false,
+    "content_preview": "Using a business-logic field (like email) as a primary key is a common database design mistake. While email may satisfy uniqueness and not-null constraints, it fails on stability and business-logic in",
+    "content_full": "Using a business-logic field (like email) as a primary key is a common database design mistake. While email may satisfy uniqueness and not-null constraints, it fails on stability and business-logic independence.\n\nWhy email fails as a primary key:\n1. **Unstable**: Users can change their email in settings, mutating the key and breaking all foreign key references\n2. **Business logic dependency**: Business requirements change \u2014 if email is later removed or replaced by phone number, all primary keys are lost\n3. **Cascading breakage**: Changing or removing the field destroys the entire identification system\n\nThe correct approach is to create a dedicated `id` field (typically a string/UUID) that is:\n- Always unique\n- Always defined (never null)\n- Immutable (cannot be changed by users)\n- Independent of business logic\n\nThis `id` field should be added to every table in the database as its primary key."
+  },
+  {
+    "id": "pattern-three-compaction-trigger-strat-3d606c",
+    "title": "Three Compaction Trigger Strategies",
+    "type": "pattern",
+    "confidence": 0.792,
+    "score": 0.846,
+    "keywords": [
+      "compaction",
+      "context-window",
+      "session-management",
+      "token-limit",
+      "summarization"
+    ],
+    "video_id": "Seu7nksZ_4k",
+    "video_title": "How AI Agents Remember Things",
+    "has_visual_support": false,
+    "content_preview": "Compaction is the process of condensing a session's conversation history into the most important information so the conversation can continue without losing critical details. There are three strategie",
+    "content_full": "Compaction is the process of condensing a session's conversation history into the most important information so the conversation can continue without losing critical details. There are three strategies for triggering compaction:\n\n1. **Count-based**: Compact when the conversation exceeds a certain token size or turn count. Simplest to implement \u2014 purely mechanical threshold.\n2. **Time-based**: Triggered when the user stops interacting for a certain period. Compaction runs in the background during idle time.\n3. **Event-based / Semantic**: The agent triggers compaction when it detects that a particular task or topic has concluded. This is the most intelligent version but also the most difficult to implement accurately.\n\nThe tradeoff is clear: count-based is simplest but least intelligent; semantic is most intelligent but hardest to get right."
+  },
+  {
+    "id": "warning-agent-teams-token-cost-scaling-08d6ed",
+    "title": "Agent Teams Token Cost Scaling",
+    "type": "warning",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "token-usage",
+      "agent-teams",
+      "cost-optimization",
+      "context-window",
+      "scaling"
+    ],
+    "video_id": "zm-BBZIAJ0c",
+    "video_title": "Claude Code Agent Teams (Full Tutorial): The BEST FEATURE of Claude Code is HERE!",
+    "has_visual_support": false,
+    "content_preview": "Agent teams use significantly more tokens than a single session because each teammate has its own context window. Usage scales linearly with the number of active teammates.\n\n**Cost math**: Running thr",
+    "content_full": "Agent teams use significantly more tokens than a single session because each teammate has its own context window. Usage scales linearly with the number of active teammates.\n\n**Cost math**: Running three teammates plus a lead means paying for four Claude Code sessions simultaneously.\n\n**When the cost is justified**:\n- Research tasks where parallel exploration adds real value\n- Code review across multiple areas\n- Building new features with independent components\n- Complex debugging with multiple hypotheses\n\n**When to avoid**:\n- Routine tasks like refactoring a single function\n- Simple changes that don't benefit from parallelism\n\nThe tradeoff is explicit: \"You're trading money for time and quality.\" Don't spin up an agent team to refactor a function \u2014 that's overkill. Reserve teams for tasks where parallel exploration genuinely multiplies output."
+  },
+  {
+    "id": "technique-flat-orchestrator-agent-patter-dbfc6c",
+    "title": "Flat Orchestrator Agent Pattern",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "orchestrator-pattern",
+      "sub-agents",
+      "context-isolation",
+      "agent-architecture",
+      "token-management",
+      "claude-code"
+    ],
+    "video_id": "I9-tdhxiH7w",
+    "video_title": "The Most Powerful Claude Code Pattern I've Found",
+    "has_visual_support": false,
+    "content_preview": "An architectural pattern for multi-agent systems where the top-level agent acts as a flat orchestrator rather than nesting sub-agents within sub-agents. Claude Code suggested this refinement when the ",
+    "content_full": "An architectural pattern for multi-agent systems where the top-level agent acts as a flat orchestrator rather than nesting sub-agents within sub-agents. Claude Code suggested this refinement when the speaker initially had a builder sub-agent that could spawn its own planning sub-agent \u2014 creating potential infinite loops and token runaway.\n\nThe flat orchestrator pattern:\n1. **One top-level orchestrator** that knows the run loop\n2. Orchestrator calls specialized sub-agents: **planner**, **evaluator**, **executor**, **builder**\n3. Each sub-agent gets a **fresh context** per work item \u2014 equivalent to clearing the conversation\n4. Planning output feeds into builder input, but through the orchestrator (never nested)\n5. No sub-agent spawns other sub-agents \u2014 eliminates infinite recursion risk\n\nKey benefit: \"No more context pollution\" \u2014 each piece of work gets its own clean context. If tokens seem to \"disappear\" in agent systems, nested sub-agent spawning is often the cause."
+  },
+  {
+    "id": "technique-claude-obsidian-mcp-setup-eff62d",
+    "title": "Claude-Obsidian MCP Setup",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "mcp-server",
+      "obsidian",
+      "claude-desktop",
+      "uv-package-manager",
+      "rest-api",
+      "setup-guide"
+    ],
+    "video_id": "VeTnndXyJQI",
+    "video_title": "Let Claude Automate Your Obsidian Notes: Second Brain AI Agent (MCP)",
+    "has_visual_support": false,
+    "content_preview": "A step-by-step workflow for connecting Claude Desktop to an Obsidian vault via MCP (Model Context Protocol) server, enabling Claude to read and write vault files directly.\n\n**Prerequisites:**\n1. **Cla",
+    "content_full": "A step-by-step workflow for connecting Claude Desktop to an Obsidian vault via MCP (Model Context Protocol) server, enabling Claude to read and write vault files directly.\n\n**Prerequisites:**\n1. **Claude Desktop app** \u2014 web client cannot use MCP servers\n2. **Python + UV** \u2014 UV is a Python package manager that auto-installs dependencies on first run\n3. **MCP Obsidian server** \u2014 open-source server that supports both read and write operations (not all variants do)\n4. **Obsidian Local REST API plugin** \u2014 community plugin that exposes a REST API from your vault\n\n**Setup steps:**\n1. Install UV via terminal command (Mac/Linux one-liner)\n2. Clone the MCP Obsidian server repository\n3. Enable the Local REST API community plugin in Obsidian and copy the API key\n4. Create a `.env` file in the cloned repo with `OBSIDIAN_API_KEY=<your-key>`\n5. Configure Claude Desktop's MCP config (Settings \u2192 Developer \u2192 Edit Config) with the UV command path and server directory\n6. Use `which uv` to find the absolute UV path for reliability\n7. Restart Claude Desktop \u2014 tool icon should show 8 available MCP tools"
+  },
+  {
+    "id": "technique-view-duplication-workflow-a731d4",
+    "title": "View Duplication Workflow",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "obsidian-bases",
+      "view-management",
+      "workflow",
+      "duplication",
+      "productivity"
+    ],
+    "video_id": "6UZemN4EVA0",
+    "video_title": "How To Easily Organize Projects & Tasks With Obsidian Bases \ud83d\ude80 \ud83d\udcdd",
+    "has_visual_support": false,
+    "content_preview": "When building multiple filtered views in Obsidian Bases, duplicating an existing view is significantly faster than creating views from scratch. A new blank view starts empty and requires manually re-a",
+    "content_full": "When building multiple filtered views in Obsidian Bases, duplicating an existing view is significantly faster than creating views from scratch. A new blank view starts empty and requires manually re-adding every property column, which is tedious.\n\nWorkflow steps:\n1. **Build one complete view** with all desired property columns and global filters (e.g., kind is not empty, kind is not test)\n2. **Click the side arrow** on the view tab and select 'Duplicate view'\n3. **Rename** the duplicated view (e.g., 'All Projects', 'All Epics', 'All Tasks')\n4. **Add a single view-specific filter** (e.g., kind contains 'project')\n5. **Repeat** for each kind type in the system\n\nThis approach preserves all property columns and global filters across views, making it trivial to build out a complete project management interface with views for projects, epics, stories, tasks, and ideas in minutes."
+  },
+  {
+    "id": "philosophy-manual-note-writing-imperative-912392",
+    "title": "Manual Note-Writing Imperative",
+    "type": "philosophy",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "note-taking",
+      "personal-knowledge",
+      "obsidian",
+      "manual-writing",
+      "second-brain",
+      "cognitive-capture"
+    ],
+    "video_id": "NSTT2iBSwZs",
+    "video_title": "Interview with Obsidian enthusiast 2026",
+    "has_visual_support": false,
+    "content_preview": "The speaker argues strongly that notes must be written by the person themselves, not automated by AI. Automating note-writing \"loses the point\" because the purpose of a personal knowledge system is to",
+    "content_full": "The speaker argues strongly that notes must be written by the person themselves, not automated by AI. Automating note-writing \"loses the point\" because the purpose of a personal knowledge system is to mirror your own mind.\n\nKey distinction:\n1. **Self-written notes** \u2192 become an extension of your mind, feel intuitive, reflect your mental associations\n2. **AI-generated notes** \u2192 become an \"external mind\" that is connected but not intuitive to navigate\n\nThe value comes from the act of linking: \"whatever pops into my head when I'm writing a note I just link to there.\" This immediate capture of mental dynamics \u2014 the associative leaps between ideas \u2014 is what makes the system personal. An AI cannot replicate which attractor states your brain naturally moves between.\n\nOver time, you develop spatial familiarity: \"I know where everything is roughly\" \u2014 recognizing clusters by color, position, and neighborhood in the graph view."
+  },
+  {
+    "id": "philosophy-obsidian-ai-integration-advant-9f4850",
+    "title": "Obsidian AI Integration Advantage",
+    "type": "philosophy",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "obsidian",
+      "ai-integration",
+      "plain-text",
+      "vendor-lock-in",
+      "local-first",
+      "future-proofing"
+    ],
+    "video_id": "y6YTk0C5pBY",
+    "video_title": "Obsidian Just Won",
+    "has_visual_support": false,
+    "content_preview": "Obsidian's architecture gives it a decisive advantage in the AI era because its vault is simply a folder of plain text markdown files on your local machine. While users of other note apps struggle wit",
+    "content_full": "Obsidian's architecture gives it a decisive advantage in the AI era because its vault is simply a folder of plain text markdown files on your local machine. While users of other note apps struggle with subscriptions, MCP protocols, and chasing AI plugin integrations, Obsidian users just point an AI agent (like Claude Code) at their vault folder.\n\nKey advantages:\n1. **Zero plugin dependency**: No AI subscription or plugin required \u2014 AI reads files directly\n2. **Future-proof**: As AI tools rapidly come and go, plain text remains universally accessible\n3. **No vendor lock-in**: If Obsidian disappears, files open in hundreds of text editors\n4. **Opt-in AI**: Nothing about Obsidian forces AI on you; use it only if you want\n5. **Lightweight format**: Text files are kilobytes vs. images/databases that are orders of magnitude larger\n\nAs the speaker notes: users of Notion and Roam are \"frustrated by subscriptions, by MCPs, always chasing the latest AI integrations in some roundabout way.\""
+  },
+  {
+    "id": "philosophy-context-as-living-asset-4c61b7",
+    "title": "Context As Living Asset",
+    "type": "philosophy",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "context-management",
+      "context-curation",
+      "solo-dev",
+      "less-is-more",
+      "shipping-velocity"
+    ],
+    "video_id": "EVKxAaxv1Z8",
+    "video_title": "Why Agents Drift Off Track Sometimes...",
+    "has_visual_support": false,
+    "content_preview": "The core insight for solo developers working with AI agents: context is a living thing you have to curate, not a passive container you fill up.\n\n\"The more I treat my context like a real asset, the les",
+    "content_full": "The core insight for solo developers working with AI agents: context is a living thing you have to curate, not a passive container you fill up.\n\n\"The more I treat my context like a real asset, the less cleanup I do and the faster I ship actual features.\"\n\nKey principles:\n1. **Less is more** \u2014 tighter context produces better agent output\n2. **Workspace not landfill** \u2014 the context window should feel organized, not chaotic\n3. **Curation compounds** \u2014 good context habits layer naturally onto new capabilities (bigger windows, persistent agents)\n4. **It's not about memory** \u2014 the secret isn't AI memory features or AI-as-teammate abstractions; it's disciplined context management\n\n\"The tighter your context, the more your agent actually helps you ship.\" This inverts the intuition that more context equals better results."
+  },
+  {
+    "id": "technique-orchestrator-agent-delegation--8e698b",
+    "title": "Orchestrator Agent Delegation Pattern",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "sub-agents",
+      "orchestration",
+      "parallel-execution",
+      "code-review",
+      "delegation-pattern",
+      "context-management"
+    ],
+    "video_id": "P60LqQg1RH8",
+    "video_title": "Stop Using Claude Code Like This (Use Sub-Agents Instead)",
+    "has_visual_support": false,
+    "content_preview": "A powerful sub-agent workflow where the main agent acts purely as a coordinator, never writing code itself. The user instructs the main agent to:\n\n1. **Analyze the implementation plan** for phases/tas",
+    "content_full": "A powerful sub-agent workflow where the main agent acts purely as a coordinator, never writing code itself. The user instructs the main agent to:\n\n1. **Analyze the implementation plan** for phases/tasks that can run in parallel\n2. **Create parallel tracks** (called \"waves\") grouping independent tasks\n3. **Kick off coding agents** for each track simultaneously\n4. **Hand off completed code to review agents** for quality feedback\n5. **Cycle coder \u2194 reviewer** until changes are fully implemented\n6. **Launch final review agents** (3 reviewers from different perspectives) after all tracks complete\n\nThe key instruction is: \"I don't want you to write any code yourself. Your role is to coordinate the efforts between coding agents and code review agents.\" This transforms the main agent into a project manager that delegates all implementation to specialized sub-agents, preserving context window for coordination logic rather than consuming it on code generation."
+  },
+  {
+    "id": "philosophy-file-over-app-philosophy-225fc7",
+    "title": "File Over App Philosophy",
+    "type": "philosophy",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "file-over-app",
+      "data-ownership",
+      "obsidian",
+      "markdown",
+      "portability",
+      "kepano"
+    ],
+    "video_id": "Dq3R3uS0sQ4",
+    "video_title": "How the CEO of Obsidian Takes his Notes (Underrated Genius)",
+    "has_visual_support": false,
+    "content_preview": "Obsidian CEO Steph (Kepano) builds his note-taking system on the 'File Over App' philosophy \u2014 the principle that your data should outlast the software you use to create it. In Obsidian, a vault is lit",
+    "content_full": "Obsidian CEO Steph (Kepano) builds his note-taking system on the 'File Over App' philosophy \u2014 the principle that your data should outlast the software you use to create it. In Obsidian, a vault is literally just a folder of markdown (text) files on your filesystem.\n\nCore implications:\n1. **No vendor lock-in**: Notes exist as plain `.md` files independent of Obsidian\n2. **Data survivability**: If the software breaks down, everything you wrote still exists\n3. **Portability**: Files can be opened by any text editor\n4. **Ownership**: You control your data, not the application\n\nAs demonstrated in Kepano's template vault, this philosophy shapes every design decision \u2014 from flat folder structures to property-based organization. The vault is not a database trapped inside an app; it's a folder you happen to view through Obsidian."
+  },
+  {
+    "id": "philosophy-deterministic-scripts-over-llm-66b3d2",
+    "title": "Deterministic Scripts Over LLM Repetition",
+    "type": "philosophy",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "deterministic-code",
+      "token-efficiency",
+      "scripting",
+      "automation",
+      "cost-optimization",
+      "reproducibility"
+    ],
+    "video_id": "Wj-505ECkXU",
+    "video_title": "Coding Agents in Obsidian (ft Artem Zhutov) - Ep 67",
+    "has_visual_support": false,
+    "content_preview": "Once a task becomes repeatable, delegating it to an LLM every time wastes tokens and money. Instead, encode the task as a deterministic script that the coding assistant can invoke, producing predictab",
+    "content_full": "Once a task becomes repeatable, delegating it to an LLM every time wastes tokens and money. Instead, encode the task as a deterministic script that the coding assistant can invoke, producing predictable, fast, and cheap output every single time.\n\nKey principles:\n1. **Identify repeatable patterns**: When you find yourself asking the LLM the same type of question repeatedly, that's a signal to scriptify\n2. **Leverage deterministic code**: Scripts produce identical output for identical input \u2014 no variance, no hallucination\n3. **Token economics**: A script call costs zero LLM tokens versus potentially thousands for a natural language request\n4. **Predictability**: Scripts give reliable, reproducible results rather than probabilistic LLM responses\n5. **Speed**: Script execution is near-instant compared to LLM inference latency\n\nAs the host states: \"Once you get a repeatable task, asking an LM to do it every single time is a lot of tokens wasted, a lot of money spent when you can just have a script.\""
+  },
+  {
+    "id": "philosophy-plan-quality-determines-output-ba27bb",
+    "title": "Plan Quality Determines Output",
+    "type": "philosophy",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "planning",
+      "token-efficiency",
+      "ai-slop",
+      "context-engineering",
+      "requirements-quality"
+    ],
+    "video_id": "zxMjOqM7DFs",
+    "video_title": "Claude Code Clearly Explained (and how to use it)",
+    "has_visual_support": false,
+    "content_preview": "A core principle that investment in planning directly reduces total token spend and improves output quality. The better the plan and initial set of documents you give the model, the better the outcome",
+    "content_full": "A core principle that investment in planning directly reduces total token spend and improves output quality. The better the plan and initial set of documents you give the model, the better the outcome \u2014 and better outcomes eliminate costly back-and-forth correction loops.\n\nThe failure pattern without planning:\n1. Basic plan with vague requirements\n2. Claude makes assumptions and builds\n3. Output doesn't match intent (\"AI slop\")\n4. Multiple correction loops burning tokens\n5. User blames the model, but the problem is insufficient specification\n\nKey quote: \"If you invest the time in the planning stage, I 100% believe you'll save a lot more money.\" Another: \"If you don't have the audacity or the decency to set up a little extra time to plan, then I guarantee whatever you generate is going to be AI slop. And you might blame the model, but really the problem is you.\"\n\nThis reframes AI output quality as an input problem, not a model problem."
+  },
+  {
+    "id": "technique-context-clean-agent-handoff-cd6bdb",
+    "title": "Context-Clean Agent Handoff",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "context-management",
+      "bmad-method",
+      "agent-handoff",
+      "context-rot",
+      "session-management",
+      "compaction"
+    ],
+    "video_id": "LorEJPrALcg",
+    "video_title": "The Official BMad-Method Masterclass (The Complete IDE Workflow)",
+    "has_visual_support": false,
+    "content_preview": "A workflow technique in the BMAD method where each agent interaction starts with a fresh context window, using only the document artifacts from the previous phase \u2014 never the raw chat history.\n\nStep-b",
+    "content_full": "A workflow technique in the BMAD method where each agent interaction starts with a fresh context window, using only the document artifacts from the previous phase \u2014 never the raw chat history.\n\nStep-by-step workflow:\n1. Complete work with current agent (e.g., business analyst \u2192 project brief)\n2. Save output to a document file in the IDE\n3. Clear context using `/clear` (preferred) or kill and restart the session\n4. Load the next agent (e.g., product manager)\n5. Provide the saved document as input to kickstart the new session\n\nCritical anti-patterns to avoid:\n- **Do NOT use compaction** \u2014 it randomly forgets important things\n- **Do NOT continue in the same chat** \u2014 even though Claude Code could handle 3 agents in a row without hitting limits\n- If the IDE shows a compaction warning, you've been in the chat too long \u2014 wrap up immediately\n\nThe benefit: \"It's not getting polluted. It only has the output from the brainstorming session. And so it just keeps it lean.\""
+  },
+  {
+    "id": "technique-technology-stack-pinning-patte-5fc1fd",
+    "title": "Technology Stack Pinning Pattern",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "technology-stack",
+      "version-pinning",
+      "consistency",
+      "agent-constraints",
+      "bmad-method",
+      "architecture"
+    ],
+    "video_id": "LorEJPrALcg",
+    "video_title": "The Official BMad-Method Masterclass (The Complete IDE Workflow)",
+    "has_visual_support": false,
+    "content_preview": "During architecture creation, the BMad Architect generates a table of all specific versions and technologies for the project. This table is later sharded into a separate document that the dev agent al",
+    "content_full": "During architecture creation, the BMad Architect generates a table of all specific versions and technologies for the project. This table is later sharded into a separate document that the dev agent always references.\n\nWhy this matters:\n1. **Prevents technology drift**: Without a pinned stack, agents may silently swap frameworks (e.g., replacing Jest with another test framework when encountering errors)\n2. **Ensures consistency**: All agents reference the same libraries, packages, and versions throughout development\n3. **Catches sneaky substitutions**: LLMs sometimes install new packages rather than fixing issues with existing ones, especially when the human isn't watching closely\n4. **Version accuracy**: Tell the architect to use web search to verify latest/best versions of each technology\n\nAs warned: \"Instead of trying to fix it, it might be sneaky and just try to install a whole new test framework without you noticing.\" The pinned tech stack document acts as a constraint that prevents this divergence."
+  },
+  {
+    "id": "technique-multi-tab-plan-then-execute-wo-589893",
+    "title": "Multi-Tab Plan-Then-Execute Workflow",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "parallel-sessions",
+      "plan-mode",
+      "auto-accept",
+      "multi-tab-workflow",
+      "claude-code",
+      "agent-management"
+    ],
+    "video_id": "DW4a1Cm8nG4",
+    "video_title": "I got a private lesson on Claude Cowork & Claude Code",
+    "has_visual_support": false,
+    "content_preview": "An Anthropic engineer's primary workflow for Claude Code involves running multiple terminal tabs in parallel, each with a separate git checkout. The process follows a consistent pattern:\n\n1. **Start t",
+    "content_full": "An Anthropic engineer's primary workflow for Claude Code involves running multiple terminal tabs in parallel, each with a separate git checkout. The process follows a consistent pattern:\n\n1. **Start task in Tab 1** \u2014 ask Claude to make a plan\n2. **While Tab 1 thinks, move to Tab 2** \u2014 kick off a second plan\n3. **Continue to Tab 3** \u2014 start another plan\n4. **Circle back to Tab 1** \u2014 review the plan, iterate if needed\n5. **Once plan looks good, switch to auto-accept edits mode** \u2014 Claude executes the plan\n6. **Repeat across tabs** \u2014 \"tending to the Claudes, making sure they're unblocked, answering their questions\"\n\nThe key insight is that with Opus 4.5, once the plan is solid, the model can execute it \"pretty much perfectly\" \u2014 a significant improvement over previous models. The engineer's role shifts from writing code to managing parallel agent sessions and reviewing plans."
+  },
+  {
+    "id": "technique-iterative-plan-mode-workflow-bda20e",
+    "title": "Iterative Plan Mode Workflow",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "plan-mode",
+      "iterative-planning",
+      "claude-code",
+      "one-shot-execution",
+      "planning-workflow",
+      "shift-tab"
+    ],
+    "video_id": "AkG-BZ-708U",
+    "video_title": "The creator of Claude Code just revealed his INSANE workflow (must watch)",
+    "has_visual_support": false,
+    "content_preview": "Boris Cherny considers plan mode the most important step in his entire workflow. He always starts sessions in plan mode and iterates multiple times before executing.\n\nStep-by-step process:\n1. **Enter ",
+    "content_full": "Boris Cherny considers plan mode the most important step in his entire workflow. He always starts sessions in plan mode and iterates multiple times before executing.\n\nStep-by-step process:\n1. **Enter plan mode**: Hit Shift+Tab twice in Claude Code\n2. **Describe your goal**: Provide initial feature or task description\n3. **Don't accept the first plan**: Always go back and forth multiple times\n4. **Ask Claude to ask you questions**: Prompt it to elicit more details about what you're looking for\n5. **Refine until comprehensive**: The more detailed the plan, the better the one-shot execution\n\nBoris claims most of his apps can be **one-shot** because his plan mode is so thorough. The principle: spending extra time in planning saves a tremendous amount of time in execution.\n\nThis is described as 'the closest thing to AGI' \u2014 a well-planned Claude Code session can build entire features in a single execution pass."
+  },
+  {
+    "id": "pattern-database-table-naming-conventi-99c756",
+    "title": "Database Table Naming Convention",
+    "type": "pattern",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "database-design",
+      "naming-conventions",
+      "snake-case",
+      "sql",
+      "erd",
+      "schema-design"
+    ],
+    "video_id": "Lim_T_BJ8-s",
+    "video_title": "Designing a Database Like a Senior Engineer (ERD & PRD)",
+    "has_visual_support": false,
+    "content_preview": "When designing database tables, table names should always follow three rules:\n\n1. **Lowercase**: Never use uppercase letters in table names (e.g., `users` not `User` or `Users`)\n2. **Plural**: Table n",
+    "content_full": "When designing database tables, table names should always follow three rules:\n\n1. **Lowercase**: Never use uppercase letters in table names (e.g., `users` not `User` or `Users`)\n2. **Plural**: Table names should be plural because a table stores multiple records, not a single one (e.g., `portfolios` not `portfolio`)\n3. **Snake case**: Use underscores to separate words rather than camelCase or kebab-case (e.g., `user_preferences` not `userPreferences`)\n\nThe rationale for plural naming is straightforward: a table contains multiple records, so the name should reflect that collection. Snake case is the SQL convention and becomes especially important when creating joins and relationships between tables \u2014 consistent naming avoids confusion in relationship definitions. While JavaScript projects typically use camelCase, database schemas should always use snake_case to follow SQL conventions."
+  },
+  {
+    "id": "pattern-join-table-many-to-many-b7346f",
+    "title": "Join Table Many-to-Many",
+    "type": "pattern",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "join-table",
+      "many-to-many",
+      "junction-table",
+      "foreign-key",
+      "database-design",
+      "erd"
+    ],
+    "video_id": "Lim_T_BJ8-s",
+    "video_title": "Designing a Database Like a Senior Engineer (ERD & PRD)",
+    "has_visual_support": false,
+    "content_preview": "A many-to-many relationship between two database tables cannot be represented by a direct connection. Instead, you create an intermediary table \u2014 variously called a **join table**, **junction table**,",
+    "content_full": "A many-to-many relationship between two database tables cannot be represented by a direct connection. Instead, you create an intermediary table \u2014 variously called a **join table**, **junction table**, or **bridge table** \u2014 that holds foreign keys referencing both original tables.\n\nImplementation steps:\n1. **Identify the many-to-many relationship** from your PRD (e.g., \"many users can watch many stocks\")\n2. **Create the join table** (e.g., `watch_list_items`) with its own primary key\n3. **Add a foreign key** to the first table (e.g., `user_id` referencing `users.id`) \u2014 this creates a one-to-many from users to the join table\n4. **Add a foreign key** to the second table (e.g., `stock_id` referencing `stocks.id`) \u2014 this creates a one-to-many from stocks to the join table\n5. **Result**: Two one-to-many relationships combine to form a single many-to-many relationship\n\nThe join table essentially decomposes an M:N relationship into two 1:N relationships, which relational databases can natively enforce with foreign key constraints."
+  },
+  {
+    "id": "technique-enforcing-one-to-one-via-uniqu-a511de",
+    "title": "Enforcing One-to-One via Unique Foreign Key",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "one-to-one-relationship",
+      "unique-constraint",
+      "foreign-key",
+      "database-design",
+      "erd"
+    ],
+    "video_id": "Lim_T_BJ8-s",
+    "video_title": "Designing a Database Like a Senior Engineer (ERD & PRD)",
+    "has_visual_support": false,
+    "content_preview": "To create a true one-to-one relationship in a relational database, simply having a foreign key is insufficient \u2014 the foreign key column must also be marked as unique. Without the unique constraint, th",
+    "content_full": "To create a true one-to-one relationship in a relational database, simply having a foreign key is insufficient \u2014 the foreign key column must also be marked as unique. Without the unique constraint, the relationship is technically one-to-many, since multiple rows could reference the same parent.\n\nImplementation steps:\n1. **Create the child table** with a foreign key column referencing the parent (e.g., `user_id` in a `user_preferences` table)\n2. **Add a unique constraint** to the foreign key column (e.g., `user_id STRING UNIQUE`)\n3. **Verify the constraint** ensures only one child record can exist per parent record\n\nExample: A `user_preferences` table has a `user_id` foreign key. Without `UNIQUE`, multiple preferences rows could reference the same user, breaking the intended one-to-one semantics. Adding `UNIQUE` to `user_id` enforces exactly one preferences record per user."
+  },
+  {
+    "id": "technique-slash-today-daily-workflow-343b9a",
+    "title": "Slash-Today Daily Workflow",
+    "type": "technique",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "slash-command",
+      "daily-workflow",
+      "task-management",
+      "obsidian",
+      "automation",
+      "frontmatter"
+    ],
+    "video_id": "oBho3hZ7MHM",
+    "video_title": "Claude Code for product managers: research, writing, context libraries, custom to-do system, more",
+    "has_visual_support": false,
+    "content_preview": "Teresa Torres built a `/today` slash command in Claude Code that generates her daily to-do list every morning. She runs it daily, including weekends, as her first action with coffee.\n\nWorkflow steps:\n",
+    "content_full": "Teresa Torres built a `/today` slash command in Claude Code that generates her daily to-do list every morning. She runs it daily, including weekends, as her first action with coffee.\n\nWorkflow steps:\n1. **Trello sync**: Checks Trello board via MCP for any new cards from team coordination\n2. **Task search**: Python script searches the tasks folder for markdown files with today's due date (via YAML frontmatter)\n3. **Overdue scan**: Surfaces past-due tasks that haven't been completed\n4. **Ideas surfacing**: Pulls in-progress items from the ideas folder for long-term project visibility\n5. **Research digest**: Appends daily research query results and papers to review\n6. **File generation**: Outputs a `today` markdown file viewable in Obsidian with all items consolidated\n\nThe task structure uses Obsidian frontmatter (YAML) with fields: `type: task`, `due: <date>`, and `tags: [...]`. Claude reads these structured files to filter and prioritize automatically."
+  },
+  {
+    "id": "philosophy-context-storage-as-highest-lev-f616a5",
+    "title": "Context Storage as Highest Leverage",
+    "type": "philosophy",
+    "confidence": 0.788,
+    "score": 0.844,
+    "keywords": [
+      "executable-context",
+      "obsidian",
+      "context-leverage",
+      "files-over-apps",
+      "personal-productivity",
+      "brain-dump"
+    ],
+    "video_id": "G9S5DgmNBaM",
+    "video_title": "Get ahead of 99% of Claude Code users",
+    "has_visual_support": false,
+    "content_preview": "Storing personal context \u2014 goals, tasks, session logs, brain dumps \u2014 in a local folder (Obsidian vault) and making it accessible to Claude Code is the highest-leverage action for AI productivity. The ",
+    "content_full": "Storing personal context \u2014 goals, tasks, session logs, brain dumps \u2014 in a local folder (Obsidian vault) and making it accessible to Claude Code is the highest-leverage action for AI productivity. The speaker references Kepano (CEO of Obsidian): \"English right now is a programming language.\"\n\nThe key insight is that notes are no longer static \u2014 they become executable context that an agent can act upon. Practical examples demonstrated:\n1. **Task management**: Claude reads tasks from Obsidian and opens dashboards\n2. **Goal review**: Morning routine pulls goals from markdown files\n3. **Brain dump processing**: Voice-record thoughts on a walk \u2192 transcribe with Gemini Flash \u2192 Claude analyzes the transcript with full context of goals and tasks \u2192 generates actionable items\n\nThe differentiator is not what model you use but how you store and feed context to your agent. Centralizing all context in one local folder (rather than scattering across Notion, Apple Notes, etc.) gives the agent complete awareness for decision-making."
+  },
+  {
+    "id": "philosophy-human-in-the-loop-qa-strategy-27b585",
+    "title": "Human-in-the-Loop QA Strategy",
+    "type": "philosophy",
+    "confidence": 0.784,
+    "score": 0.842,
+    "keywords": [
+      "human-in-the-loop",
+      "quality-assurance",
+      "taste",
+      "generate-and-select",
+      "ai-strategy",
+      "curation"
+    ],
+    "video_id": "4pAt0DP-x50",
+    "video_title": "how to stay economically valuable from 2026-2029",
+    "has_visual_support": false,
+    "content_preview": "The game-optimal strategy for using AI models is a two-phase generate-then-select workflow where AI handles quantity and humans handle quality judgment. AI's current competitive advantage is producing",
+    "content_full": "The game-optimal strategy for using AI models is a two-phase generate-then-select workflow where AI handles quantity and humans handle quality judgment. AI's current competitive advantage is producing extraordinarily high quantities of \"pretty good\" work very quickly, but with variance in output quality.\n\nThe optimal workflow:\n1. **Generate at volume**: Produce many outputs (designs, code, content) \u2014 e.g., 100 designs in one-tenth the time of creating one manually\n2. **Human QA selection**: A human reviews outputs and selects the best ones, exercising taste and judgment\n3. **Collapse the possibility space**: From all possible generations, the human selects the actually good output\n\nAs a concrete example, a thumbnail generator produces 8 variations in 5-10 seconds \u2014 more output than an hour of manual work. The human simply scrolls through, picks the best one, and downloads it. AI currently lacks the ability to reliably self-evaluate why one output is better than another, making human taste the critical bottleneck. This dynamic is unlikely to change in the next few years, especially as human taste itself grows more refined through massive cultural exposure."
+  },
+  {
+    "id": "philosophy-protect-main-thread-first-fb2240",
+    "title": "Protect Main Thread First",
+    "type": "philosophy",
+    "confidence": 0.784,
+    "score": 0.842,
+    "keywords": [
+      "context-window",
+      "token-management",
+      "sub-agents",
+      "compaction",
+      "main-thread"
+    ],
+    "video_id": "P60LqQg1RH8",
+    "video_title": "Stop Using Claude Code Like This (Use Sub-Agents Instead)",
+    "has_visual_support": false,
+    "content_preview": "The central principle of effective Claude Code usage is protecting the main conversation thread from token bloat. The main agent's context window is the most valuable and constrained resource in any a",
+    "content_full": "The central principle of effective Claude Code usage is protecting the main conversation thread from token bloat. The main agent's context window is the most valuable and constrained resource in any agentic coding session.\n\n\"Instead, what you want to do is protect this main thread as much as possible. And the best way to do that is to try and offload a lot of work to sub agents.\"\n\nPractical evidence from the tutorial:\n- Without sub-agents: planning alone consumes ~60% of main context\n- With sub-agents: same planning task uses only ~26% of main context\n- On large codebases with complicated tech stacks, the savings are even more dramatic\n- Sub-agents that consume 40-50K tokens each only add a small summary back to the main thread\n\nThe failure mode this prevents is repeated compaction \u2014 \"if you've ever used agentic coding and you keep running into compacting issues, then you know exactly what a problem that can be.\""
+  },
+  {
+    "id": "philosophy-ai-code-ownership-discipline-26f30d",
+    "title": "AI Code Ownership Discipline",
+    "type": "philosophy",
+    "confidence": 0.784,
+    "score": 0.842,
+    "keywords": [
+      "code-review",
+      "prompt-engineering",
+      "plan-mode",
+      "security",
+      "developer-discipline",
+      "production-readiness"
+    ],
+    "video_id": "Ffh9OeJ7yxw",
+    "video_title": "800+ hours of Learning Claude Code in 8 minutes (2026 tutorial / unknown tricks / newest model)",
+    "has_visual_support": false,
+    "content_preview": "Two core mindset principles from 800+ hours of Claude Code usage that drive the biggest productivity gains:\n\n**1. Garbage In, Garbage Out**:\n- If you can't write a clear prompt, you don't actually kno",
+    "content_full": "Two core mindset principles from 800+ hours of Claude Code usage that drive the biggest productivity gains:\n\n**1. Garbage In, Garbage Out**:\n- If you can't write a clear prompt, you don't actually know what you want\n- Learning basic prompt engineering forces you to decompose problems into smaller pieces\n- This decomposition clarifies your own thinking as a side benefit\n- When ideas are vague, use **plan mode** for a Q&A session with clarifying questions before any code generation\n\n**2. AI Generates Code, Humans Own It**:\n- Before pushing to production, start a **fresh session** and have AI review the files it recently touched\n- Never become lazy about fundamentals: security, performance, error handling\n- Ignoring review leads to accumulated vulnerabilities and bugs over time\n- \"Speed means nothing if your app is buggy or insecure\"\n\nBoth principles emphasize that AI amplifies developer discipline rather than replacing it."
+  },
+  {
+    "id": "technique-obsidian-context-injection-wor-29d574",
+    "title": "Obsidian Context Injection Workflow",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "obsidian",
+      "context-injection",
+      "files-over-apps",
+      "linear-integration",
+      "knowledge-management",
+      "planning"
+    ],
+    "video_id": "1O6PH3mpYgI",
+    "video_title": "You're Not Behind on AI. You're Just Overcomplicating It.",
+    "has_visual_support": false,
+    "content_preview": "Leveraging Obsidian's markdown-based architecture to provide rich context to Claude Code during implementation planning. The workflow bridges the gap between note-taking/requirements gathering and AI-",
+    "content_full": "Leveraging Obsidian's markdown-based architecture to provide rich context to Claude Code during implementation planning. The workflow bridges the gap between note-taking/requirements gathering and AI-assisted coding.\n\nWorkflow steps:\n1. **Gather context**: Take notes in Obsidian during meetings, problem-solving sessions, or from meeting transcriptions\n2. **Tag by issue**: Organize notes by Linear issue ID for easy retrieval\n3. **Point Claude Code at Obsidian folder**: Since Obsidian files are just markdown, Claude Code works with them natively\n4. **Automated retrieval in skill**: Skill searches Obsidian vault for notes matching the Linear issue ID\n5. **Context-informed planning**: The retrieved notes inform the implementation plan\n\nThe key insight is that Obsidian's \"files over apps\" architecture makes it naturally compatible with file-based AI tools like Claude Code. The speaker notes: \"one of the nice things about Claude Code is it just works with files. Like it's great at that.\""
+  },
+  {
+    "id": "technique-template-driven-base-setup-858f68",
+    "title": "Template-Driven Base Setup",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "obsidian-bases",
+      "templates",
+      "properties",
+      "project-setup",
+      "workflow"
+    ],
+    "video_id": "6UZemN4EVA0",
+    "video_title": "How To Easily Organize Projects & Tasks With Obsidian Bases \ud83d\ude80 \ud83d\udcdd",
+    "has_visual_support": false,
+    "content_preview": "A technique for bootstrapping Obsidian Bases with all required properties by creating a template file that pre-defines every property the Base needs to display.\n\nWorkflow:\n1. Create a new note in the ",
+    "content_full": "A technique for bootstrapping Obsidian Bases with all required properties by creating a template file that pre-defines every property the Base needs to display.\n\nWorkflow:\n1. Create a new note in the templates folder\n2. Add the 'kind' property (set to 'project' or relevant type)\n3. Add all desired properties: status, priority, due date, tags, cover image, description, topics\n4. Save as the project template\n5. When this template note exists inside the Base's filter scope, all its properties automatically appear in the Base's selectable property list\n\nThis solves a key Bases limitation: properties can only be added as columns if they already exist in at least one file within the filtered set. By creating a template with all properties pre-defined, you unlock the full column set immediately. New notes can then be created directly from the Base's 'new' button, inheriting the property structure without needing to manually insert templates."
+  },
+  {
+    "id": "technique-obsidian-ai-setup-recommendati-52e489",
+    "title": "Obsidian AI Setup Recommendations",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "obsidian-setup",
+      "ai-experimentation",
+      "vault-separation",
+      "claude-code",
+      "incremental-adoption",
+      "workflow"
+    ],
+    "video_id": "y6YTk0C5pBY",
+    "video_title": "Obsidian Just Won",
+    "has_visual_support": false,
+    "content_preview": "The speaker provides a three-step approach for getting started with Obsidian in the AI era, emphasizing safety and incremental adoption.\n\nRecommended setup:\n1. **Start simple**: Set up Obsidian withou",
+    "content_full": "The speaker provides a three-step approach for getting started with Obsidian in the AI era, emphasizing safety and incremental adoption.\n\nRecommended setup:\n1. **Start simple**: Set up Obsidian without overengineering it. Go one step at a time rather than configuring everything at once\n2. **Separate AI vault**: Create a secondary vault specifically for AI experimentation, distinct from your primary vault. This provides a safe space where changes can be easily reverted without risking your \"trusted digital home.\" Point Claude Code or other AI agents at this secondary vault to test AI functionality\n3. **Self-compassion**: Don't worry about past missteps with other apps. Break the app-switching cycle by making Obsidian your \"thinking forever home\"\n\nThe separation of vaults is particularly important \u2014 it lets you stay current with AI capabilities while protecting your accumulated knowledge. The speaker specifically mentions Claude Code as the recommended AI agent for reading and editing Obsidian files directly on your computer."
+  },
+  {
+    "id": "philosophy-never-read-state-files-9c30cf",
+    "title": "Never Read State Files",
+    "type": "philosophy",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "gsd-framework",
+      "agent-autonomy",
+      "state-management",
+      "human-in-the-loop",
+      "delegation"
+    ],
+    "video_id": "5L3dm7KBCmY",
+    "video_title": "I Created GSD For Claude Code. This Is How I Use It.",
+    "has_visual_support": false,
+    "content_preview": "A key operational principle in GSD: once the project kicks off and files like the project brief, planning file, and decisions table are created, the human operator never reads these files directly.\n\nT",
+    "content_full": "A key operational principle in GSD: once the project kicks off and files like the project brief, planning file, and decisions table are created, the human operator never reads these files directly.\n\nThe principle in practice:\n1. **Files are for the agent**: The project brief, state files, and planning documents exist for Claude's context, not for human consumption\n2. **Human role is minimal**: \"The only thing I do is the things that it can't do on its own\"\n3. **Decisions table auto-updates**: Key decisions are tracked and updated automatically as the project evolves\n4. **Trust the system**: The human delegates project state management entirely to the GSD framework\n\nAs stated: \"I never read these files. At this point, I do not read my project. I don't read the state. I don't read any of these files once I get started.\" This reinforces the Level 3 Agent OS philosophy where the human acts as supervisor rather than participant."
+  },
+  {
+    "id": "philosophy-resist-mid-build-deviation-e127a4",
+    "title": "Resist Mid-Build Deviation",
+    "type": "philosophy",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "gsd-framework",
+      "iterative-development",
+      "milestone-discipline",
+      "completion-over-perfection",
+      "development-philosophy"
+    ],
+    "video_id": "5L3dm7KBCmY",
+    "video_title": "I Created GSD For Claude Code. This Is How I Use It.",
+    "has_visual_support": false,
+    "content_preview": "A key discipline in GSD milestone-driven development is resisting the urge to deviate from the plan during execution. Even when the current milestone's output is imperfect, completing it as planned is",
+    "content_full": "A key discipline in GSD milestone-driven development is resisting the urge to deviate from the plan during execution. Even when the current milestone's output is imperfect, completing it as planned is more valuable than pivoting mid-stream.\n\nCore argument:\n1. **Completion over perfection**: \"Even if the final product of milestone one isn't perfect, it will still get you to a point where in theory you've got something built\"\n2. **Cumulative quality**: \"It often takes a few milestones to get it to a point of being like, 'Ah, okay. This is now something I want to share with people'\"\n3. **Mid-build temptation**: \"I know it's super tempting mid-build to start making changes and to be like, 'Oh, I want to deviate'\"\n4. **Structured iteration**: Quality improvements belong in the next milestone's discuss phase, not as ad-hoc changes during execution\n\nThis mirrors the broader GSD philosophy of structured phases over reactive coding."
+  },
+  {
+    "id": "philosophy-solo-builder-capability-shift-6bba04",
+    "title": "Solo Builder Capability Shift",
+    "type": "philosophy",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "solo-development",
+      "ai-coding",
+      "capability-shift",
+      "vibe-coding",
+      "code-quality"
+    ],
+    "video_id": "QPAy9R9V1rA",
+    "video_title": "Screensharing Kevin Rose's AI Workflow/New App",
+    "has_visual_support": false,
+    "content_preview": "Kevin Rose describes a fundamental shift in what a single person can accomplish with AI coding tools. Projects that previously required teams are now achievable by a solo engineer-designer, and the qu",
+    "content_full": "Kevin Rose describes a fundamental shift in what a single person can accomplish with AI coding tools. Projects that previously required teams are now achievable by a solo engineer-designer, and the quality has crossed a critical threshold where the output is no longer dismissible as \"AI slop.\"\n\nHis framing: \"Things that are technically out of bounds for you \u2014 things that you just think that you cannot do \u2014 are very much possible as a solo engineer, solo designer.\" He notes the code quality is \"damn good and it's getting better by the week.\"\n\nKey observations:\n1. **Capability boundary has expanded** \u2014 previously impossible solo projects are now feasible\n2. **Quality threshold crossed** \u2014 output no longer warrants the \"slop\" label\n3. **Weekly improvement cadence** \u2014 tools are getting better at a rapid pace\n4. **Solo = team-equivalent** \u2014 one person can match what required a team\n\nRose demonstrates this by building a Techmeme competitor in roughly one week as a solo builder."
+  },
+  {
+    "id": "technique-ai-sparring-partner-pattern-39c579",
+    "title": "AI Sparring Partner Pattern",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "compound-engineering",
+      "claude-code",
+      "ai-advisor",
+      "technology-selection",
+      "iterative-prototyping"
+    ],
+    "video_id": "QPAy9R9V1rA",
+    "video_title": "Screensharing Kevin Rose's AI Workflow/New App",
+    "has_visual_support": false,
+    "content_preview": "Kevin Rose describes a tiered approach to using AI in product development, where the level of AI involvement scales with the complexity and uncertainty of the task.\n\nDecision framework:\n1. **Minor fea",
+    "content_full": "Kevin Rose describes a tiered approach to using AI in product development, where the level of AI involvement scales with the complexity and uncertainty of the task.\n\nDecision framework:\n1. **Minor feature tweak**: Use compound engineering on Claude Code directly \u2014 describe the idea, let AI implement it in a workflow\n2. **Bigger idea with unknown technology choices**: Use AI as a \"sparring partner\" to evaluate options before committing\n\nConcrete example: When choosing a news clustering algorithm, Rose faced ~10 competing options. He used AI to narrow to the top 2 recommendations, then implemented both (hence \"clusters V2\" in the URL \u2014 the second algorithm outperformed the first). The first implementation was discarded entirely.\n\nThis pattern separates AI's role as **implementer** (for known tasks) from **advisor** (for technology selection and architectural decisions), preventing premature commitment to wrong approaches."
+  },
+  {
+    "id": "technique-specialized-agent-workflow-e71761",
+    "title": "Specialized Agent Workflow",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "agent-specialization",
+      "sub-agents",
+      "code-review",
+      "model-selection",
+      "workflow"
+    ],
+    "video_id": "P60LqQg1RH8",
+    "video_title": "Stop Using Claude Code Like This (Use Sub-Agents Instead)",
+    "has_visual_support": false,
+    "content_preview": "A practical workflow for utilizing sub-agents involves creating specialized agents with distinct roles, each with tailored system prompts and model selections appropriate to their task.\n\nRecommended a",
+    "content_full": "A practical workflow for utilizing sub-agents involves creating specialized agents with distinct roles, each with tailored system prompts and model selections appropriate to their task.\n\nRecommended agent team setup:\n1. **UI Expert agent**: Specialized design rules baked into system prompt (e.g., neo-brutalism style), handles all styling changes\n2. **Coder agent**: Experienced developer persona focused on performant, secure, well-commented code following best practices. Recommended model: Opus (or Sonnet for cost savings)\n3. **Code Reviewer agent**: Reviews completeness against requirements, ensures security, performance, modularity, and maintainability. Model: Haiku works well \u2014 \"Haiku actually does a really good job at identifying any glaring issues\"\n\nThe key insight is that specialized instructions only need to exist in the sub-agent's prompt, not the main agent's context. Company-specific coding practices and naming conventions can be added to both the coder and reviewer agents."
+  },
+  {
+    "id": "philosophy-context-window-preservation-vi-7ed76c",
+    "title": "Context Window Preservation Via Sub-Agents",
+    "type": "philosophy",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "context-window",
+      "compaction",
+      "sub-agents",
+      "context-preservation",
+      "scalability"
+    ],
+    "video_id": "P60LqQg1RH8",
+    "video_title": "Stop Using Claude Code Like This (Use Sub-Agents Instead)",
+    "has_visual_support": false,
+    "content_preview": "Sub-agents fundamentally solve the context window exhaustion problem for large projects. Without sub-agents, a single-threaded agent implementing a multi-phase project would realistically reach phase ",
+    "content_full": "Sub-agents fundamentally solve the context window exhaustion problem for large projects. Without sub-agents, a single-threaded agent implementing a multi-phase project would realistically reach phase 8 or 9 before needing to compact the conversation, dropping critical context in the process.\n\nWith the orchestrator-delegation pattern, the demonstrated project was fully implemented using only 58-68% of the context window. Key insight: \"For something of this size you really wouldn't be able to do this in a single thread, not even close.\"\n\nBenefits observed:\n1. **No compaction needed** \u2014 the main conversation stays lean since sub-agents carry the implementation burden\n2. **Context budget for bug fixes** \u2014 remaining 32-42% available for post-build iteration\n3. **Autocompact warning at 87%** \u2014 appeared only during final bug-fix phase, well after core implementation\n\nThis demonstrates that sub-agents aren't just a speed optimization \u2014 they're a context management strategy."
+  },
+  {
+    "id": "technique-ask-user-question-planning-26b919",
+    "title": "Ask User Question Planning",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "planning",
+      "ask-user-question",
+      "claude-code",
+      "requirements-gathering",
+      "token-efficiency"
+    ],
+    "video_id": "zxMjOqM7DFs",
+    "video_title": "Claude Code Clearly Explained (and how to use it)",
+    "has_visual_support": false,
+    "content_preview": "A technique for generating high-quality plans in Claude Code by explicitly instructing the model to use the Ask User Question tool during planning. Instead of accepting the default plan mode (which as",
+    "content_full": "A technique for generating high-quality plans in Claude Code by explicitly instructing the model to use the Ask User Question tool during planning. Instead of accepting the default plan mode (which asks 2 basic questions then starts building), you specify that Claude should keep asking granular questions until it fully understands requirements.\n\nThe progressive questioning flow:\n1. **Initial questions**: Core workflow and technical foundation (database, hosting)\n2. **Second round**: UI/UX aesthetic preferences, AI model selection\n3. **Third round**: Feature-specific details (avatars, storage, video handling)\n4. **Continues until**: Claude has enough specificity to avoid assumptions\n\nWithout this technique, Claude makes assumptions about minute details you haven't considered \u2014 information architecture, storage strategy, component complexity \u2014 then burns tokens building the wrong thing. You end up in correction loops that cost more than the upfront planning would have."
+  },
+  {
+    "id": "philosophy-context-window-threshold-rule-ff07fd",
+    "title": "Context Window Threshold Rule",
+    "type": "philosophy",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "context-rot",
+      "context-window",
+      "session-management",
+      "token-limits",
+      "output-quality",
+      "fresh-context"
+    ],
+    "video_id": "zxMjOqM7DFs",
+    "video_title": "Claude Code Clearly Explained (and how to use it)",
+    "has_visual_support": false,
+    "content_preview": "A practical rule for managing Claude Code session context: never exceed 50% of the model's context window before starting a fresh session.\n\nThe reasoning by analogy: like a student in a class where th",
+    "content_full": "A practical rule for managing Claude Code session context: never exceed 50% of the model's context window before starting a fresh session.\n\nThe reasoning by analogy: like a student in a class where the professor keeps dumping information, at some point the model becomes \"overwhelmed\" and output quality deteriorates. Users who report \"I started off good but it started going bad\" are typically experiencing context saturation.\n\nSpecific thresholds:\n- **Opus model context**: 200,000 tokens total\n- **Recommended maximum**: ~100,000 tokens (50%)\n- **Conservative threshold**: Start new session at 40% usage\n- **Observable signal**: Claude Code and Cursor both show context usage percentage\n\nThis aligns with the broader concept of context rot \u2014 beyond a certain fill level, the model's ability to maintain coherent, high-quality output degrades significantly. The solution is simply starting fresh sessions proactively rather than pushing context limits."
+  },
+  {
+    "id": "technique-bmad-npx-installation-workflow-6454cf",
+    "title": "BMAD NPX Installation Workflow",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "bmad-installation",
+      "npx",
+      "project-setup",
+      "sharding",
+      "context-management",
+      "claude-code"
+    ],
+    "video_id": "LorEJPrALcg",
+    "video_title": "The Official BMad-Method Masterclass (The Complete IDE Workflow)",
+    "has_visual_support": false,
+    "content_preview": "The BMAD method installs into any project via a single NPX command without cloning the full GitHub repository. The repository clone is only needed for creating expansion packs, modifying the core syst",
+    "content_full": "The BMAD method installs into any project via a single NPX command without cloning the full GitHub repository. The repository clone is only needed for creating expansion packs, modifying the core system, or contributing to the project.\n\nInstallation steps:\n1. **Run installer**: `npx bmad-method install` from your dev directory\n2. **Specify project path**: Enter full path or relative path (e.g., `./simple-todo`); creates directory if it doesn't exist\n3. **Select modules**: Multi-select \u2014 choose BMAD Core for the agile AI-driven workflow\n4. **Enable PRD sharding**: Splits large PRD documents into smaller pieces for better agent context management\n5. **Enable architecture sharding**: Splits architecture files so agents load only what they need\n6. **Select target IDEs**: Multi-select with spacebar (supports Cursor, Claude Code, and others simultaneously)\n7. **Handle directory creation**: Confirm creation for new projects\n\nThe entire installation takes approximately 5 seconds once options are selected. It installs slash commands for agent activation and utility commands for non-agent operations."
+  },
+  {
+    "id": "technique-bmad-brainstorming-agent-workf-f60f8d",
+    "title": "BMAD Brainstorming Agent Workflow",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "bmad-method",
+      "brainstorming",
+      "business-analyst",
+      "workflow",
+      "claude-code",
+      "agent-interaction"
+    ],
+    "video_id": "LorEJPrALcg",
+    "video_title": "The Official BMad-Method Masterclass (The Complete IDE Workflow)",
+    "has_visual_support": false,
+    "content_preview": "The BMAD business analyst agent (\"Mary\") guides users through structured brainstorming using a multi-step interactive workflow inside Claude Code.\n\nWorkflow steps:\n1. **Launch agent**: Type `/` then s",
+    "content_full": "The BMAD business analyst agent (\"Mary\") guides users through structured brainstorming using a multi-step interactive workflow inside Claude Code.\n\nWorkflow steps:\n1. **Launch agent**: Type `/` then select or type the analyst agent name\n2. **Type `*help`** to see all available commands\n3. **Select brainstorm** (command #5) \u2014 optionally with or without a topic\n4. **Answer four intake questions**: topic, constraints, exploration breadth, parameters\n5. **Choose brainstorming mode**: (a) manually pick techniques, (b) agent-recommended, (c) random creative chaos, or (d) progressive creative journey (broad\u2192focused)\n6. **Work through each technique** interactively \u2014 typically 10-15 minutes per technique\n7. **Receive brainstorming document** saved to a `docs/` folder\n8. **Start a new chat session** before moving to the next phase\n\nCritical practice: Always start a fresh Claude session after receiving an output document, even if continuing with the same agent."
+  },
+  {
+    "id": "technique-hindsight-2020-elicitation-met-e5a943",
+    "title": "Hindsight 2020 Elicitation Method",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "elicitation",
+      "bmad-method",
+      "mvp-scoping",
+      "requirements-analysis",
+      "hindsight",
+      "prompt-engineering"
+    ],
+    "video_id": "LorEJPrALcg",
+    "video_title": "The Official BMad-Method Masterclass (The Complete IDE Workflow)",
+    "has_visual_support": false,
+    "content_preview": "The \"Hindsight is 2020\" (also called \"If Only\" brainstorm) is an advanced elicitation technique in the BMAD method for stress-testing requirements before building.\n\n**How it works:**\n1. The LLM review",
+    "content_full": "The \"Hindsight is 2020\" (also called \"If Only\" brainstorm) is an advanced elicitation technique in the BMAD method for stress-testing requirements before building.\n\n**How it works:**\n1. The LLM reviews all functional and non-functional requirements\n2. It imagines the application has been built and launched (6 months to 2 years out)\n3. It simulates a reflective conversation (e.g., a board meeting) generating \"if only we had...\" statements\n4. These statements surface scope risks, unrealistic requirements, and complexity traps\n\n**Example outputs from the technique:**\n- \"If only we had included basic team sharing features from the start\"\n- \"Non-functional requirement 1 might be unrealistic for bootstrap budget and single developer\"\n- \"What if we started with single device and added sync in phase 2?\"\n\n**Primary value:** Helps cut scope from the MVP by identifying features that add disproportionate complexity. This is described as \"the real agile way of product development\" \u2014 ship lean, test in market, then layer features."
+  },
+  {
+    "id": "technique-bmad-architect-workflow-option-d6a9ea",
+    "title": "BMad Architect Workflow Options",
+    "type": "technique",
+    "confidence": 0.78,
+    "score": 0.84,
+    "keywords": [
+      "bmad-method",
+      "architecture",
+      "project-types",
+      "brownfield",
+      "full-stack",
+      "workflow"
+    ],
+    "video_id": "LorEJPrALcg",
+    "video_title": "The Official BMad-Method Masterclass (The Complete IDE Workflow)",
+    "has_visual_support": false,
+    "content_preview": "The BMad Architect agent provides multiple architecture creation workflows depending on project type. Selection determines what templates, questions, and document structures are generated.\n\nArchitectu",
+    "content_full": "The BMad Architect agent provides multiple architecture creation workflows depending on project type. Selection determines what templates, questions, and document structures are generated.\n\nArchitecture types available:\n1. **Full-stack architecture**: Front-end and back-end together, either as a monorepo (e.g., Next.js) or separate repos (React + cloud service)\n2. **Backend architecture**: Service projects, utilities, CLIs \u2014 anything without a web/GUI front-end\n3. **Front-end architecture**: Web-only projects, or building a React app against an existing REST API\n4. **Brownfield architecture**: Existing projects requiring research from the analyst/PM phases to understand current state and constraints\n\nFor starter projects (e.g., Next.js + Supabase + Shadcn + Tailwind), generate the boilerplate first and share package.json/requirements.txt with the architect so it knows your existing technology stack before making decisions."
+  }
+]
