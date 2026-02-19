@@ -224,7 +224,7 @@ When should I invoke an external CLI tool?
 |   +-> hyperfine via Bash (time gives one noisy sample)
 |
 +-- Can I approximate with native tools?
-    +-> Use native tools (Read, Grep, LSP)
+    +-> Use native tools (Read, Grep)
 ```
 
 | Tool        | Category          | Speed      | Use Case                      |
@@ -264,14 +264,14 @@ filtering. WebFetch auto-upgrades HTTP to HTTPS and includes a
 15-minute cache.
 
 > **Do Not:** Use `WebFetch` for authenticated/private URLs (Google
-> Docs, Jira, Confluence). Use `ToolSearch` first to find an MCP
-> tool with authenticated access.
+> Docs, Jira, Confluence). Check for MCP tools (prefixed `mcp__`)
+> that provide authenticated access.
 
 ### MCP and IDE Tools
 
 When MCP tools are available (prefixed `mcp__`), prefer them for
-domain-specific operations. Use `ToolSearch` to discover deferred
-MCP tools not loaded at session start.
+domain-specific operations. MCP tools appear automatically in the
+session's available tools when their servers are configured.
 
 IDE tools (`mcp__ide__getDiagnostics`, `mcp__ide__executeCode`)
 provide language server integration. Prefer `mcp__ide__getDiagnostics`

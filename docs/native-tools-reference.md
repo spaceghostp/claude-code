@@ -1,6 +1,6 @@
 # Claude Code Native Tools Reference
 
-This document provides a comprehensive reference for all native tools available in the Claude Code CLI (v2.1.45+). Each tool listing includes its parameters, types, behavioral characteristics, usage examples, and common patterns.
+This document provides a comprehensive reference for all native tools available in the Claude Code CLI. Each tool listing includes its parameters, types, behavioral characteristics, usage examples, and common patterns.
 
 ## Table of Contents
 
@@ -32,22 +32,14 @@ This document provides a comprehensive reference for all native tools available 
   - [TaskUpdate](#taskupdate)
   - [TaskList](#tasklist)
 - [Planning & Organization Tools](#planning--organization-tools)
-  - [TodoWrite](#todowrite)
   - [EnterPlanMode](#enterplanmode)
   - [ExitPlanMode](#exitplanmode)
-- [Multi-Agent Tools](#multi-agent-tools)
-  - [Teammate](#teammate)
 - [User Interaction Tools](#user-interaction-tools)
   - [AskUserQuestion](#askuserquestion)
-- [Code Intelligence Tools](#code-intelligence-tools)
-  - [LSP](#lsp)
-- [Tool & Workflow Discovery](#tool--workflow-discovery)
+- [Workflow Discovery](#workflow-discovery)
   - [Skill](#skill)
-  - [ToolSearch](#toolsearch)
 - [MCP Tools](#mcp-tools)
   - [mcp](#mcp)
-  - [ListMcpResourcesTool](#listmcpresourcestool)
-  - [ReadMcpResourceTool](#readmcpresourcetool)
 - [Configuration Reference](#configuration-reference)
 - [Summary](#summary)
 
@@ -60,15 +52,12 @@ This document provides a comprehensive reference for all native tools available 
 | **Agentic turn** | A single iteration of the agent's reasoning loop: receive input, select tools, execute, generate output. |
 | **Auto-allowed** | A tool that executes without requiring user permission, typically read-only operations. |
 | **Concurrency-safe** | A tool that can be invoked simultaneously by multiple agents without causing race conditions or data corruption. |
-| **Deferred tools** | Tools not initially loaded to reduce token overhead; discoverable on-demand via `ToolSearch`. |
-| **LSP** | Language Server Protocol — a standardized protocol for code intelligence features like go-to-definition, find references, and hover. |
 | **Max result size** | Maximum character length of a tool's output. When exceeded, results are truncated with a warning. |
 | **MCP** | [Model Context Protocol](https://modelcontextprotocol.io/) — an open protocol for connecting AI agents to external data sources and tools. |
 | **Read-only** | A tool that does not modify files, state, or external resources. |
 | **Sandboxed** | Execution in a restricted environment with limited file system and network access. |
 | **Strict schema** | Tool parameters are validated exactly against a Zod schema; extra or mistyped fields cause errors. |
 | **Sub-agent** | A child agent spawned by the `Task` tool to handle a specific workflow independently, with its own tool permissions and turn limits. |
-| **Swarm mode** | Multi-agent execution mode where multiple agents work in parallel, coordinating via the `Teammate` tool. |
 | **Zod** | TypeScript-first schema validation library used to enforce tool parameter types at runtime. See [zod.dev](https://zod.dev). |
 
 ---
@@ -121,17 +110,11 @@ This document provides a comprehensive reference for all native tools available 
 | 14 | `TaskGet` | TaskGet | Yes | Yes | No | — |
 | 15 | `TaskUpdate` | TaskUpdate | No | Yes | No | — |
 | 16 | `TaskList` | TaskList | Yes | Yes | No | — |
-| 17 | `TodoWrite` | *(hidden)* | No | No | No (auto-allowed) | — |
-| 18 | `EnterPlanMode` | *(hidden)* | Yes | Yes | No | — |
-| 19 | `ExitPlanMode` | *(hidden)* | Yes | Yes | No | — |
-| 20 | `Teammate` | Teammate | Conditional | No | Yes | — |
-| 21 | `AskUserQuestion` | *(hidden)* | Yes | Yes | No | — |
-| 22 | `LSP` | LSP | Yes | Yes | No | — |
-| 23 | `Skill` | Skill | No | No | Yes | — |
-| 24 | `ToolSearch` | ToolSearch | Yes | Yes | No | — |
-| 25 | `mcp` | mcp | No | No | Yes | — |
-| 26 | `ListMcpResourcesTool` | — | Yes | Yes | No | — |
-| 27 | `ReadMcpResourceTool` | — | Yes | Yes | No | — |
+| 17 | `EnterPlanMode` | *(hidden)* | Yes | Yes | No | — |
+| 18 | `ExitPlanMode` | *(hidden)* | Yes | Yes | No | — |
+| 19 | `AskUserQuestion` | *(hidden)* | Yes | Yes | No | — |
+| 20 | `Skill` | Skill | No | No | Yes | — |
+| 21 | `mcp` | mcp | No | No | Yes | — |
 
 ---
 
@@ -228,7 +211,7 @@ Task(description="Run tests and fix failures",
 
 Read-only and informational tools execute immediately:
 
-`Read`, `Grep`, `Glob`, `WebFetch`, `WebSearch`, `TaskOutput`, `TaskList`, `TaskGet`, `TodoWrite`, `AskUserQuestion`, `LSP`, `EnterPlanMode`, `ExitPlanMode`, `ListMcpResourcesTool`, `ReadMcpResourceTool`, `ToolSearch`
+`Read`, `Grep`, `Glob`, `WebFetch`, `WebSearch`, `TaskOutput`, `TaskList`, `TaskGet`, `AskUserQuestion`, `EnterPlanMode`, `ExitPlanMode`
 
 ### Permission-Required Tools
 
@@ -242,7 +225,6 @@ These require user approval before execution:
 | `Bash` | Write/modify commands (read-only commands like `ls`, `git status` are auto-allowed) |
 | `Task` | Spawning a sub-agent |
 | `Skill` | Executing a custom workflow |
-| `Teammate` | Multi-agent coordination |
 | `mcp` | MCP tool execution (varies by server) |
 
 ### Sandbox Model (Bash)
@@ -543,7 +525,7 @@ Launches a sub-agent to handle complex, multi-step tasks autonomously.
 | ------------------- | ---------- | -------- | ---------------------------------------------------------------------- |
 | `description`       | `string`   | Yes      | Short (3-5 word) task description                                      |
 | `prompt`            | `string`   | Yes      | Detailed task instructions                                             |
-| `subagent_type`     | `string`   | Yes      | Agent type (e.g. `"Bash"`, `"Explore"`, `"Plan"`, `"general-purpose"`, `"statusline-setup"`, `"claude-code-guide"`) |
+| `subagent_type`     | `string`   | Yes      | Agent type: `"Bash"`, `"Explore"`, `"Plan"`, `"general-purpose"`, `"statusline-setup"`, `"claude-code-guide"` |
 | `model`             | `enum`     | No       | `"sonnet"` (Sonnet 4.6), `"opus"` (Opus 4.6), or `"haiku"` (Haiku 4.5). Inherits from parent if omitted. |
 | `resume`            | `string`   | No       | Agent ID to resume a previous execution                                |
 | `run_in_background` | `boolean`  | No       | Run in background                                                      |
@@ -607,8 +589,6 @@ User-facing name: **Task Output**. Retrieves output from a running or completed 
 ---
 
 ## Task Management Tools
-
-> **Note:** These are the active task management tools, replacing the deprecated `TodoWrite` system.
 
 ### TaskCreate
 
@@ -679,25 +659,6 @@ Lists all tasks. **No parameters.**
 
 ## Planning & Organization Tools
 
-### TodoWrite
-
-> **Deprecated.** Replaced by the `TaskCreate`/`TaskGet`/`TaskUpdate`/`TaskList` system. TodoWrite may still appear in older configurations but is no longer the active task management tool.
-
-Manages the agent's internal todo/checklist. Auto-allowed (no permission prompt).
-
-| Parameter            | Type     | Required | Description                                     |
-| -------------------- | -------- | -------- | ----------------------------------------------- |
-| `todos`              | `array`  | Yes      | Array of todo items                             |
-| `todos[].content`    | `string` | Yes      | What needs to be done (min 1 char)              |
-| `todos[].status`     | `enum`   | Yes      | `"pending"`, `"in_progress"`, or `"completed"` |
-| `todos[].activeForm` | `string` | Yes      | Present continuous form, e.g. "Fixing the bug" (min 1 char) |
-
-- **Read-only:** No
-- **Concurrency-safe:** No
-- **Requires permission:** No (auto-allowed)
-
----
-
 ### EnterPlanMode
 
 Requests permission to enter plan mode for complex tasks requiring exploration and design. **No parameters.**
@@ -723,43 +684,6 @@ Prompts the user to exit plan mode and begin implementation.
 - **Read-only:** Yes
 - **Concurrency-safe:** Yes
 - **Requires permission:** No
-
----
-
-## Multi-Agent Tools
-
-### Teammate
-
-Spawns teammates and coordinates with other agents running in parallel.
-
-**Availability:** Only enabled in swarm mode.
-
-| Parameter         | Type     | Required | Description                                                                 |
-| ----------------- | -------- | -------- | --------------------------------------------------------------------------- |
-| `operation`       | `enum`   | Yes      | `"spawnTeam"`, `"cleanup"`, `"write"`, `"broadcast"`, `"requestShutdown"`, `"approveShutdown"`, `"rejectShutdown"`, `"approvePlan"`, `"rejectPlan"`, `"discoverTeams"`, `"requestJoin"`, `"approveJoin"`, `"rejectJoin"` |
-| `name`            | `string` | No       | Your name when broadcasting (required for `broadcast`)                      |
-| `key`             | `string` | No       | Key for stored data (`write` operation)                                     |
-| `value`           | `string` | No       | Value to store as JSON string (`write` operation)                           |
-| `target_agent_id` | `string` | No       | Recipient agent ID (`write` operation)                                      |
-| `agent_id`        | `string` | No       | Your registered agent ID (for `write` operations)                           |
-| `agent_type`      | `string` | No       | Type/role of the team lead                                                  |
-| `team_name`       | `string` | No       | Team name for spawning                                                      |
-| `proposed_name`   | `string` | No       | Proposed name when joining a team                                           |
-| `capabilities`    | `string` | No       | Description of capabilities when joining                                    |
-| `description`     | `string` | No       | Team description/purpose (`spawnTeam` only)                                 |
-| `reason`          | `string` | No       | Reason for the operation                                                    |
-| `request_id`      | `string` | No       | Request ID for shutdown, plan approval, or join operations                  |
-| `feedback`        | `string` | No       | Feedback for plan rejection                                                 |
-| `assigned_name`   | `string` | No       | Name to assign to a joining agent                                           |
-| `timeout_ms`      | `number` | No       | Timeout in ms for `requestJoin` (default: 60000)                            |
-
-- **Read-only:** Conditional (returns `true` only for `write` and `broadcast` operations)
-- **Concurrency-safe:** No
-- **Requires permission:** Yes
-
-#### Notes
-
-- `broadcast` is expensive (N messages for N teammates) — prefer `write` to specific teammates when possible.
 
 ---
 
@@ -794,30 +718,7 @@ Asks the user structured multiple-choice questions (1-4 questions).
 
 ---
 
-## Code Intelligence Tools
-
-### LSP
-
-Interacts with Language Server Protocol servers for code intelligence features.
-
-**Availability:** Only enabled when LSP servers are configured and running (non-error state).
-
-> **Note:** In IDE integrations, LSP operations are now delivered via MCP (`mcp__ide__getDiagnostics`, `mcp__ide__executeCode`). The native LSP tool remains available in standalone CLI mode.
-
-| Parameter   | Type     | Required | Description                                                                                                                  |
-| ----------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `operation` | `enum`   | Yes      | `"goToDefinition"`, `"findReferences"`, `"hover"`, `"documentSymbol"`, `"workspaceSymbol"`, `"goToImplementation"`, `"prepareCallHierarchy"`, `"incomingCalls"`, `"outgoingCalls"` |
-| `filePath`  | `string` | Yes      | Path to the file                                                                                                             |
-| `line`      | `number` | Yes      | Line number (1-based, positive integer)                                                                                      |
-| `character` | `number` | Yes      | Character offset (1-based, positive integer)                                                                                 |
-
-- **Read-only:** Yes
-- **Concurrency-safe:** Yes
-- **Requires permission:** No
-
----
-
-## Tool & Workflow Discovery
+## Workflow Discovery
 
 ### Skill
 
@@ -831,23 +732,6 @@ Executes a registered skill (custom command/workflow).
 - **Read-only:** No
 - **Concurrency-safe:** No
 - **Requires permission:** Yes
-
----
-
-### ToolSearch
-
-Searches for deferred/lazy-loaded tools by name or keywords.
-
-**Availability:** Only enabled when deferred tools are active.
-
-| Parameter     | Type     | Required | Description                                              |
-| ------------- | -------- | -------- | -------------------------------------------------------- |
-| `query`       | `string` | Yes      | Search query or `"select:<tool_name>"` for direct lookup |
-| `max_results` | `number` | No       | Maximum number of results (default: 5)                   |
-
-- **Read-only:** Yes
-- **Concurrency-safe:** Yes
-- **Requires permission:** No
 
 ---
 
@@ -875,35 +759,6 @@ Generic passthrough for MCP server tools. Acts as a bridge for dynamically loade
 - **Read-only:** No
 - **Concurrency-safe:** No
 - **Requires permission:** Yes (varies by MCP tool)
-
----
-
-### ListMcpResourcesTool
-
-Lists available MCP resources.
-
-| Parameter | Type     | Required | Description                        |
-| --------- | -------- | -------- | ---------------------------------- |
-| `server`  | `string` | No       | Server name to filter resources by |
-
-- **Read-only:** Yes
-- **Concurrency-safe:** Yes
-- **Requires permission:** No
-
----
-
-### ReadMcpResourceTool
-
-Reads an MCP resource by URI.
-
-| Parameter | Type     | Required | Description          |
-| --------- | -------- | -------- | -------------------- |
-| `server`  | `string` | Yes      | MCP server name      |
-| `uri`     | `string` | Yes      | Resource URI to read |
-
-- **Read-only:** Yes
-- **Concurrency-safe:** Yes
-- **Requires permission:** No
 
 ---
 
@@ -957,14 +812,12 @@ Hooks are shell commands that execute in response to lifecycle events (e.g. `Pre
 | **Web**                 | `WebFetch`, `WebSearch`                                                    |
 | **Sub-Agent Execution** | `Task`, `TaskStop`, `TaskOutput`                                           |
 | **Task Management**     | `TaskCreate`, `TaskGet`, `TaskUpdate`, `TaskList`                          |
-| **Planning**            | `TodoWrite`, `EnterPlanMode`, `ExitPlanMode`                               |
-| **Multi-Agent**         | `Teammate`                                                                 |
+| **Planning**            | `EnterPlanMode`, `ExitPlanMode`                                            |
 | **User Interaction**    | `AskUserQuestion`                                                          |
-| **Code Intelligence**   | `LSP`                                                                      |
-| **Tool Discovery**      | `Skill`, `ToolSearch`                                                      |
-| **MCP**                 | `mcp`, `ListMcpResourcesTool`, `ReadMcpResourceTool`                       |
+| **Workflow Discovery**  | `Skill`                                                                    |
+| **MCP**                 | `mcp`                                                                      |
 
-**Total: 27 native tools**
+**Total: 21 native tools**
 
 ### Historical Names
 
@@ -973,6 +826,6 @@ Hooks are shell commands that execute in response to lifecycle events (e.g. `Pre
 | `Read` | `View` | v0.2.x |
 | `TaskStop` | `KillShell` | — (alias still supported) |
 | `TaskOutput` | `BashOutputTool` / `AgentOutputTool` | — (aliases still supported) |
-| `TaskCreate`/`TaskUpdate`/`TaskList`/`TaskGet` | `TodoWrite` | v2.1.30+ (TodoWrite deprecated) |
+| `TaskCreate`/`TaskUpdate`/`TaskList`/`TaskGet` | `TodoWrite` | v2.1.30+ (TodoWrite removed) |
 
-All tool definitions extracted from the installed Claude Code package (`@anthropic-ai/claude-code` v2.1.45+). Schemas are validated at runtime using [Zod](https://zod.dev).
+All tool definitions extracted from the installed Claude Code package. Schemas are validated at runtime using [Zod](https://zod.dev).
