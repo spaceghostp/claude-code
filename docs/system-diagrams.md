@@ -28,7 +28,17 @@ WS-000-03/
 |
 +-- docs/                     Reference documentation
 |   +-- native-tools-reference.md
+|   +-- usage-methodology.md
 |   +-- system-diagrams.md    (this file)
+|   +-- cli-tools-expanding-claude-code.md
+|   +-- cli-tools-that-outperform-claude-code.md
+|   +-- agentic-patterns-reference.md
+|   +-- governance-reference.md
+|   +-- frameworks-reference.md
+|   +-- frameworks-quick-reference.md
+|   +-- release-notes-2026-02.md
+|   +-- ws002-roadmap-digest.md
+|   +-- synthesis-contributive-implementations.md
 |   +-- obsidian-cognitive-infrastructure.md
 |   +-- obsidian-personal-workflow.md
 |   +-- autonomous-vault-plan.md
@@ -259,9 +269,12 @@ PreToolUse  (before each tool call)
   [ Tool Executes ]
     |
     v
-PostToolUse  (after each tool call)
+PostToolUse  (after each successful tool call)
     |
     +-- [plugin] hookify/posttooluse.py
+    |
+    v
+PostToolUseFailure  (after a tool call fails)
     |
     v
 PreCompact  (before context compaction)

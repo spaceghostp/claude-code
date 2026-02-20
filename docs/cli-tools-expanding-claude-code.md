@@ -6,7 +6,7 @@ The [full research document](cli-tools-that-outperform-claude-code.md) catalogs 
 
 Three tests, all must pass:
 1. **Non-interactive** — runs without TTY, produces parseable output
-2. **Capability gap** — does something Claude Code's 27 native tools cannot (see [native-tools-reference.md](native-tools-reference.md))
+2. **Capability gap** — does something Claude Code's 22 native tools (+ 1 conditional) cannot (see [native-tools-reference.md](native-tools-reference.md))
 3. **Real value** — the gap matters in practice, not just in theory
 
 ---

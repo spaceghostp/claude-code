@@ -234,6 +234,14 @@ These require user approval before execution:
 
 Bash commands run in a sandboxed environment by default. The `dangerouslyDisableSandbox` parameter overrides this (requires explicit approval).
 
+### Permission Evaluation Order
+
+Rules are evaluated in this order; first match wins:
+
+1. **Deny** — checked first. A deny match blocks immediately, even if an allow rule also matches.
+2. **Ask** — checked second. Prompts the user for approval.
+3. **Allow** — checked last. Auto-allows the tool execution.
+
 ### Configuring Permissions
 
 - **Allow specific tools:** `--allowedTools=Read,Edit,Bash`
@@ -548,6 +556,38 @@ Launches a sub-agent to handle complex, multi-step tasks autonomously.
 - Most sub-agent types cannot access the parent's conversation context — provide all needed information in `prompt`. Some types (e.g. `"claude-code-guide"`) receive full conversation history.
 - When `max_turns` is reached, partial results are returned. Use `resume` with the agent ID to continue.
 - Prefer `"haiku"` model for quick, straightforward sub-tasks to minimize cost and latency.
+- Sub-agents cannot spawn other sub-agents (no nesting).
+- Background sub-agents auto-deny permissions not pre-approved at launch. MCP tools not available in background.
+
+#### Custom Agent Definitions
+
+Custom agents are defined as markdown files with YAML frontmatter in `.claude/agents/` or `~/.claude/agents/`:
+
+| Frontmatter Field | Description |
+|-------------------|-------------|
+| `name` | Unique identifier (lowercase, hyphens) |
+| `description` | When Claude should delegate to this agent |
+| `tools` | Tools the agent can use. Inherits all if omitted. |
+| `disallowedTools` | Tools to deny from inherited or specified list |
+| `model` | `sonnet`, `opus`, `haiku`, or `inherit` (default) |
+| `permissionMode` | `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, `plan` |
+| `maxTurns` | Max agentic turns before agent stops |
+| `skills` | Skills to preload (full content injected at startup) |
+| `mcpServers` | MCP servers: names or `{name: config}` inline definitions |
+| `hooks` | Lifecycle hooks scoped to the agent |
+| `memory` | Persistent memory scope: `user`, `project`, or `local` |
+
+#### Persistent Memory
+
+When `memory` is set on a custom agent definition:
+
+| Scope | Location | Use when |
+|-------|----------|----------|
+| `user` | `~/.claude/agent-memory/<name>/` | Learnings across all projects |
+| `project` | `.claude/agent-memory/<name>/` | Project-specific, shareable via VCS |
+| `local` | `.claude/agent-memory-local/<name>/` | Project-specific, not checked in |
+
+The first 200 lines of `MEMORY.md` in the memory directory are included in the agent's system prompt. Read, Write, Edit tools are auto-enabled for memory curation.
 
 **Related tools:** `TaskStop`, `TaskOutput`
 
@@ -736,6 +776,40 @@ Executes a registered skill (custom command/workflow).
 - **Concurrency-safe:** No
 - **Requires permission:** Yes
 
+#### Skill Frontmatter Fields
+
+Skills are defined in `SKILL.md` files with YAML frontmatter:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | No | Display name (lowercase, hyphens, max 64 chars). Defaults to directory name. |
+| `description` | Recommended | What the skill does. Claude uses this for auto-invocation. |
+| `argument-hint` | No | Hint shown during autocomplete (e.g. `[issue-number]`) |
+| `allowed-tools` | No | Tools auto-allowed when skill is active |
+| `model` | No | Model to use when skill is active |
+| `context` | No | Set to `fork` to run in a forked sub-agent context |
+| `agent` | No | Sub-agent type when `context: fork` (default: `general-purpose`) |
+| `hooks` | No | Hooks scoped to skill's lifecycle |
+| `disable-model-invocation` | No | If `true`, prevents Claude from auto-loading (manual `/name` only) |
+| `user-invocable` | No | If `false`, hides from `/` menu (background knowledge only) |
+
+#### Skill Discovery Locations
+
+| Priority | Location | Path |
+|----------|----------|------|
+| 1 (highest) | Enterprise | Managed settings |
+| 2 | Personal | `~/.claude/skills/<name>/SKILL.md` |
+| 3 | Project | `.claude/skills/<name>/SKILL.md` |
+| 4 (lowest) | Plugin | `<plugin>/skills/<name>/SKILL.md` (namespaced as `plugin:skill`) |
+
+Legacy commands (`.claude/commands/<name>.md`) still work but skills take precedence if both exist.
+
+#### Dynamic Context and Substitutions
+
+- **Dynamic context:** `` !`shell command` `` in skill content — command output replaces the placeholder before content is sent to Claude.
+- **String substitutions:** `$ARGUMENTS` (all args), `$ARGUMENTS[N]` or `$N` (specific arg by index), `${CLAUDE_SESSION_ID}` (current session ID).
+- **Character budget:** Skill descriptions in context capped at ~2% of context window (fallback 16,000 chars). Override with `SLASH_COMMAND_TOOL_CHAR_BUDGET`.
+
 ---
 
 ## Git Worktree
@@ -779,7 +853,27 @@ claude mcp add-json <server-name> '<json-config>'
 claude mcp add-from-claude-desktop
 ```
 
-**Debugging:** Use `--mcp-debug` flag or set `MCP_TIMEOUT` environment variable for timeout configuration.
+**Scopes:** `local` (default, per-project in `~/.claude.json`), `project` (`.mcp.json` at repo root), `user` (cross-project in `~/.claude.json`).
+
+**Transports:** `http` (recommended), `sse` (deprecated), `stdio`.
+
+**Debugging:** Use `--mcp-debug` flag or set `MCP_TIMEOUT` for startup timeout and `MCP_TOOL_TIMEOUT` for tool execution timeout.
+
+### OAuth
+
+Claude Code supports OAuth 2.0 for remote MCP servers. Authenticate via the `/mcp` command, follow the browser login flow. Tokens are stored securely and refreshed automatically. For servers without dynamic client registration, use `--client-id`, `--client-secret`, and `--callback-port` flags. Env vars: `MCP_CLIENT_SECRET` (CI/non-interactive), `MCP_OAUTH_CALLBACK_PORT` (fixed redirect port).
+
+### Managed MCP
+
+Enterprise-managed MCP configuration at system paths (same directories as managed settings) via `managed-mcp.json`. Takes exclusive control over all MCP servers. Policy control via `allowedMcpServers` and `deniedMcpServers` in managed settings (denylist takes absolute precedence).
+
+### Resources
+
+MCP servers expose resources referenced via `@` mentions: `@server:protocol://resource/path` (e.g., `@github:issue://123`). Resources are fuzzy-searchable in `@` mention autocomplete and automatically fetched as attachments.
+
+### Prompts as Commands
+
+MCP prompts become available as slash commands: `/mcp__servername__promptname`. Arguments are passed space-separated. Prompt results are injected directly into the conversation.
 
 ### mcp
 
@@ -820,17 +914,34 @@ Discovers deferred MCP tools on demand. Auto-activates when MCP tool description
 | `BASH_MAX_TIMEOUT_MS` | `600000` | Bash | Maximum allowed timeout |
 | `MCP_TIMEOUT` | — | MCP | Timeout for MCP server startup (ms) |
 | `ANTHROPIC_MODEL` | — | Task | Override default model (e.g., Bedrock ARN) |
-| `ANTHROPIC_SMALL_FAST_MODEL` | — | Task | Override model for sub-tasks |
+| `ANTHROPIC_SMALL_FAST_MODEL` | — | Task | Override model for sub-tasks (deprecated) |
 | `ANTHROPIC_LOG` | — | All | Set to `debug` for API request logging |
+| `BASH_MAX_OUTPUT_LENGTH` | — | Bash | Max characters in Bash output before middle-truncation |
+| `CLAUDE_CODE_EFFORT_LEVEL` | `high` | All | Effort level: `low`, `medium`, `high` |
+| `CLAUDE_CODE_MAX_OUTPUT_TOKENS` | `32000` | All | Max output tokens per request (max `64000`) |
+| `CLAUDE_CODE_SUBAGENT_MODEL` | — | Task | Override model for sub-agents |
+| `MAX_THINKING_TOKENS` | `31999` | All | Override extended thinking token budget |
 | `ENABLE_TOOL_SEARCH` | `auto` | MCPSearch | Controls MCPSearch activation: `auto`, `auto:<N>`, `true`, `false` |
 | `MAX_MCP_OUTPUT_TOKENS` | `25000` | MCP | Maximum output tokens for MCP tool results |
+| `MCP_TOOL_TIMEOUT` | — | MCP | Timeout in ms for MCP tool execution |
+| `CLAUDE_CODE_ENABLE_TASKS` | `true` | Tasks | Set to `false` to revert to previous TODO list |
+| `CLAUDE_CODE_TASK_LIST_ID` | — | Tasks | Share a task list across sessions |
 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | — | Task | Set to `1` to enable Agent Teams (experimental) |
+| `CLAUDE_CODE_TEAM_NAME` | — | Task | Team name for Agent Teams |
 | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` | — | Task | Set to `1` to disable background task functionality |
 | `CLAUDE_CODE_TMPDIR` | — | All | Override temp directory for internal temp files |
 | `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS` | — | Read | Override the default file read token limit |
 | `CLAUDE_CODE_EXIT_AFTER_STOP_DELAY` | — | SDK | Auto-exit SDK mode after a specified idle duration |
 | `CLAUDE_CODE_SHELL` | — | Bash | Override automatic shell detection |
+| `CLAUDE_CODE_PLAN_MODE_REQUIRED` | — | All | Require plan mode for all sessions |
+| `CLAUDE_CODE_DISABLE_AUTO_MEMORY` | — | All | Disable automatic memory features |
+| `SLASH_COMMAND_TOOL_CHAR_BUDGET` | `16000` | Skill | Skill metadata character budget |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `95` | All | Auto-compaction trigger threshold (percentage) |
+| `HTTP_PROXY` / `HTTPS_PROXY` | — | Network | Proxy server configuration |
+| `NO_PROXY` | — | Network | Domains/IPs to bypass proxy |
+| `CLAUDE_CODE_USE_BEDROCK` | — | Cloud | Enable Amazon Bedrock provider |
+| `CLAUDE_CODE_USE_VERTEX` | — | Cloud | Enable Google Vertex AI provider |
+| `CLAUDE_CODE_USE_FOUNDRY` | — | Cloud | Enable Anthropic Foundry provider |
 
 ### CLI Flags
 
@@ -840,25 +951,50 @@ Discovers deferred MCP tools on demand. Auto-activates when MCP tool description
 | `--disallowedTools=<tools>` | Comma-separated list of denied tools |
 | `--mcp-config <path>` | One-off MCP server configuration file |
 | `--mcp-debug` | Enable MCP debugging output |
+| `--strict-mcp-config` | Only use MCP servers from `--mcp-config` (ignore project/user configs) |
 | `--worktree` / `-w` | Start in an isolated git worktree |
 | `--agent <name>` | Override agent for the current session |
+| `--agents <json>` | Define custom sub-agents dynamically via JSON |
 | `--from-pr <number\|url>` | Resume a session linked to a specific GitHub PR |
-| `--tools <list>` | Restrict available built-in tools in interactive mode |
+| `--fork-session` | Create new session ID when resuming |
+| `--tools <list>` | Restrict available built-in tools (`""` = none, `"default"` = all, or tool names) |
+| `--plugin-dir <path>` | Load plugins from directories (repeatable) |
+| `--chrome` / `--no-chrome` | Enable/disable Chrome browser integration |
+| `--remote` | Create new web session on claude.ai |
+| `--teleport` | Resume a web session in local terminal |
+| `--teammate-mode <mode>` | Agent team display: `auto`, `in-process`, `tmux` |
+| `--setting-sources <list>` | Comma-separated setting sources: `user`, `project`, `local` |
+| `--model <name>` | Set model for session (alias or full model ID) |
+| `--permission-mode <mode>` | Begin in specified permission mode |
+| `--print` / `-p` | Print response without interactive mode |
+| `--continue` / `-c` | Load most recent conversation |
+| `--resume` / `-r` | Resume specific session by ID or name |
 | `auth login` | Authenticate with Anthropic API |
 | `auth status` | Show current authentication and session status |
 | `auth logout` | Clear stored authentication credentials |
 
 ### Hooks Configuration
 
-Hooks are shell commands that execute in response to lifecycle events. Hook entries support an `"async": true` property for non-blocking execution — the hook runs in the background without delaying the agent loop.
+Hooks execute in response to lifecycle events. There are three hook types.
+
+#### Hook Types
+
+| Type | Key Fields | Behavior |
+|------|-----------|----------|
+| `command` | `command`, `timeout` (default 600s), `async`, `statusMessage`, `once` | Runs a shell command. Receives JSON on stdin. Exit code 0 = success, exit 2 = blocking error. `async: true` runs in background without blocking. |
+| `prompt` | `prompt`, `model`, `timeout` (default 30s), `statusMessage`, `once` | Sends prompt + hook input to a Claude model for single-turn yes/no evaluation. `$ARGUMENTS` placeholder injects hook input JSON. Response: `{"ok": true\|false, "reason": "..."}`. |
+| `agent` | `prompt`, `model`, `timeout` (default 60s), `statusMessage`, `once` | Spawns a sub-agent with Read, Grep, Glob tools for multi-turn verification (up to 50 turns). Same response schema as prompt hooks. |
+
+#### Hook Events (15)
 
 | Event | Trigger |
 |-------|---------|
 | `Setup` | Triggered via `--init`, `--init-only`, or `--maintenance` CLI flags |
-| `SessionStart` | New session begins |
+| `SessionStart` | New session begins or resumes |
 | `UserPromptSubmit` | Each user message submitted |
-| `PreToolUse` | Before each tool call |
-| `PostToolUse` | After each tool call |
+| `PreToolUse` | Before each tool call (can block) |
+| `PostToolUse` | After each successful tool call |
+| `PostToolUseFailure` | After a tool call fails |
 | `PreCompact` | Before context compaction |
 | `Stop` | Agent turn ends |
 | `SubagentStart` | Before a sub-agent runs |
@@ -866,17 +1002,33 @@ Hooks are shell commands that execute in response to lifecycle events. Hook entr
 | `SessionEnd` | After session closes |
 | `Notification` | Idle/permission prompt notifications |
 | `PermissionRequest` | When a permission prompt appears |
-| `ConfigChange` | When configuration files change during a session |
 | `TeammateIdle` | Agent Teams: teammate becomes idle |
 | `TaskCompleted` | Agent Teams: teammate completes a task |
+
+Hooks snapshot at session startup — direct edits to hook config do not take effect mid-session.
+
+### Settings Hierarchy
+
+Settings are resolved in this priority order (highest to lowest):
+
+| Priority | Source | Path |
+|----------|--------|------|
+| 1 (highest) | Managed settings | macOS: `/Library/Application Support/ClaudeCode/managed-settings.json`; Linux/WSL: `/etc/claude-code/managed-settings.json`; Windows: `C:\Program Files\ClaudeCode\managed-settings.json` |
+| 2 | CLI arguments | `--allowedTools`, `--disallowedTools`, `--model`, etc. |
+| 3 | Local project | `.claude/settings.local.json` (gitignored, personal) |
+| 4 | Shared project | `.claude/settings.json` (in source control, team-shared) |
+| 5 (lowest) | User | `~/.claude/settings.json` |
+
+Objects (like `permissions`, `env`, `sandbox`) are merged across scopes; more specific scopes override less specific. Arrays are replaced, not merged.
 
 ### Configuration Files
 
 | File | Purpose |
 |------|---------|
-| `.claude/settings.json` | Project permission rules and settings |
+| `.claude/settings.json` | Shared project permission rules and settings |
+| `.claude/settings.local.json` | Local project settings (gitignored) |
 | `.mcp.json` | MCP server configuration (project/local/user scopes) |
-| `.claude/commands/` | Custom slash commands (markdown templates) |
+| `.claude/commands/` | Custom slash commands (markdown templates, legacy — skills preferred) |
 | `.claude/agents/` | Custom agent definitions (markdown with frontmatter) |
 | `.claude/skills/` | Custom skill definitions |
 | `.claude/rules/` | Per-directory rule files |

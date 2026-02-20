@@ -288,6 +288,24 @@ Only use `Skill` for skills listed in the system prompt — don't
 guess at skill names. Built-in CLI commands (`/help`, `/clear`,
 `/compact`) are not skills and should not use the `Skill` tool.
 
+Skills are discovered from (highest to lowest priority): enterprise
+managed settings, personal (`~/.claude/skills/`), project
+(`.claude/skills/`), plugins. Legacy commands (`.claude/commands/`)
+still work but skills take precedence. Key frontmatter fields:
+
+| Field | Effect |
+|-------|--------|
+| `description` | Claude uses this for auto-invocation decisions |
+| `allowed-tools` | Tools auto-allowed when skill is active |
+| `context: fork` | Run in forked sub-agent context |
+| `agent` | Sub-agent type when forked (default: `general-purpose`) |
+| `disable-model-invocation: true` | Manual `/name` only, not auto-loaded |
+| `user-invocable: false` | Hidden from `/` menu, background knowledge only |
+
+Dynamic context (`` !`command` ``) executes shell commands inline
+before content reaches Claude. String substitutions: `$ARGUMENTS`,
+`$ARGUMENTS[N]`, `$N`, `${CLAUDE_SESSION_ID}`.
+
 > **Do Not:** Invoke `Skill` for built-in CLI commands or guess at
 > skill names not listed in the session's available skills.
 
@@ -483,6 +501,15 @@ Use the `resume` parameter with a previous agent ID to continue
 from where it left off. The agent retains its full previous
 context. Use this for follow-up work on the same task.
 
+### Agent Teams (Experimental)
+
+Agent Teams allow multiple named agents to work concurrently on
+related tasks. Enable with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`.
+Key concepts: agents have `name`, `allowed_tools`, and `mode`
+parameters on `Task`; `TeammateIdle` and `TaskCompleted` hook
+events coordinate handoffs; `--teammate-mode` controls display
+(`auto`, `in-process`, `tmux`).
+
 > **Do Not:** Duplicate work that a sub-agent is already doing. If
 > you delegate a search, don't also perform the same search inline.
 > Don't spawn sub-agents for tasks completable in 1-2 tool calls.
@@ -560,20 +587,26 @@ settings, CLAUDE.md instructions, and hooks.
 ### Settings Hierarchy
 
 ```
-Enterprise managed-settings.json  (highest priority)
+Managed managed-settings.json      (highest priority)
     |
     v
-User ~/.claude/settings.json
+CLI arguments                      (session overrides)
     |
     v
-Project .claude/settings.json
+Local .claude/settings.local.json  (gitignored, personal)
     |
     v
-Local .claude/settings.local.json  (gitignored)
+Shared .claude/settings.json       (in source control)
+    |
+    v
+User ~/.claude/settings.json       (lowest priority)
 ```
 
-Higher-priority settings override lower ones. Enterprise settings
-can lock properties that lower levels cannot change.
+Higher-priority settings override lower ones. Managed settings
+(macOS: `/Library/Application Support/ClaudeCode/`, Linux:
+`/etc/claude-code/`) can lock properties that lower levels
+cannot change. Objects are merged across scopes; arrays are
+replaced entirely by higher-priority sources.
 
 ### Permission Rules
 
@@ -597,6 +630,12 @@ Permissions use `allow` / `deny` / `ask` with glob-style matchers:
 }
 ```
 
+**Evaluation order** (first match wins):
+
+1. **Deny** — checked first. A deny match blocks immediately.
+2. **Ask** — checked second. Prompts user for approval.
+3. **Allow** — checked last. Auto-allows execution.
+
 - `allow`: Tool executes without prompting
 - `deny`: Tool is blocked entirely
 - `ask`: User is prompted each time (default for most write tools)
@@ -618,9 +657,22 @@ session start and consume context (see
 
 ### Hooks
 
-Hooks are shell commands that execute in response to lifecycle
-events (tool calls, session start/stop, etc.). They differ from
-the other mechanisms:
+Hooks execute in response to lifecycle events (tool calls, session
+start/stop, etc.). There are three hook types:
+
+| Type | Behavior |
+|------|----------|
+| `command` | Runs a shell command. Receives JSON on stdin. Exit 0 = success, exit 2 = blocking error. Supports `async: true` for background execution. |
+| `prompt` | Single-turn LLM evaluation. Sends prompt + input to a model for yes/no decision. |
+| `agent` | Multi-turn sub-agent with Read/Grep/Glob tools (up to 50 turns) for complex verification. |
+
+15 lifecycle events: `Setup`, `SessionStart`, `UserPromptSubmit`,
+`PreToolUse`, `PostToolUse`, `PostToolUseFailure`, `PreCompact`,
+`Stop`, `SubagentStart`, `SubagentStop`, `SessionEnd`,
+`Notification`, `PermissionRequest`, `TeammateIdle`,
+`TaskCompleted`.
+
+Hooks differ from the other enforcement mechanisms:
 
 | Mechanism        | Nature         | When Applied            |
 |-----------------|----------------|------------------------|
@@ -628,7 +680,7 @@ the other mechanisms:
 | CLAUDE.md        | Instructions   | Prompt construction     |
 | Hooks            | Executable     | Event lifecycle         |
 
-Hooks load at session start — changes require a new session.
+Hooks snapshot at session start — changes require a new session.
 Hook feedback is treated as coming from the user. If a hook blocks
 an action, determine if you can adjust; if not, ask the user to
 check their hooks configuration.
@@ -700,6 +752,18 @@ EOF
 | Stage specific files, not `git add .`   | Prevents accidental inclusion of secrets |
 | Never use `-i` (interactive) flags      | Requires TTY input               |
 | Create NEW commits after hook failure   | Previous commit is untouched     |
+
+### Worktrees
+
+Use `EnterWorktree` (or `--worktree` / `-w` CLI flag) to work in
+an isolated git worktree when changes should not affect the main
+working tree. The worktree is created in `.claude/worktrees/` with
+a new branch based on HEAD. On session exit, the user is prompted
+to keep or remove the worktree.
+
+Use worktrees when: experimenting with risky changes, working on
+a feature branch in parallel, or when sub-agents need filesystem
+isolation (via `isolation: "worktree"` in agent definitions).
 
 ### Risky Action Framework
 
@@ -819,6 +883,9 @@ messages.
 - [Permission & security model](native-tools-reference.md#permission--security-model)
 - [Configuration reference](native-tools-reference.md#configuration-reference)
 - [System architecture diagrams](system-diagrams.md)
+- [Agentic patterns reference](agentic-patterns-reference.md)
+- [Governance reference](governance-reference.md)
+- [Frameworks reference](frameworks-reference.md)
 - [Settings examples](../examples/settings/)
 - [CLI tools that outperform Claude Code](cli-tools-that-outperform-claude-code.md)
 - [CLI tools expanding Claude Code](cli-tools-expanding-claude-code.md)
