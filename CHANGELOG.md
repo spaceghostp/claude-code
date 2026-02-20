@@ -1,5 +1,279 @@
 # Changelog
 
+## 2.1.49
+
+- Added `--worktree` (`-w`) flag to start Claude in an isolated git worktree
+- Subagents support `isolation: "worktree"` for working in a temporary git worktree
+- Added Ctrl+F keybinding to kill background agents (two-press confirmation)
+- Agent definitions support `background: true` to always run as a background task
+- Plugins can ship `settings.json` for default configuration
+- Added `ConfigChange` hook event that fires when configuration files change during a session
+- Simple mode (`CLAUDE_CODE_SIMPLE`) now includes the file edit tool in addition to the Bash tool
+- Permission suggestions are now populated when safety checks trigger an ask response
+- Sonnet 4.5 with 1M context is being removed from the Max plan in favor of Sonnet 4.6 with 1M context
+- SDK model info now includes `supportsEffort`, `supportedEffortLevels`, and `supportsAdaptiveThinking` fields
+- Fixed file-not-found errors to suggest corrected paths when the model drops the repo folder
+- Fixed Ctrl+C and ESC being silently ignored when background agents are running and the main thread is idle
+- Fixed prompt suggestion cache regression that reduced cache hit rates
+- Fixed `plugin enable` and `plugin disable` to auto-detect the correct scope when `--scope` is not specified
+- Fixed verbose mode not updating thinking block display when toggled via `/config`
+- Fixed unbounded WASM memory growth during long sessions by periodically resetting the tree-sitter parser
+- Fixed unbounded memory growth during long-running sessions caused by Yoga WASM linear memory never shrinking
+- Fixed potential rendering issues caused by stale yoga layout references
+- Fixed `disableAllHooks` setting to respect managed settings hierarchy
+- Fixed `--resume` session picker showing raw XML tags for sessions that start with commands like `/clear`
+- Improved performance in non-interactive mode (`-p`) by skipping unnecessary API calls during startup
+- Improved startup performance by caching MCP auth failures to avoid redundant connection attempts
+- Improved startup performance by reducing HTTP calls for analytics token counting
+- Improved startup performance by batching MCP tool token counting into a single API call
+- Improved permission prompts for path safety and working directory blocks to show the reason for the restriction
+
+## 2.1.47
+
+- Added `last_assistant_message` field to Stop and SubagentStop hook inputs
+- Added `chat:newline` keybinding action for configurable multi-line input
+- Added `added_dirs` to the statusline JSON `workspace` section, exposing directories added via `/add-dir`
+- Use `ctrl+f` to kill all background agents instead of double-pressing ESC
+- Simplified teammate navigation to use only Shift+Down (with wrapping) instead of both Shift+Up and Shift+Down
+- Search patterns in collapsed tool results are now displayed in quotes for clarity
+- Increased initial session count in resume picker from 10 to 50 for faster session discovery
+- Fixed FileWriteTool line counting to preserve intentional trailing blank lines instead of stripping them
+- Fixed Windows terminal rendering bugs caused by `os.EOL` (`\r\n`) in display code
+- Fixed compaction failing when conversation contains many PDF documents
+- Fixed bold and colored text in markdown output shifting to wrong characters on Windows
+- Fixed bash tool output being silently discarded on Windows when using MSYS2 or Cygwin shells
+- Fixed bash permission classifier to validate that returned match descriptions correspond to actual input rules
+- Fixed user-defined agents only loading one file on NFS/FUSE filesystems that report zero inodes
+- Fixed plugin agent skills silently failing to load when referenced by bare name instead of fully-qualified plugin name
+- Fixed single file write/edit error aborting all other parallel file write/edit operations
+- Fixed custom session titles set via `/rename` being lost after resuming a conversation
+- Fixed collapsed read/search hint text overflowing on narrow terminals
+- Fixed bash commands with backslash-newline continuation lines producing spurious empty arguments
+- Fixed built-in slash commands being hidden from autocomplete when many user skills are installed
+- Fixed MCP servers not appearing in MCP Management Dialog after deferred loading
+- Fixed session name persisting in status bar after `/clear` command
+- Fixed crash when a skill's `name` or `description` in SKILL.md frontmatter is a bare number
+- Fixed `/resume` silently dropping sessions when the first message exceeds 16KB or uses array-format content
+- Fixed `claude doctor` misclassifying mise and asdf-managed installations as native installs
+- Fixed zsh heredoc failing with "read-only file system" error in sandboxed commands
+- Fixed agent progress indicator showing inflated tool use count
+- Fixed image pasting not working on WSL2 systems where Windows copies images as BMP format
+- Fixed background agent results returning raw transcript data instead of the agent's final answer
+- Fixed Warp terminal incorrectly prompting for Shift+Enter setup when it supports it natively
+- Fixed CJK wide characters causing misaligned timestamps and layout elements in the TUI
+- Fixed custom agent `model` field in `.claude/agents/*.md` being ignored when spawning team teammates
+- Fixed plan mode being lost after context compaction
+- Fixed `alwaysThinkingEnabled: true` in settings.json not enabling thinking mode on Bedrock and Vertex
+- Fixed `tool_decision` OTel telemetry event not being emitted in headless/SDK mode
+- Fixed session name being lost after context compaction
+- Fixed "Always allow" on multiline bash commands creating invalid permission patterns that corrupt settings
+- Fixed React crash when a skill's `argument-hint` uses YAML sequence syntax
+- Fixed crash when using `/fork` on sessions that used web search
+- Fixed read-only git commands triggering FSEvents file watcher loops on macOS
+- Fixed custom agents and skills not being discovered when running from a git worktree
+- Fixed non-interactive subcommands like `claude doctor` being blocked inside nested Claude sessions
+- Fixed inline code spans in markdown being incorrectly parsed as bash commands
+- Fixed teammate spinners not respecting custom spinnerVerbs from settings
+- Fixed shell commands permanently failing after a command deletes its own working directory
+- Fixed hooks (PreToolUse, PostToolUse) silently failing to execute on Windows by using Git Bash instead of cmd.exe
+- Fixed LSP `findReferences` returning results from gitignored files
+- Fixed sessions with large first prompts (>16KB) disappearing from the /resume list
+- Fixed shell functions with double-underscore prefixes not being preserved across shell sessions
+- Fixed spinner showing "0 tokens" counter before any tokens have been received
+- Fixed background tasks failing in git worktrees due to remote URL resolution
+- Fixed Right Alt key leaving visible escape sequence residue in the input on Windows/Git Bash terminals
+- Fixed Edit tool silently corrupting Unicode curly quotes by replacing them with straight quotes
+- Fixed OSC 8 hyperlinks only being clickable on the first line when link text wraps
+- Moved config backup files from home directory root to `~/.claude/backups/`
+- The `/rename` command now updates the terminal tab title by default
+- Improved VS Code plan preview: auto-updates as Claude iterates, enables commenting only when ready for review
+- Improved memory usage in long-running sessions by releasing API stream buffers, agent context, and skill state
+- Improved startup performance by deferring SessionStart hook execution, reducing time-to-interactive by ~500ms
+- Improved `@` file mention performance with pre-warmed index and session-based caching
+- Improved memory usage by trimming agent task message history after tasks complete
+- Improved memory usage during long agent sessions by eliminating O(n²) message accumulation in progress updates
+- Windows: Fixed CWD tracking temp files never being cleaned up
+- Windows: Fixed worktree session matching when drive letter casing differs
+- Windows: Fixed the same CLAUDE.md file being loaded twice when drive letter casing differs
+- VSCode: Fixed conversation messages appearing dimmed while AskUserQuestion dialog is open
+- Fixed `/resume <session-id>` failing to find sessions whose first message exceeds 16KB
+
+## 2.1.46
+
+- Fixed orphaned Claude Code processes after terminal disconnect on macOS
+- Added support for using claude.ai MCP connectors in Claude Code
+
+## 2.1.45
+
+- Added support for Claude Sonnet 4.6
+- Added support for reading `enabledPlugins` and `extraKnownMarketplaces` from `--add-dir` directories
+- Added `spinnerTipsOverride` setting to customize spinner tips
+- Added `SDKRateLimitInfo` and `SDKRateLimitEvent` types to the SDK
+- Fixed Agent Teams teammates failing on Bedrock, Vertex, and Foundry by propagating API provider environment variables to tmux-spawned processes
+- Fixed sandbox "operation not permitted" errors when writing temporary files on macOS by using the correct per-user temp directory
+- Fixed Task tool (backgrounded agents) crashing with a `ReferenceError` on completion
+- Fixed autocomplete suggestions not being accepted on Enter when images are pasted in the input
+- Fixed skills invoked by subagents incorrectly appearing in main session context after compaction
+- Fixed excessive `.claude.json.backup` files accumulating on every startup
+- Fixed plugin-provided commands, agents, and hooks not being available immediately after installation
+- Improved startup performance by removing eager loading of session history for stats caching
+- Improved memory usage for shell commands that produce large output
+- Improved collapsed read/search groups to show the current file or search pattern being processed
+- [VSCode] Improved permission destination choice (project/user/session) to persist across sessions
+
+## 2.1.44
+
+- Fixed ENAMETOOLONG errors for deeply-nested directory paths
+- Fixed auth refresh errors
+
+## 2.1.43
+
+- Fixed AWS auth refresh hanging indefinitely by adding a 3-minute timeout
+- Fixed spurious warnings for non-agent markdown files in `.claude/agents/` directory
+- Fixed structured-outputs beta header being sent unconditionally on Vertex/Bedrock
+
+## 2.1.42
+
+- Improved startup performance by deferring Zod schema construction
+- Improved prompt cache hit rates by moving date out of system prompt
+- Added one-time Opus 4.6 effort callout for eligible users
+- Fixed /resume showing interrupt messages as session titles
+- Fixed image dimension limit errors to suggest /compact
+
+## 2.1.41
+
+- Added guard against launching Claude Code inside another Claude Code session
+- Added `claude auth login`, `claude auth status`, and `claude auth logout` CLI subcommands
+- Added Windows ARM64 (win32-arm64) native binary support
+- Added `speed` attribute to OTel events and trace spans for fast mode visibility
+- Fixed Agent Teams using wrong model identifier for Bedrock, Vertex, and Foundry customers
+- Fixed a crash when MCP tools return image content during streaming
+- Fixed /resume session previews showing raw XML tags instead of readable command names
+- Fixed plugin browse showing misleading "Space to Toggle" hint for already-installed plugins
+- Fixed hook blocking errors (exit code 2) not showing stderr to the user
+- Fixed file resolution failing for @-mentions with anchor fragments (e.g., `@README.md#installation`)
+- Fixed FileReadTool blocking the process on FIFOs, `/dev/stdin`, and large files
+- Fixed background task notifications not being delivered in streaming Agent SDK mode
+- Fixed cursor jumping to end on each keystroke in classifier rule input
+- Fixed markdown link display text being dropped for raw URL
+- Fixed auto-compact failure error notifications being shown to users
+- Fixed permission wait time being included in subagent elapsed time display
+- Fixed proactive ticks firing while in plan mode
+- Fixed clear stale permission rules when settings change on disk
+- Fixed hook blocking errors showing stderr content in UI
+- Improved model error messages for Bedrock/Vertex/Foundry users with fallback suggestions
+- Improved `/rename` to auto-generate session name from conversation context when called without arguments
+- Improved narrow terminal layout for prompt footer
+- Errors from invalid managed settings are now surfaced
+- VSCode: Added support for remote sessions, allowing OAuth users to browse and resume sessions from claude.ai
+- VSCode: Added git branch and message count to the session picker, with support for searching by branch name
+- VSCode: Fixed scroll-to-bottom under-scrolling on initial session load and session switch
+
+## 2.1.39
+
+- Improved terminal rendering performance
+- Fixed fatal errors being swallowed instead of displayed
+- Fixed process hanging after session close
+- Fixed character loss at terminal screen boundary
+- Fixed blank lines in verbose transcript view
+
+## 2.1.38
+
+- Fixed VS Code terminal scroll-to-top regression introduced in 2.1.37
+- Fixed Tab key queueing slash commands instead of autocompleting
+- Fixed bash permission matching for commands using environment variable wrappers
+- Fixed text between tool uses disappearing when not using streaming
+- Fixed duplicate sessions when resuming in VS Code extension
+- Improved heredoc delimiter parsing to prevent command smuggling
+- Blocked writes to `.claude/skills` directory in sandbox mode
+
+## 2.1.37
+
+- Fixed an issue where /fast was not immediately available after enabling /extra-usage
+
+## 2.1.36
+
+- Fast mode is now available for Opus 4.6. Learn more at https://code.claude.com/docs/en/fast-mode
+
+## 2.1.34
+
+- Fixed a crash when agent teams setting changed between renders
+- Fixed a bug where commands excluded from sandboxing could bypass the Bash ask permission rule when `autoAllowBashIfSandboxed` was enabled
+
+## 2.1.33
+
+- Added `TeammateIdle` and `TaskCompleted` hook events for multi-agent workflows
+- Added support for restricting which sub-agents can be spawned via `Task(agent_type)` syntax in agent "tools" frontmatter
+- Added `memory` frontmatter field support for agents, enabling persistent memory with `user`, `project`, or `local` scope
+- Added plugin name to skill descriptions and `/skills` menu for better discoverability
+- Fixed agent teammate sessions in tmux to send and receive messages
+- Fixed warnings about agent teams not being available on your current plan
+- Fixed an issue where submitting a new message while the model was in extended thinking would interrupt the thinking phase
+- Fixed an API error that could occur when aborting mid-stream, where whitespace text combined with a thinking block would bypass normalization
+- Fixed API proxy compatibility issue where 404 errors on streaming endpoints no longer triggered non-streaming fallback
+- Fixed proxy settings configured via `settings.json` environment variables not being applied to WebFetch and other HTTP requests on the Node.js build
+- Fixed `/resume` session picker showing raw XML markup instead of clean titles for sessions started with slash commands
+- Improved error messages for API connection failures — now shows specific cause instead of generic "Connection error"
+- Errors from invalid managed settings are now surfaced
+- VSCode: Added support for remote sessions, allowing OAuth users to browse and resume sessions from claude.ai
+- VSCode: Added git branch and message count to the session picker, with support for searching by branch name
+- VSCode: Fixed scroll-to-bottom under-scrolling on initial session load and session switch
+
+## 2.1.32
+
+- Claude Opus 4.6 is now available!
+- Added research preview agent teams feature for multi-agent collaboration (requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
+- Claude now automatically records and recalls memories as it works
+- Added "Summarize from here" to the message selector, allowing partial conversation summarization
+- Skills defined in `.claude/skills/` within additional directories (`--add-dir`) are now loaded automatically
+- Skill character budget now scales with context window (2% of context)
+- Fixed `@` file completion showing incorrect relative paths when running from a subdirectory
+- Updated --resume to re-use --agent value specified in previous conversation by default
+- Fixed Bash tool throwing "Bad substitution" errors when heredocs contain JavaScript template literals
+- Fixed Thai/Lao spacing vowels not rendering correctly in the input field
+- VSCode: Fixed slash commands incorrectly being executed when pressing Enter with preceding text
+- VSCode: Added spinner when loading past conversations list
+
+## 2.1.31
+
+- Added session resume hint on exit, showing how to continue your conversation later
+- Added support for full-width (zenkaku) space input from Japanese IME in checkbox selection
+- Fixed PDF too large errors permanently locking up sessions
+- Fixed bash commands incorrectly reporting failure with "Read-only file system" errors when sandbox mode was enabled
+- Fixed a crash after entering plan mode when project config in `~/.claude.json` was missing default fields
+- Fixed `temperatureOverride` being silently ignored in the streaming API path
+- Fixed LSP shutdown/exit compatibility with strict language servers that reject null params
+- Improved system prompts to more clearly guide the model toward using dedicated tools instead of bash equivalents
+- Improved PDF and request size error messages to show actual limits (100 pages, 20MB)
+- Reduced layout jitter in the terminal when the spinner appears and disappears during streaming
+- Removed misleading Anthropic API pricing from model selector for third-party provider users
+
+## 2.1.30
+
+- Added `pages` parameter to the Read tool for PDFs, allowing specific page ranges to be read
+- Added pre-configured OAuth client credentials for MCP servers that don't support Dynamic Client Registration
+- Added `/debug` for Claude to help troubleshoot the current session
+- Added support for additional `git log` and `git show` flags in read-only mode
+- Added token count, tool uses, and duration metrics to Task tool results
+- Added reduced motion mode to the config
+- Fixed phantom "(no content)" text blocks appearing in API conversation history
+- Fixed prompt cache not correctly invalidating when tool descriptions or input schemas changed
+- Fixed 400 errors that could occur after running `/login` when the conversation contained thinking blocks
+- Fixed a hang when resuming sessions with corrupted transcript files containing `parentUuid` cycles
+- Fixed rate limit message showing incorrect "/upgrade" suggestion for Max 20x users
+- Fixed permission dialogs stealing focus while actively typing
+- Fixed subagents not being able to access SDK-provided MCP tools
+- Fixed a regression where Windows users with a `.bashrc` file could not run bash commands
+- Improved memory usage for `--resume` (68% reduction) by replacing the session index with lightweight stat-based loading
+- Improved `TaskStop` tool to display the stopped command/task description in the result line
+- Changed `/model` to execute immediately instead of being queued
+- [VSCode] Added multiline input support to the "Other" text input in question dialogs
+- [VSCode] Fixed duplicate sessions appearing in the session list when starting a new conversation
+
+## 2.1.29
+
+- Fixed startup performance issues when resuming sessions that have `saved_hook_context`
+
 ## 2.1.27
 
 - Added tool call failures and denials to debug logs

@@ -38,6 +38,8 @@ This document provides a comprehensive reference for all native tools available 
   - [AskUserQuestion](#askuserquestion)
 - [Workflow Discovery](#workflow-discovery)
   - [Skill](#skill)
+- [Git Worktree](#git-worktree)
+  - [EnterWorktree](#enterworktree)
 - [MCP Tools](#mcp-tools)
   - [mcp](#mcp)
   - [MCPSearch](#mcpsearch)
@@ -116,6 +118,7 @@ This document provides a comprehensive reference for all native tools available 
 | 19 | `AskUserQuestion` | *(hidden)* | Yes | Yes | No | — |
 | 20 | `Skill` | Skill | No | No | Yes | — |
 | 21 | `mcp` | mcp | No | No | Yes | — |
+| 22 | `EnterWorktree` | *(hidden)* | No | No | Yes | — |
 
 ---
 
@@ -735,6 +738,33 @@ Executes a registered skill (custom command/workflow).
 
 ---
 
+## Git Worktree
+
+### EnterWorktree
+
+Creates a new git worktree branched from HEAD and switches the session into it. Used when the user asks to work in isolation or on a separate branch without affecting the main working tree. The worktree is created inside `.claude/worktrees/` with a new branch.
+
+| Parameter | Type     | Required | Description                                                |
+| --------- | -------- | -------- | ---------------------------------------------------------- |
+| `name`    | `string` | No       | Name for the worktree. A random name is generated if omitted. |
+
+- **Read-only:** No
+- **Concurrency-safe:** No
+- **Requires permission:** Yes
+
+#### Requirements
+
+- Must be in a git repository.
+- Must not already be in a worktree.
+
+#### Notes
+
+- On session exit, the user will be prompted to keep or remove the worktree.
+- Subagents can use `isolation: "worktree"` in agent definitions to work in a temporary git worktree.
+- The `--worktree` (`-w`) CLI flag starts Claude directly in an isolated worktree.
+
+---
+
 ## MCP Tools
 
 MCP (Model Context Protocol) allows Claude Code to integrate with external tools and data sources via MCP servers. Once configured, MCP server tools appear alongside native tools and are invoked automatically as needed.
@@ -796,6 +826,10 @@ Discovers deferred MCP tools on demand. Auto-activates when MCP tool description
 | `MAX_MCP_OUTPUT_TOKENS` | `25000` | MCP | Maximum output tokens for MCP tool results |
 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | — | Task | Set to `1` to enable Agent Teams (experimental) |
 | `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` | — | Task | Set to `1` to disable background task functionality |
+| `CLAUDE_CODE_TMPDIR` | — | All | Override temp directory for internal temp files |
+| `CLAUDE_CODE_FILE_READ_MAX_OUTPUT_TOKENS` | — | Read | Override the default file read token limit |
+| `CLAUDE_CODE_EXIT_AFTER_STOP_DELAY` | — | SDK | Auto-exit SDK mode after a specified idle duration |
+| `CLAUDE_CODE_SHELL` | — | Bash | Override automatic shell detection |
 | `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` | `95` | All | Auto-compaction trigger threshold (percentage) |
 
 ### CLI Flags
@@ -806,13 +840,35 @@ Discovers deferred MCP tools on demand. Auto-activates when MCP tool description
 | `--disallowedTools=<tools>` | Comma-separated list of denied tools |
 | `--mcp-config <path>` | One-off MCP server configuration file |
 | `--mcp-debug` | Enable MCP debugging output |
-| `login` | Authenticate with Anthropic API |
-| `status` | Show current authentication and session status |
-| `logout` | Clear stored authentication credentials |
+| `--worktree` / `-w` | Start in an isolated git worktree |
+| `--agent <name>` | Override agent for the current session |
+| `--from-pr <number\|url>` | Resume a session linked to a specific GitHub PR |
+| `--tools <list>` | Restrict available built-in tools in interactive mode |
+| `auth login` | Authenticate with Anthropic API |
+| `auth status` | Show current authentication and session status |
+| `auth logout` | Clear stored authentication credentials |
 
 ### Hooks Configuration
 
-Hooks are shell commands that execute in response to lifecycle events (e.g. `PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`, `UserPromptSubmit`). Hook entries support an `"async": true` property for non-blocking execution — the hook runs in the background without delaying the agent loop.
+Hooks are shell commands that execute in response to lifecycle events. Hook entries support an `"async": true` property for non-blocking execution — the hook runs in the background without delaying the agent loop.
+
+| Event | Trigger |
+|-------|---------|
+| `Setup` | Triggered via `--init`, `--init-only`, or `--maintenance` CLI flags |
+| `SessionStart` | New session begins |
+| `UserPromptSubmit` | Each user message submitted |
+| `PreToolUse` | Before each tool call |
+| `PostToolUse` | After each tool call |
+| `PreCompact` | Before context compaction |
+| `Stop` | Agent turn ends |
+| `SubagentStart` | Before a sub-agent runs |
+| `SubagentStop` | When a sub-agent completes |
+| `SessionEnd` | After session closes |
+| `Notification` | Idle/permission prompt notifications |
+| `PermissionRequest` | When a permission prompt appears |
+| `ConfigChange` | When configuration files change during a session |
+| `TeammateIdle` | Agent Teams: teammate becomes idle |
+| `TaskCompleted` | Agent Teams: teammate completes a task |
 
 ### Configuration Files
 
@@ -821,6 +877,9 @@ Hooks are shell commands that execute in response to lifecycle events (e.g. `Pre
 | `.claude/settings.json` | Project permission rules and settings |
 | `.mcp.json` | MCP server configuration (project/local/user scopes) |
 | `.claude/commands/` | Custom slash commands (markdown templates) |
+| `.claude/agents/` | Custom agent definitions (markdown with frontmatter) |
+| `.claude/skills/` | Custom skill definitions |
+| `.claude/rules/` | Per-directory rule files |
 | `CLAUDE.md` | Project context file (supports `@path/to/file.md` imports) |
 
 ---
@@ -838,9 +897,10 @@ Hooks are shell commands that execute in response to lifecycle events (e.g. `Pre
 | **Planning**            | `EnterPlanMode`, `ExitPlanMode`                                            |
 | **User Interaction**    | `AskUserQuestion`                                                          |
 | **Workflow Discovery**  | `Skill`                                                                    |
+| **Git Worktree**        | `EnterWorktree`                                                            |
 | **MCP**                 | `mcp`, `MCPSearch` (conditional)                                           |
 
-**Total: 21 native tools + 1 conditional (`MCPSearch`)**
+**Total: 22 native tools + 1 conditional (`MCPSearch`)**
 
 ### Historical Names
 

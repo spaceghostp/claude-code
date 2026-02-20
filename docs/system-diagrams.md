@@ -235,6 +235,9 @@ Lifecycle events and which components fire at each stage.
 SESSION LIFECYCLE
 =================
 
+Setup  (via --init / --init-only / --maintenance)
+    |
+    v
 SessionStart
     |
     +-- [global] resurface.py      Surface vault notes
@@ -261,6 +264,15 @@ PostToolUse  (after each tool call)
     +-- [plugin] hookify/posttooluse.py
     |
     v
+PreCompact  (before context compaction)
+    |
+    v
+SubagentStart  (before sub-agent runs)
+    |
+    v
+SubagentStop  (when sub-agent completes)
+    |
+    v
 Stop  (agent turn ends)
     |
     +-- [global] stop-capture-check.py  Vault capture reminder
@@ -277,18 +289,27 @@ SessionEnd
 Notification  (idle/permission prompts)
     |
     +-- [global] afplay Glass.aiff  Audio alert
+    |
+    v
+PermissionRequest  (permission prompt appears)
+    |
+    v
+ConfigChange  (config files change during session)
+    |
+    v
+TeammateIdle / TaskCompleted  (Agent Teams events)
 ```
 
 ---
 
 ## 6. Tool Categories
 
-All 21 native tools (+ 1 conditional) grouped by category with
+All 22 native tools (+ 1 conditional) grouped by category with
 permission indicators.
 
 ```
 +-----------------------------------------------------------+
-|          NATIVE TOOLS (21 + 1 conditional)                |
+|          NATIVE TOOLS (22 + 1 conditional)                |
 +-----------------------------------------------------------+
 |                                                           |
 |  FILE I/O                          Perm?                  |
@@ -337,6 +358,10 @@ permission indicators.
 |  WORKFLOW DISCOVERY                                       |
 |  ------------------                                       |
 |  Skill ........................... YES                     |
+|                                                           |
+|  GIT WORKTREE                                             |
+|  -------------                                            |
+|  EnterWorktree ................... YES                     |
 |                                                           |
 |  MCP                                                      |
 |  ---                                                      |
